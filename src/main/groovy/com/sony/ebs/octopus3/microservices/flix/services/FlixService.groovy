@@ -19,7 +19,7 @@ class FlixService {
 
     rx.Observable<String> flixFlow(ProcessId processId, String publication, String locale) {
         observe(execControl.blocking {
-            log.info "flix started for processId $processId publication $publication locale $locale"
+            log.info "flix started for processId $processId.id, publication $publication, locale $locale"
             "flix started"
         })
     }
