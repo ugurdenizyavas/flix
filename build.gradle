@@ -1,0 +1,99 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://oss.jfrog.org/repo" }
+    }
+    dependencies {
+        classpath 'io.ratpack:ratpack-gradle:0.9.6'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://mvn.sony-europe.com/content/groups/global" }
+    maven { url "http://oss.jfrog.org/repo" }
+    maven { url "http://repo.springsource.org/repo" }
+    maven { url "http://repo.spring.io/libs-release" }
+}
+
+apply plugin: "ratpack-groovy"
+apply plugin: "groovy"
+
+configurations {
+    all {
+        exclude module: "groovy"
+    }
+    cucumberRuntime {
+        extendsFrom testRuntime
+    }
+}
+
+dependencies {
+    compile 'com.sony.ebs.octopus3:octopus3-commons:1.0-SNAPSHOT'
+    compile 'commons-io:commons-io:2.4'
+
+    // cucumber
+    cucumberRuntime files("${jar.archivePath}")
+    testCompile 'junit:junit:4.11'
+    testCompile 'info.cukes:cucumber-junit:1.1.7'
+    testCompile 'info.cukes:cucumber-groovy:1.1.7'
+
+    // spring
+    compile "org.springframework:spring-core:4.0.5.RELEASE"
+    compile "org.springframework:spring-context:4.0.5.RELEASE"
+    compile "org.springframework:spring-beans:4.0.5.RELEASE"
+
+    // ratpack
+    springloaded "org.springsource.springloaded:springloaded-core:1.1.4"
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0", {
+        exclude module: "groovy-all"
+    }
+    compile 'io.ratpack:ratpack-rx:0.9.6'
+    compile 'io.ratpack:ratpack-jackson:0.9.6'
+
+    // logging
+    compile "org.slf4j:slf4j-api:1.7.5"
+    compile "org.slf4j:slf4j-log4j12:1.7.5"
+
+    // http clients
+    compile 'com.ning:async-http-client:1.8.11', {
+        exclude group: 'io.netty'
+        exclude group: 'org.slf4j'
+        exclude group: 'org.apache.httpcomponents'
+    }
+    testCompile 'com.github.dreamhead:moco-core:0.9.1', {
+        exclude group: 'org.slf4j'
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile 'com.netflix.rxjava:rxjava-apache-http:0.19.2', {
+       exclude group: 'org.apache.httpcomponents'
+    }
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0.1'
+    compile 'org.apache.httpcomponents:httpmime:4.3.4'
+    compile 'org.apache.httpcomponents:httpcore:4.3.2'
+    compile 'org.apache.httpcomponents:httpclient:4.3.4'
+
+}
+
+run {
+    systemProperty('environment', System.getProperty('environment'))
+    systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir'))
+}
+test {
+    systemProperty('environment', System.getProperty('environment'))
+    systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir'))
+}
+
+task cucumber() {
+    dependsOn assemble
+    doLast {
+        javaexec {
+            main = "cucumber.api.cli.Main"
+            classpath = files(configurations.cucumberRuntime, sourceSets.test.runtimeClasspath)
+            args = ['-f', 'pretty', '--glue', 'src/test/groovy', 'src/test/resources/cukes']
+
+        }
+    }
+}
