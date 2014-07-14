@@ -1,7 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
+import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
-import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
+import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
@@ -11,18 +13,17 @@ import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
 
 @Slf4j
-class FlixSheetServiceTest {
+class EanCodeProviderTest {
 
-    FlixSheetService flixSheetService
+    EanCodeProvider eanCodeProvider
     ExecController execController
-    StubFor mockNingHttpClient, mockEanCodeProvider
+    StubFor mockNingHttpClient
 
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file")
+        eanCodeProvider = new EanCodeProvider(execControl: execController.control, serviceUrl: "/ean")
         mockNingHttpClient = new StubFor(NingHttpClient)
-        mockEanCodeProvider = new StubFor(EanCodeProvider)
     }
 
     @After
@@ -31,32 +32,26 @@ class FlixSheetServiceTest {
     }
 
     @Test
-    void "import sheet"() {
-        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
-
+    void "flix flow"() {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
-                rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
-            }
-            doPost(1) { String url, String data ->
-                rx.Observable.from("done")
-            }
-        }
-
-        mockEanCodeProvider.demand.with {
-            getEanCode(1) {
-                rx.Observable.from("ea1")
+                assert url == "/ean/a"
+                def xml = """
+                <eancodes>
+                    <eancode material="DSC-500" code="4905524328974"/>
+                </eancodes>
+                """
+                rx.Observable.from(xml)
             }
         }
 
-        flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
-        flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
+        eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
         execController.start {
-            flixSheetService.importSheet(flixSheet).subscribe { String result ->
+            eanCodeProvider.getEanCode(new URNImpl("urn:flix:a")).subscribe { String result ->
                 synchronized (finished) {
-                    assert result == "done"
+                    assert result == "4905524328974"
                     log.info "finished test"
                     finished.notifyAll()
                 }

@@ -30,7 +30,7 @@ class FlixSheetService {
     ExecControl execControl
 
     @Autowired
-    EancodeProvider eancodeProvider
+    EanCodeProvider eanCodeProvider
 
     def parseJson(readResult) {
         observe(execControl.blocking {
@@ -56,7 +56,7 @@ class FlixSheetService {
         def readUrl = "$repositoryFileUrl/$flixSheet.urnStr"
         httpClient.doGet(readUrl)
                 .flatMap({ String readResult ->
-            rx.Observable.zip([parseJson(readResult), eancodeProvider.getEanCode(flixSheet.urn)]) { zipResult ->
+            rx.Observable.zip([parseJson(readResult), eanCodeProvider.getEanCode(flixSheet.urn)]) { zipResult ->
                 log.info "merging results"
                 def json = zipResult[0]
                 def eanCode = zipResult[1]
