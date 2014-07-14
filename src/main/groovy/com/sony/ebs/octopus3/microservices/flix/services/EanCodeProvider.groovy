@@ -28,7 +28,8 @@ class EanCodeProvider {
     ExecControl execControl
 
     rx.Observable<String> getEanCode(URN urn) {
-        def url = "$serviceUrl/${urn.values.last()}"
+        def url = serviceUrl.replace(":product", urn.values.last())
+        log.info "ean code service url for $urn is $url"
         httpClient.doGet(url).flatMap({ result ->
             observe(execControl.blocking {
                 log.info "parsing eanCode xml"

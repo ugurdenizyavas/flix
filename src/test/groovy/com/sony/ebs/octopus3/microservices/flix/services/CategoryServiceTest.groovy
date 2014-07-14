@@ -1,7 +1,5 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.process.ProcessId
-import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
@@ -13,16 +11,17 @@ import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
 
 @Slf4j
-class FlixServiceTest {
+class CategoryServiceTest {
 
-    FlixService flixService
+    CategoryService categoryService
     ExecController execController
     StubFor mockNingHttpClient
 
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet", repositoryDeltaUrl: "/delta/:urn")
+        categoryService = new CategoryService(categoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
+                repositoryFileUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
@@ -32,27 +31,29 @@ class FlixServiceTest {
     }
 
     @Test
-    void "flix flow"() {
-        def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
-
+    void "get category feed"() {
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
         mockNingHttpClient.demand.with {
-            doGet(4) { String url ->
-                String result = ""
-                if (url.startsWith("/delta")) result = '{ "urns" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
-                if (url.startsWith("/flix/sheet")) result = "$url"
-                log.info "getLocal url $url"
-                rx.Observable.from(result)
+            doGet(1) { String url ->
+                assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
+                rx.Observable.from("xxx")
+            }
+            doPost(1) { String url, String data ->
+                assert url == "/repository/file/urn:category:score:en_gb"
+                assert data == "xxx"
+                rx.Observable.from("done")
             }
         }
 
-        flixService.httpClient = mockNingHttpClient.proxyInstance()
+        categoryService.proxyHttpClient = mockNingHttpClient.proxyInstance()
+        categoryService.localHttpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
         execController.start {
-            flixService.flixFlow(flix).subscribe { String result ->
+            categoryService.getCategoryFeed(flix).subscribe { String result ->
                 synchronized (finished) {
-                    log.info "result $result"
-                    assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c]"
+                    assert result == "done"
+                    log.info "finished test"
                     finished.notifyAll()
                 }
             }

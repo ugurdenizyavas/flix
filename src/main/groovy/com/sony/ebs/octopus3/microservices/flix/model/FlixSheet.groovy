@@ -4,7 +4,7 @@ import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.ToString
 
-@ToString(includeNames = true, includePackage = false)
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true)
 class FlixSheet {
 
     String processId

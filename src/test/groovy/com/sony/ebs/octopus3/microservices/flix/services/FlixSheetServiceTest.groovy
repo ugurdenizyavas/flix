@@ -20,7 +20,7 @@ class FlixSheetServiceTest {
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file")
+        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockEanCodeProvider = new StubFor(EanCodeProvider)
     }
@@ -36,9 +36,11 @@ class FlixSheetServiceTest {
 
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
+                assert url == "/repository/file/urn:flix:score:en_gb:a"
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
             doPost(1) { String url, String data ->
+                assert url == "/repository/file/urn:flix-xml:score:en_gb:a"
                 rx.Observable.from("done")
             }
         }

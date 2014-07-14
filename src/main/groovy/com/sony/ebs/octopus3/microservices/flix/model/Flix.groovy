@@ -3,7 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.model
 import com.sony.ebs.octopus3.commons.process.ProcessId
 import groovy.transform.ToString
 
-@ToString(includeNames = true, includePackage = false)
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true)
 class Flix {
 
     ProcessId processId

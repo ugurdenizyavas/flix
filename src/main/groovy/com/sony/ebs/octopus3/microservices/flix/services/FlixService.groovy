@@ -29,6 +29,9 @@ class FlixService {
     NingHttpClient httpClient
 
     @Autowired
+    CategoryService categoryService
+
+    @Autowired
     @Lazy
     ExecControl execControl
 
@@ -47,7 +50,7 @@ class FlixService {
     rx.Observable<String> flixFlow(Flix flix) {
         log.info "reading delta"
         def deltaUrn = new URNImpl("flix", [flix.publication, flix.locale])
-        def deltaUrl = "$repositoryDeltaUrl/${deltaUrn.toString()}?sdate=$flix.sdate&edate=$flix.edate"
+        def deltaUrl = repositoryDeltaUrl.replace(":urn", deltaUrn.toString()) + "?sdate=$flix.sdate&edate=$flix.edate"
         httpClient.doGet(deltaUrl)
                 .flatMap({ deltaResult ->
             observe(execControl.blocking {
@@ -55,11 +58,11 @@ class FlixService {
                 new JsonSlurper().parseText(deltaResult)
             })
         }).flatMap({ jsonResult ->
-            rx.Observable.zip(
-                    jsonResult?.urns?.collect { String sheetUrn ->
-                        singleSheet(flix, sheetUrn)
-                    }
-            ) { sheetResult ->
+            List list = jsonResult?.urns?.collect { String sheetUrn ->
+                singleSheet(flix, sheetUrn)
+            }
+            list << categoryService.getCategoryFeed(flix)
+            rx.Observable.zip(list) { sheetResult ->
                 log.info "finished sheet calls with $sheetResult"
                 "$sheetResult"
             }

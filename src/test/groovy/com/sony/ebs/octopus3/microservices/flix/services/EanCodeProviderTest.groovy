@@ -1,9 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
@@ -22,7 +20,7 @@ class EanCodeProviderTest {
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        eanCodeProvider = new EanCodeProvider(execControl: execController.control, serviceUrl: "/ean")
+        eanCodeProvider = new EanCodeProvider(execControl: execController.control, serviceUrl: "/ean/:product")
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 

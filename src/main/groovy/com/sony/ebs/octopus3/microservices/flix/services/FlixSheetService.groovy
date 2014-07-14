@@ -53,7 +53,7 @@ class FlixSheetService {
 
     rx.Observable<String> importSheet(FlixSheet flixSheet) {
         log.info "reading json"
-        def readUrl = "$repositoryFileUrl/$flixSheet.urnStr"
+        def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
         httpClient.doGet(readUrl)
                 .flatMap({ String readResult ->
             rx.Observable.zip([parseJson(readResult), eanCodeProvider.getEanCode(flixSheet.urn)]) { zipResult ->
@@ -67,7 +67,7 @@ class FlixSheetService {
             buildXml(jsonResult)
         }).flatMap({ String xmlResult ->
             log.info "saving xml"
-            def saveUrl = "$repositoryFileUrl/${flixSheet.xmlUrn.toString()}"
+            def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.xmlUrn.toString())
             httpClient.doPost(saveUrl, xmlResult)
         })
     }
