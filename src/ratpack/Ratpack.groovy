@@ -1,5 +1,6 @@
 import com.sony.ebs.octopus3.microservices.flix.SpringConfig
 import com.sony.ebs.octopus3.microservices.flix.handlers.FlixFlowHandler
+import com.sony.ebs.octopus3.microservices.flix.handlers.FlixSheetFlowHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -15,6 +16,7 @@ Logger log = LoggerFactory.getLogger("ratpack");
 ratpack {
 
     FlixFlowHandler flixFlowHandler
+    FlixSheetFlowHandler flixSheetFlowHandler
 
     bindings {
         add new JacksonModule()
@@ -25,6 +27,7 @@ ratpack {
             ctx.beanFactory.registerSingleton "execControl", launchConfig.execController.control
 
             flixFlowHandler = ctx.getBean(FlixFlowHandler.class)
+            flixSheetFlowHandler = ctx.getBean(FlixSheetFlowHandler.class)
 
             RxRatpack.initialize()
         }
@@ -32,5 +35,6 @@ ratpack {
 
     handlers {
         get("flix/publication/:publication/locale/:locale", flixFlowHandler)
+        get("flix/sheet/:urn", flixSheetFlowHandler)
     }
 }

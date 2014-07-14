@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
-import com.sony.ebs.octopus3.commons.process.ProcessId
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.util.logging.Slf4j
@@ -22,24 +22,28 @@ class FlixFlowHandler extends GroovyHandler {
     @Autowired
     RequestValidator validator
 
+
     @Override
     protected void handle(GroovyContext context) {
         context.with {
-            String publication = pathTokens.publication
-            String locale = pathTokens.locale
+            log.info "starting flix"
+            Flix flix = new Flix(processId: new ProcessIdImpl(), publication: pathTokens.publication,
+                    locale: pathTokens.locale, sdate: request.queryParams.sdate, edate: request.queryParams.edate)
 
-            def sendError = { String message ->
-                log.error message
+            List errors = validator.validateFlix(flix)
+            if (errors) {
+                log.error "error validating params $errors"
                 response.status(400)
-                render json(status: 400, message: message, publication: publication, locale: locale)
+                render json(status: 400, errors: errors, flix: flix)
+            } else {
+                flixService.flixFlow(flix).subscribe({ result ->
+                    log.info "$flix finished"
+                })
+                log.info "$flix started"
+                response.status(202)
+                render json(status: 202, message: "flix started", flix: flix)
             }
-            ProcessId processId = new ProcessIdImpl()
-            flixService.flixFlow(processId, publication, locale).subscribe({ result ->
-                log.info "flix media generation finished for publication $publication, locale $locale, reuslt: $result"
-            })
-            log.info "flix media generation started for publication $publication, locale $locale"
-            response.status(202)
-            render json(status: 202, processId: processId.id, message: "flix media generation started", publication: publication, locale: locale)
+
         }
     }
 

@@ -1,7 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.process.ProcessId
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -12,16 +11,16 @@ import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
 @Service
-class FlixService {
+class FlixSheetService {
 
     @Autowired
     @Lazy
     ExecControl execControl
 
-    rx.Observable<String> flixFlow(Flix flix) {
+    rx.Observable<String> importSheet(FlixSheet flixSheet) {
         observe(execControl.blocking {
-            log.info "$flix started"
-            "$flix started"
+            log.info "$flixSheet started"
+            "$flixSheet started"
         })
     }
 

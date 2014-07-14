@@ -1,8 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.process.ProcessId
-import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import groovy.util.logging.Slf4j
 import org.junit.After
 import org.junit.Before
@@ -11,15 +9,15 @@ import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
 
 @Slf4j
-class FlixServiceTest {
+class FlixSheetServiceTest {
 
-    FlixService flixService
+    FlixSheetService flixSheetService
     ExecController execController
 
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        flixService = new FlixService(execControl: execController.control)
+        flixSheetService = new FlixSheetService(execControl: execController.control)
     }
 
     @After
@@ -29,13 +27,13 @@ class FlixServiceTest {
 
     @Test
     void "delta flow"() {
-        def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb")
 
         def finished = new Object()
         execController.start {
-            flixService.flixFlow(flix).subscribe { String result ->
+            flixSheetService.importSheet(flixSheet).subscribe { String result ->
                 synchronized (finished) {
-                    assert result == "$flix started"
+                    assert result == "$flixSheet started"
                     log.info "assertions finished"
                     finished.notifyAll()
                 }

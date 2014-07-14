@@ -49,14 +49,31 @@ After() {
 * */
 
 When(~"I request flix media generation for publication (.*) locale (.*)") { publication, locale ->
-    get("flix/publication/$publication/locale/$locale")
+    get("flix/publication/$publication/locale/$locale?sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
 }
 
 Then(~"Flix media generation for publication (.*) locale (.*) should be started") { publication, locale ->
     assert response.statusCode == 202
     def json = parseJson(response)
     assert json.status == 202
-    assert json.message == "flix media generation started"
-    assert json.publication == publication
-    assert json.locale == locale
+    assert json.message == "flix started"
+    assert json.flix.publication == publication
+    assert json.flix.locale == locale
+    assert json.flix.sdate == "2014-07-09T00:00:00.000Z"
+    assert json.flix.edate == "2014-07-12T00:00:00.000Z"
+    assert json.flix.processId
+}
+
+When(~"I request flix sheet import for process (.*) sheet (.*)") { process, sheet ->
+    get("flix/sheet/urn:flix:score:en_GB:$sheet?processId=$process")
+}
+
+Then(~"Flix sheet import for process (.*) sheet (.*) should be started") { process, sheet ->
+    assert response.statusCode == 202
+    def json = parseJson(response)
+    assert json.status == 202
+    assert json.message == "flixSheet started"
+    assert json.flixSheet.processId == process
+    assert json.flixSheet.urnStr == "urn:flix:score:en_GB:$sheet"
+    assert json.flixSheet.processId
 }
