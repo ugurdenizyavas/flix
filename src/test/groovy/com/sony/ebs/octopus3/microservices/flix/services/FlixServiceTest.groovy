@@ -40,7 +40,7 @@ class FlixServiceTest {
                 String result = ""
                 if (url.startsWith("/delta")) result = '{ "urns" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
                 if (url.startsWith("/flix/sheet")) result = "$url"
-                log.info "$result"
+                log.info "getLocal url $url"
                 rx.Observable.from(result)
             }
         }

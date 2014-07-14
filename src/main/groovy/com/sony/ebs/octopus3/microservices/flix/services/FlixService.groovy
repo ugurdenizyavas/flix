@@ -30,33 +30,35 @@ class FlixService {
     @Lazy
     ExecControl execControl
 
-    private rx.Observable<String> singleSheet(Flix flix, String urn) {
-        def importUrl = "$sheetUrl/$urn?processId=$flix.processId.id"
+    private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
+        log.info "importing sheet"
+        def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
         httpClient.getLocal(importUrl).flatMap({
             log.info "finished $importUrl"
-            rx.Observable.from("success for $urn")
+            rx.Observable.from("success for $sheetUrn")
         }).onErrorReturn({
-            log.error "error in $urn", it
-            "error in $urn"
+            log.error "error in $sheetUrn", it
+            "error in $sheetUrn"
         })
     }
 
     rx.Observable<String> flixFlow(Flix flix) {
-        observe(execControl.blocking {
-            log.info "$flix started"
-            "$flix started"
-        }).flatMap({
-            def urn = new URNImpl("flix", [flix.publication, flix.locale])
-            def url = "$repositoryDeltaUrl/${urn.toString()}?sdate=$flix.sdate&edate=$flix.edate"
-            httpClient.getLocal(url)
-        }).flatMap({ deltaResult ->
-            def json = new JsonSlurper().parseText(deltaResult)
+        log.info "reading delta"
+        def deltaUrn = new URNImpl("flix", [flix.publication, flix.locale])
+        def deltaUrl = "$repositoryDeltaUrl/${deltaUrn.toString()}?sdate=$flix.sdate&edate=$flix.edate"
+        httpClient.getLocal(deltaUrl)
+                .flatMap({ deltaResult ->
+            observe(execControl.blocking {
+                log.info "parsing delta json"
+                new JsonSlurper().parseText(deltaResult)
+            })
+        }).flatMap({ jsonResult ->
             rx.Observable.zip(
-                    json?.urns?.collect { String urn ->
-                        singleSheet(flix, urn)
+                    jsonResult?.urns?.collect { String sheetUrn ->
+                        singleSheet(flix, sheetUrn)
                     }
             ) { sheetResult ->
-                log.info "import finished with result $sheetResult"
+                log.info "finished sheet calls with $sheetResult"
                 "$sheetResult"
             }
         })
