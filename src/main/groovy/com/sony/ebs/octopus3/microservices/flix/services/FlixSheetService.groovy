@@ -6,6 +6,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -21,31 +22,53 @@ class FlixSheetService {
     String repositoryFileUrl
 
     @Autowired
+    @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
     @Autowired
     @Lazy
     ExecControl execControl
 
+    @Autowired
+    EancodeProvider eancodeProvider
+
+    def parseJson(readResult) {
+        observe(execControl.blocking {
+            log.info "parsing json"
+            new JsonSlurper().parseText(readResult)
+        })
+    }
+
+    def buildXml(jsonResult) {
+        observe(execControl.blocking {
+            log.info "building xml"
+            def writer = new StringWriter()
+            def xml = new MarkupBuilder(writer)
+            xml.content {
+                c jsonResult
+            }
+            writer.toString()
+        })
+    }
+
     rx.Observable<String> importSheet(FlixSheet flixSheet) {
         log.info "reading json"
         def readUrl = "$repositoryFileUrl/$flixSheet.urnStr"
-        httpClient.getLocal(readUrl)
+        httpClient.doGet(readUrl)
                 .flatMap({ String readResult ->
-            observe(execControl.blocking {
-                log.info "creating xml from json"
-                def json = new JsonSlurper().parseText(readResult)
-                def writer = new StringWriter()
-                def xml = new MarkupBuilder(writer)
-                xml.content {
-                    c json
-                }
-                writer.toString()
-            })
+            rx.Observable.zip([parseJson(readResult), eancodeProvider.getEanCode(flixSheet.urn)]) { zipResult ->
+                log.info "merging results"
+                def json = zipResult[0]
+                def eanCode = zipResult[1]
+                json.eanCode = eanCode
+                json
+            }
+        }).flatMap({ jsonResult ->
+            buildXml(jsonResult)
         }).flatMap({ String xmlResult ->
             log.info "saving xml"
             def saveUrl = "$repositoryFileUrl/${flixSheet.xmlUrn.toString()}"
-            httpClient.postLocal(saveUrl, xmlResult)
+            httpClient.doPost(saveUrl, xmlResult)
         })
     }
 

@@ -36,7 +36,7 @@ class FlixServiceTest {
         def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
 
         mockNingHttpClient.demand.with {
-            getLocal(4) { String url ->
+            doGet(4) { String url ->
                 String result = ""
                 if (url.startsWith("/delta")) result = '{ "urns" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
                 if (url.startsWith("/flix/sheet")) result = "$url"

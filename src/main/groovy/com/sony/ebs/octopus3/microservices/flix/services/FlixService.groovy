@@ -6,6 +6,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -24,6 +25,7 @@ class FlixService {
     String sheetUrl
 
     @Autowired
+    @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
     @Autowired
@@ -33,7 +35,7 @@ class FlixService {
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
         log.info "importing sheet"
         def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
-        httpClient.getLocal(importUrl).flatMap({
+        httpClient.doGet(importUrl).flatMap({
             log.info "finished $importUrl"
             rx.Observable.from("success for $sheetUrn")
         }).onErrorReturn({
@@ -46,7 +48,7 @@ class FlixService {
         log.info "reading delta"
         def deltaUrn = new URNImpl("flix", [flix.publication, flix.locale])
         def deltaUrl = "$repositoryDeltaUrl/${deltaUrn.toString()}?sdate=$flix.sdate&edate=$flix.edate"
-        httpClient.getLocal(deltaUrl)
+        httpClient.doGet(deltaUrl)
                 .flatMap({ deltaResult ->
             observe(execControl.blocking {
                 log.info "parsing delta json"

@@ -1,50 +1,57 @@
 package com.sony.ebs.octopus3.microservices.flix.http
 
 import com.ning.http.client.AsyncHttpClient
+import com.ning.http.client.AsyncHttpClientConfig
+import com.ning.http.client.ProxyServer
+import com.ning.http.client.Realm
 import groovy.util.logging.Slf4j
 import org.apache.http.client.utils.URIBuilder
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Lazy
-import org.springframework.stereotype.Component
 import ratpack.exec.ExecControl
-
-import javax.annotation.PostConstruct
 
 import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
-@Component
 class NingHttpClient {
 
     enum RequestType {
-        GET_LOCAL, POST_LOCAL
+        GET, POST
     }
 
-    @Autowired
-    @Lazy
     ExecControl execControl
-
+    String authenticationUser, authenticationPassword
     AsyncHttpClient asyncHttpClient
 
-    @PostConstruct
-    void init() {
-        asyncHttpClient = new AsyncHttpClient()
+    public NingHttpClient() {
+
     }
 
-    private String getByNing(RequestType requestType, String urlString, String data = null) {
+    public NingHttpClient(ExecControl execControl, String proxyHost, int proxyPort, String proxyUser, String proxyPassword,
+                          String authenticationUser, String authenticationPassword) {
+        AsyncHttpClientConfig config
+        if (proxyHost) {
+            config = new AsyncHttpClientConfig.Builder().setProxyServer(new ProxyServer(proxyHost, proxyPort, proxyUser, proxyPassword)).build()
+        } else {
+            config = new AsyncHttpClientConfig.Builder().build()
+        }
+        asyncHttpClient = new AsyncHttpClient(config)
+
+        this.execControl = execControl
+        this.authenticationUser = authenticationUser
+        this.authenticationPassword = authenticationPassword
+    }
+
+    String getByNing(RequestType requestType, String urlString, String data = null) {
         def url = new URIBuilder(urlString).toString()
 
         log.info "starting $requestType for $url"
+
+        Realm realm = authenticationUser ? (new Realm.RealmBuilder()).setScheme(Realm.AuthScheme.BASIC).setPrincipal(authenticationUser).setPassword(authenticationPassword).build() : null
+
         def f
-        if (RequestType.GET_LOCAL == requestType) {
-            f = asyncHttpClient.prepareGet(url)
-                    .addHeader('Accept-Charset', 'UTF-8')
-                    .execute()
-        } else if (RequestType.POST_LOCAL == requestType) {
-            f = asyncHttpClient.preparePost(url)
-                    .addHeader('Accept-Charset', 'UTF-8')
-                    .setBody(data)
-                    .execute()
+        if (RequestType.GET == requestType) {
+            f = asyncHttpClient.prepareGet(url).addHeader('Accept-Charset', 'UTF-8').setRealm(realm).execute()
+        } else {
+            f = asyncHttpClient.preparePost(url).addHeader('Accept-Charset', 'UTF-8').setRealm(realm).setBody(data).execute()
         }
         def response = f.get()
 
@@ -58,17 +65,17 @@ class NingHttpClient {
         }
     }
 
-    private rx.Observable<String> getObservableNing(RequestType requestType, String url, String data = null) {
+    rx.Observable<String> getObservableNing(RequestType requestType, String url, String data = null) {
         observe(execControl.blocking {
             getByNing(requestType, url, data)
         })
     }
 
-    rx.Observable<String> getLocal(String url) {
-        getObservableNing(RequestType.GET_LOCAL, url)
+    rx.Observable<String> doGet(String url) {
+        getObservableNing(RequestType.GET, url)
     }
 
-    rx.Observable<String> postLocal(String url, String data) {
-        getObservableNing(RequestType.POST_LOCAL, url, data)
+    rx.Observable<String> doPost(String url, String data) {
+        getObservableNing(RequestType.POST, url, data)
     }
 }
