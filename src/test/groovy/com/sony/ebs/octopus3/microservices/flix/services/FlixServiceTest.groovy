@@ -17,13 +17,14 @@ class FlixServiceTest {
 
     FlixService flixService
     ExecController execController
-    StubFor mockNingHttpClient
+    StubFor mockNingHttpClient, mockCategoryService
 
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
         flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet", repositoryDeltaUrl: "/delta/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
+        mockCategoryService = new StubFor(CategoryService)
     }
 
     @After
@@ -44,15 +45,23 @@ class FlixServiceTest {
                 rx.Observable.from(result)
             }
         }
+        mockCategoryService.demand.with {
+            doCategoryFeed(1) { f ->
+                assert f == flix
+                log.info "doCategoryFeed"
+                rx.Observable.from("success for urn:category:score:en_gb")
+            }
+        }
 
         flixService.httpClient = mockNingHttpClient.proxyInstance()
+        flixService.categoryService = mockCategoryService.proxyInstance()
 
         def finished = new Object()
         execController.start {
             flixService.flixFlow(flix).subscribe { String result ->
                 synchronized (finished) {
-                    log.info "result $result"
-                    assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c]"
+                    assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c, success for urn:category:score:en_gb]"
+                    log.info "finished test"
                     finished.notifyAll()
                 }
             }

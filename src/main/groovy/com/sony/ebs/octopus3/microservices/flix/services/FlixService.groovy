@@ -61,7 +61,7 @@ class FlixService {
             List list = jsonResult?.urns?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }
-            list << categoryService.getCategoryFeed(flix)
+            list << categoryService.doCategoryFeed(flix)
             rx.Observable.zip(list) { sheetResult ->
                 log.info "finished sheet calls with $sheetResult"
                 "$sheetResult"

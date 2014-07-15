@@ -50,9 +50,9 @@ class CategoryServiceTest {
 
         def finished = new Object()
         execController.start {
-            categoryService.getCategoryFeed(flix).subscribe { String result ->
+            categoryService.doCategoryFeed(flix).subscribe { String result ->
                 synchronized (finished) {
-                    assert result == "done"
+                    assert result == "success for urn:category:score:en_gb"
                     log.info "finished test"
                     finished.notifyAll()
                 }

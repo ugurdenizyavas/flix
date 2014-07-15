@@ -28,14 +28,18 @@ class CategoryService {
     @Qualifier("localHttpClient")
     NingHttpClient localHttpClient
 
-    rx.Observable<String> getCategoryFeed(Flix flix) {
+    rx.Observable<String> doCategoryFeed(Flix flix) {
         def categoryReadUrl = categoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
         log.info "category service url for $flix is $categoryReadUrl"
         proxyHttpClient.doGet(categoryReadUrl).flatMap({ categoryResult ->
-            def categoryUrn = new URNImpl("category", [flix.publication, flix.locale])
-            def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrn.toString())
+            def categoryUrn = new URNImpl("flix-category", [flix.publication, flix.locale])
+            def categoryUrnStr =  categoryUrn.toString()
+            def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrnStr)
+
             log.info "category save url for $flix is $categorySaveUrl"
             localHttpClient.doPost(categorySaveUrl, categoryResult)
+
+            rx.Observable.from("success for $categoryUrnStr")
         })
     }
 }
