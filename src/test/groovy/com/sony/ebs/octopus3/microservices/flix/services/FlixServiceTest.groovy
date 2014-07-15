@@ -57,11 +57,11 @@ class FlixServiceTest {
         flixService.categoryService = mockCategoryService.proxyInstance()
 
         def finished = new Object()
+        def result
         execController.start {
-            flixService.flixFlow(flix).subscribe { String result ->
+            flixService.flixFlow(flix).subscribe { String res ->
                 synchronized (finished) {
-                    assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c, success for urn:category:score:en_gb]"
-                    log.info "finished test"
+                    result = res
                     finished.notifyAll()
                 }
             }
@@ -69,6 +69,7 @@ class FlixServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
+        assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c, success for urn:category:score:en_gb]"
     }
 
 }

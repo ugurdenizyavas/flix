@@ -61,6 +61,9 @@ class FlixSheetFlowHandlerTest {
     void "error in params"() {
         mockRequestValidator.demand.with {
             validateFlixSheet(1) { FlixSheet flixSheet ->
+                assert flixSheet.processId == PROCESS_ID
+                assert flixSheet.urnStr == URN
+                log.info "service assertions finished"
                 ["error"]
             }
         }

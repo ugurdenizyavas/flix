@@ -55,11 +55,11 @@ class FlixSheetServiceTest {
         flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
 
         def finished = new Object()
+        def result
         execController.start {
-            flixSheetService.importSheet(flixSheet).subscribe { String result ->
+            flixSheetService.importSheet(flixSheet).subscribe { String res ->
                 synchronized (finished) {
-                    assert result == "done"
-                    log.info "finished test"
+                    result = res
                     finished.notifyAll()
                 }
             }
@@ -67,6 +67,7 @@ class FlixSheetServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
+        assert result == "done"
     }
 
 }

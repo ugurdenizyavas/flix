@@ -29,16 +29,10 @@ class EanCodeProviderTest {
         if (execController) execController.close()
     }
 
-    @Test
-    void "flix flow"() {
+    void "run flow"(String expected, String xml) {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/ean/a"
-                def xml = """
-                <eancodes>
-                    <eancode material="DSC-500" code="4905524328974"/>
-                </eancodes>
-                """
                 rx.Observable.from(xml)
             }
         }
@@ -46,11 +40,17 @@ class EanCodeProviderTest {
         eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
+        def result
         execController.start {
-            eanCodeProvider.getEanCode(new URNImpl("urn:flix:a")).subscribe { String result ->
+            eanCodeProvider.getEanCode(new URNImpl("urn:flix:a"))
+                    .doOnError({
                 synchronized (finished) {
-                    assert result == "4905524328974"
-                    log.info "finished test"
+                    result = "error"
+                    finished.notifyAll()
+                }
+            }).subscribe { String res ->
+                synchronized (finished) {
+                    result = res
                     finished.notifyAll()
                 }
             }
@@ -58,6 +58,17 @@ class EanCodeProviderTest {
         synchronized (finished) {
             finished.wait 5000
         }
+        assert result == expected
+    }
+
+    @Test
+    void "success case"() {
+        "run flow"("4905524328974", '<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
+    }
+
+    @Test
+    void "error case"() {
+        "run flow"("error", 'invalid xml')
     }
 
 }

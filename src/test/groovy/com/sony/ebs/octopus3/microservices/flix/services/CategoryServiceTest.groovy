@@ -49,11 +49,11 @@ class CategoryServiceTest {
         categoryService.localHttpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
+        def result
         execController.start {
-            categoryService.doCategoryFeed(flix).subscribe { String result ->
+            categoryService.doCategoryFeed(flix).subscribe { String res ->
                 synchronized (finished) {
-                    assert result == "success for urn:flix-category:score:en_gb"
-                    log.info "finished test"
+                    result = res
                     finished.notifyAll()
                 }
             }
@@ -61,6 +61,7 @@ class CategoryServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
+        assert result == "success for urn:flix-category:score:en_gb"
     }
 
 }
