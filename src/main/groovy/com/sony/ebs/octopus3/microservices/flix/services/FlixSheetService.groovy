@@ -56,10 +56,11 @@ class FlixSheetService {
         def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
         httpClient.doGet(readUrl)
                 .flatMap({ String readResult ->
-            rx.Observable.zip([parseJson(readResult), eanCodeProvider.getEanCode(flixSheet.urn)]) { zipResult ->
+            rx.Observable.zip(
+                    parseJson(readResult),
+                    eanCodeProvider.getEanCode(flixSheet.urn)
+            ) { json, eanCode ->
                 log.info "merging results"
-                def json = zipResult[0]
-                def eanCode = zipResult[1]
                 json.eanCode = eanCode
                 json
             }

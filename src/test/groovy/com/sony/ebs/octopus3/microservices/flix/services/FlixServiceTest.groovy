@@ -39,7 +39,7 @@ class FlixServiceTest {
         mockNingHttpClient.demand.with {
             doGet(4) { String url ->
                 String result = ""
-                if (url.startsWith("/delta")) result = '{ "urns" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
+                if (url.startsWith("/delta")) result = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
                 if (url.startsWith("/flix/sheet")) result = "$url"
                 log.info "getLocal url $url"
                 rx.Observable.from(result)
@@ -57,11 +57,11 @@ class FlixServiceTest {
         flixService.categoryService = mockCategoryService.proxyInstance()
 
         def finished = new Object()
-        def result
+        def result = [].asSynchronized()
         execController.start {
             flixService.flixFlow(flix).subscribe { String res ->
                 synchronized (finished) {
-                    result = res
+                    result << res
                     finished.notifyAll()
                 }
             }
@@ -69,7 +69,7 @@ class FlixServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
-        assert result == "[success for urn:flix:a, success for urn:flix:b, success for urn:flix:c, success for urn:category:score:en_gb]"
+        assert result.sort() == ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"]
     }
 
 }

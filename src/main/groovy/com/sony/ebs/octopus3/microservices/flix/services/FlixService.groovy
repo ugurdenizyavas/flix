@@ -58,14 +58,11 @@ class FlixService {
                 new JsonSlurper().parseText(deltaResult)
             })
         }).flatMap({ jsonResult ->
-            List list = jsonResult?.urns?.collect { String sheetUrn ->
+            List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }
             list << categoryService.doCategoryFeed(flix)
-            rx.Observable.zip(list) { sheetResult ->
-                log.info "finished sheet calls with $sheetResult"
-                "$sheetResult"
-            }
+            rx.Observable.merge(list)
         })
     }
 

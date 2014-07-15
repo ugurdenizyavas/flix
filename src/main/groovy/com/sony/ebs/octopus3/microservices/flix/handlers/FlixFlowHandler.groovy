@@ -37,7 +37,7 @@ class FlixFlowHandler extends GroovyHandler {
                 render json(status: 400, errors: errors, flix: flix)
             } else {
                 flixService.flixFlow(flix).subscribe({ result ->
-                    log.info "$flix finished"
+                    log.info "$result"
                 })
                 log.info "$flix started"
                 response.status(202)
