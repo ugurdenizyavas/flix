@@ -32,6 +32,9 @@ class FlixSheetService {
     @Autowired
     EanCodeProvider eanCodeProvider
 
+    @Autowired
+    FlixXmlBuilder flixXmlBuilder
+
     def parseJson(readResult) {
         observe(execControl.blocking {
             log.info "parsing json"
@@ -42,12 +45,7 @@ class FlixSheetService {
     def buildXml(jsonResult) {
         observe(execControl.blocking {
             log.info "building xml"
-            def writer = new StringWriter()
-            def xml = new MarkupBuilder(writer)
-            xml.content {
-                c jsonResult
-            }
-            writer.toString()
+            flixXmlBuilder.buildXml(jsonResult)
         })
     }
 

@@ -15,7 +15,7 @@ class FlixSheetServiceTest {
 
     FlixSheetService flixSheetService
     ExecController execController
-    StubFor mockNingHttpClient, mockEanCodeProvider
+    StubFor mockNingHttpClient, mockEanCodeProvider, mockFlixXmlBuilder
 
     @Before
     void before() {
@@ -23,6 +23,7 @@ class FlixSheetServiceTest {
         flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockEanCodeProvider = new StubFor(EanCodeProvider)
+        mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
     }
 
     @After
@@ -41,6 +42,7 @@ class FlixSheetServiceTest {
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flix-xml:score:en_gb:a"
+                assert data == "some xml"
                 rx.Observable.from("done")
             }
         }
@@ -51,8 +53,18 @@ class FlixSheetServiceTest {
             }
         }
 
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) { json ->
+                assert json.eanCode == "ea1"
+                assert json.a == "1"
+                assert json.b.c == ["2","3"]
+                "some xml"
+            }
+        }
+
         flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
         flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
+        flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
 
         def finished = new Object()
         def result
