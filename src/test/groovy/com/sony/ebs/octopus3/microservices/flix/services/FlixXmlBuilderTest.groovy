@@ -2,12 +2,19 @@ package com.sony.ebs.octopus3.microservices.flix.services
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.custommonkey.xmlunit.Diff
+import org.custommonkey.xmlunit.XMLUnit
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.springframework.core.io.DefaultResourceLoader
 
 @Slf4j
 class FlixXmlBuilderTest {
+
+    final static String BASE_PATH = "classpath:com/sony/ebs/octopus3/microservices/flix/services/"
+
+    DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader()
 
     FlixXmlBuilder flixXmlBuilder
 
@@ -20,16 +27,29 @@ class FlixXmlBuilderTest {
     void after() {
     }
 
+    def getFileText(name) {
+        defaultResourceLoader.getResource(BASE_PATH + name)?.file?.text
+    }
+
+    def testBuildXml(name) {
+        def json = new JsonSlurper().parseText(getFileText("${name}.json"))
+        def actual = flixXmlBuilder.buildXml(json)
+        def expected = getFileText("${name}.xml")
+
+        XMLUnit.setIgnoreWhitespace(true)
+        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true)
+        def xmlDiff = new Diff(expected, actual)
+        assert xmlDiff.similar()
+    }
+
     @Test
-    void "build xml"() {
-        def str = '{"a":"1", "b": { "c" : ["2","3"]}}'
-        def json = new JsonSlurper().parseText(str)
+    void "test hierarchy"() {
+        testBuildXml("x1")
+    }
 
-        def xml = new XmlParser().parseText(flixXmlBuilder.buildXml(json))
-
-        assert xml.a.text() == "1"
-        assert xml.b.c[0].text() == "2"
-        assert xml.b.c[1].text() == "3"
+    @Test
+    void "test non alphanumeric elements"() {
+        testBuildXml("x2")
     }
 
 }
