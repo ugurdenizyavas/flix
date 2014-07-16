@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
-import com.sony.ebs.octopus3.microservices.flix.services.FlixService
+import com.sony.ebs.octopus3.microservices.flix.services.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,7 @@ import static ratpack.jackson.Jackson.json
 class FlixPackageFlowHandler extends GroovyHandler {
 
     @Autowired
-    FlixService flixService
+    FlixPackageService flixPackageService
 
     @Autowired
     RequestValidator validator
@@ -33,7 +33,7 @@ class FlixPackageFlowHandler extends GroovyHandler {
                 response.status(400)
                 render json(status: 400, errors: errors, flixPackage: flixPackage)
             } else {
-                flixService.packageFlow(flixPackage).subscribe({ result ->
+                flixPackageService.packageFlow(flixPackage).subscribe({ result ->
                     log.info "$result"
                 })
                 log.info "$flixPackage started"

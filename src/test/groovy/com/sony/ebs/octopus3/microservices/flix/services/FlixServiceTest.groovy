@@ -3,7 +3,6 @@ package com.sony.ebs.octopus3.microservices.flix.services
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
@@ -69,34 +68,10 @@ class FlixServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
-        assert result as Set == ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"] as Set
-    }
-
-    @Test
-    void "package flow"() {
-        mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
-                rx.Observable.from("xxx")
-            }
-        }
-        flixService.httpClient = mockNingHttpClient.proxyInstance()
-
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
-
-        def finished = new Object()
-        def result
-        execController.start {
-            flixService.packageFlow(flixPackage).subscribe { String res ->
-                synchronized (finished) {
-                    result = res
-                    finished.notifyAll()
-                }
-            }
-        }
-        synchronized (finished) {
-            finished.wait 5000
-        }
-        assert result == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
+        assert result.contains("success for urn:category:score:en_gb")
+        assert result.contains("success for urn:flix:a")
+        assert result.contains("success for urn:flix:b")
+        assert result.contains("success for urn:flix:c")
     }
 
 }

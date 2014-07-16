@@ -1,9 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,18 +61,6 @@ class FlixService {
             }
             list << categoryService.doCategoryFeed(flix)
             rx.Observable.merge(list)
-        })
-    }
-
-    rx.Observable<String> packageFlow(FlixPackage flixPackage) {
-        log.info "creating package"
-        def importUrl = ""
-        httpClient.doGet(importUrl).flatMap({
-            log.info "finished $importUrl"
-            rx.Observable.from("success for $flixPackage")
-        }).onErrorReturn({
-            log.error "error in $flixPackage", it
-            "error in $flixPackage"
         })
     }
 

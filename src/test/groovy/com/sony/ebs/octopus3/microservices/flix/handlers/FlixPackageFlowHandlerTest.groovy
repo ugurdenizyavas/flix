@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
-import com.sony.ebs.octopus3.microservices.flix.services.FlixService
+import com.sony.ebs.octopus3.microservices.flix.services.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -14,17 +14,17 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class FlixPackageFlowHandlerTest {
 
-    StubFor mockFlixService, mockRequestValidator
+    StubFor mockFlixPackageService, mockRequestValidator
 
     @Before
     void before() {
-        mockFlixService = new StubFor(FlixService)
+        mockFlixPackageService = new StubFor(FlixPackageService)
         mockRequestValidator = new StubFor(RequestValidator)
     }
 
     @Test
     void "main flow"() {
-        mockFlixService.demand.with {
+        mockFlixPackageService.demand.with {
             packageFlow(1) { FlixPackage flixPackage ->
                 assert flixPackage.publication == "SCORE"
                 assert flixPackage.locale == "en_GB"
@@ -37,7 +37,7 @@ class FlixPackageFlowHandlerTest {
             }
         }
 
-        handle(new FlixPackageFlowHandler(flixService: mockFlixService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new FlixPackageFlowHandler(flixPackageService: mockFlixPackageService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
