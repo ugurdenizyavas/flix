@@ -34,6 +34,9 @@ class FlixService {
     @Lazy
     ExecControl execControl
 
+    @Autowired
+    DateParamsProvider dateParamsProvider
+
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
         log.info "importing sheet"
         def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
@@ -47,11 +50,15 @@ class FlixService {
     }
 
     rx.Observable<String> flixFlow(Flix flix) {
-        log.info "reading delta"
-        def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + "?sdate=$flix.sdate&edate=$flix.edate"
-        httpClient.doGet(deltaUrl)
-                .flatMap({ deltaResult ->
+        observe(execControl.blocking {
+            repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParamsProvider.createDateParams(flix)
+        }).flatMap({ deltaUrl ->
+            log.info "deltaUrl for $flix is $deltaUrl"
+            httpClient.doGet(deltaUrl)
+        }).flatMap({ deltaResult ->
             observe(execControl.blocking {
+                dateParamsProvider.updateLastModified(flix)
+
                 log.info "parsing delta json"
                 new JsonSlurper().parseText(deltaResult)
             })

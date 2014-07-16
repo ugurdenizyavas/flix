@@ -16,7 +16,7 @@ class FlixServiceTest {
 
     FlixService flixService
     ExecController execController
-    StubFor mockNingHttpClient, mockCategoryService
+    StubFor mockNingHttpClient, mockCategoryService, mockDateParamsProvider
 
     @Before
     void before() {
@@ -24,6 +24,7 @@ class FlixServiceTest {
         flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet", repositoryDeltaUrl: "/delta/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
+        mockDateParamsProvider = new StubFor(DateParamsProvider)
     }
 
     @After
@@ -38,7 +39,10 @@ class FlixServiceTest {
         mockNingHttpClient.demand.with {
             doGet(4) { String url ->
                 String result = ""
-                if (url.startsWith("/delta")) result = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
+                if (url.startsWith("/delta")) {
+                    result = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
+                    assert url == "/delta/urn:global_sku:score:en_gb?dates"
+                }
                 if (url.startsWith("/flix/sheet")) result = "$url"
                 log.info "getLocal url $url"
                 rx.Observable.from(result)
@@ -51,9 +55,19 @@ class FlixServiceTest {
                 rx.Observable.from("success for urn:category:score:en_gb")
             }
         }
+        mockDateParamsProvider.demand.with {
+            createDateParams(1) { f ->
+                assert f == flix
+                "?dates"
+            }
+            updateLastModified(1) { f ->
+                assert f == flix
+            }
+        }
 
         flixService.httpClient = mockNingHttpClient.proxyInstance()
         flixService.categoryService = mockCategoryService.proxyInstance()
+        flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
 
         def finished = new Object()
         def result = [].asSynchronized()

@@ -19,7 +19,11 @@ class Flix {
     }
 
     URN getDeltaUrn() {
-        new URNImpl("flixMedia", ["flixDelta", publication, locale])
+        new URNImpl("global_sku", [publication, locale])
+    }
+
+    URN getLastModifiedUrn() {
+        new URNImpl("flix_media_last_modified", [publication, locale])
     }
 
 }
