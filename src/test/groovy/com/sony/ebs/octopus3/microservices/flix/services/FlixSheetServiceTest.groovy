@@ -41,7 +41,7 @@ class FlixSheetServiceTest {
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
             doPost(1) { String url, String data ->
-                assert url == "/repository/file/urn:flix-xml:score:en_gb:a"
+                assert url == "/repository/file/urn:flixmedia:flixsheet:score:en_gb:a"
                 assert data == "some xml"
                 rx.Observable.from("done")
             }
@@ -79,7 +79,7 @@ class FlixSheetServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
-        assert result == "done"
+        assert result == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
     }
 
 }

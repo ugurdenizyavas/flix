@@ -14,7 +14,8 @@ class FlixSheet {
         new URNImpl(urnStr)
     }
 
-    URN getXmlUrn() {
-        new URNImpl("flix-xml", new URNImpl(urnStr).values)
+    URN getSheetUrn() {
+        def values = ["flixSheet"] + new URNImpl(urnStr).values
+        new URNImpl("flixMedia", values)
     }
 }

@@ -35,7 +35,7 @@ class FlixSheetFlowHandler extends GroovyHandler {
                 render json(status: 400, errors: errors, flixSheet: flixSheet)
             } else {
                 flixSheetService.importSheet(flixSheet).subscribe({ result ->
-                    log.info "$flixSheet finished"
+                    log.info "$result"
                 })
                 log.info "$flixSheet started"
                 response.status(202)

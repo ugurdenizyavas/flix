@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.validators
 import com.sony.ebs.octopus3.commons.date.ISODateUtils
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.LocaleUtils
@@ -19,26 +20,40 @@ class RequestValidator {
      */
     List validateFlix(Flix flix) {
         def errors = []
+        validatePublication(errors, flix.publication)
+        validateLocale(errors, flix.locale)
+        validateDate(errors, flix.sdate, "sdate")
+        validateDate(errors, flix.edate, "edate")
+        errors
+    }
 
-        if (!(flix.publication ==~ /[a-zA-Z0-9\-]+/)) {
-            errors << "publication parameter is invalid"
-        }
+    void validateDate(List errors, String date, String name) {
         try {
-            LocaleUtils.toLocale(flix.locale)
+            ISODateUtils.toISODate(date)
+        } catch (e) {
+            errors << "$name parameter is invalid".toString()
+        }
+    }
+
+    void validateLocale(List errors, String locale) {
+        try {
+            LocaleUtils.toLocale(locale)
         } catch (e) {
             errors << "locale parameter is invalid"
         }
-        try {
-            ISODateUtils.toISODate(flix.sdate)
-        } catch (e) {
-            errors << "sdate parameter is invalid"
-        }
-        try {
-            ISODateUtils.toISODate(flix.edate)
-        } catch (e) {
-            errors << "edate parameter is invalid"
-        }
 
+    }
+
+    void validatePublication(List errors, String publication) {
+        if (!(publication ==~ /[a-zA-Z0-9\-]+/)) {
+            errors << "publication parameter is invalid"
+        }
+    }
+
+    List validateFlixPackage(FlixPackage flixPackage) {
+        def errors = []
+        validatePublication(errors, flixPackage.publication)
+        validateLocale(errors, flixPackage.locale)
         errors
     }
 

@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service
 @Service
 class FlixXmlBuilder {
 
-    String cleanNonAlphanumericChars(val) {
-        return "$val".replaceAll("\\P{Alnum}", "")
+    def nonAlphanumeric = {
+        "$it".replaceAll("\\P{Alnum}", "")
+    }
+
+    def cdata = {
+        "<![CDATA[${it ?: ''}]]>"
     }
 
     String buildXml(Object json) {
@@ -17,20 +21,20 @@ class FlixXmlBuilder {
         generate = { builder, Map map ->
             map.each { k, v ->
                 if (v instanceof Map) {
-                    builder."${cleanNonAlphanumericChars(k)}" {
+                    builder."${nonAlphanumeric(k)}" {
                         generate(it, v)
                     }
                 } else if (v instanceof List) {
-                    builder."${cleanNonAlphanumericChars(k)}" {
+                    builder."${nonAlphanumeric(k)}" {
                         v.each { item ->
                             builder.item {
-                                mkp.yieldUnescaped("<![CDATA[$item]]>")
+                                mkp.yieldUnescaped(cdata(item))
                             }
                         }
                     }
                 } else {
-                    builder."${cleanNonAlphanumericChars(k)}" {
-                        mkp.yieldUnescaped("<![CDATA[$v]]>")
+                    builder."${nonAlphanumeric(k)}" {
+                        mkp.yieldUnescaped(cdata(v))
                     }
                 }
             }
@@ -46,7 +50,7 @@ class FlixXmlBuilder {
         }
 
         String result = xml.toString()
-        log.info result
+        log.debug result
         result
     }
 

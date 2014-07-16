@@ -4,7 +4,6 @@ import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import groovy.xml.MarkupBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -66,8 +65,11 @@ class FlixSheetService {
             buildXml(jsonResult)
         }).flatMap({ String xmlResult ->
             log.info "saving xml"
-            def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.xmlUrn.toString())
+            def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.sheetUrn.toString())
             httpClient.doPost(saveUrl, xmlResult)
+        }).flatMap({ String saveResult ->
+            log.debug "save xml result: $saveResult"
+            rx.Observable.from("success for $flixSheet")
         })
     }
 

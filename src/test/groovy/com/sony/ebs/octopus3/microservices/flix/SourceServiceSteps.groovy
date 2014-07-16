@@ -49,7 +49,7 @@ After() {
 * */
 
 When(~"I request flix media generation for publication (.*) locale (.*)") { publication, locale ->
-    get("flix/publication/$publication/locale/$locale?sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
+    get("flix/delta/publication/$publication/locale/$locale?sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
 }
 
 Then(~"Flix media generation for publication (.*) locale (.*) should be started") { publication, locale ->
