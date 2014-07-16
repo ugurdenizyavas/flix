@@ -6,5 +6,6 @@ Feature: Flix
     Then Flix media generation for publication SCORE locale en_GB should be started
 
   Scenario: Flix sheet flow
+    Given Flix json for sheet x1.ceh
     When I request flix sheet import for process 123 sheet x1.ceh
     Then Flix sheet import for process 123 sheet x1.ceh should be started

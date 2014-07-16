@@ -11,6 +11,9 @@ import ratpack.groovy.test.LocalScriptApplicationUnderTest
 import ratpack.groovy.test.TestHttpClient
 import ratpack.groovy.test.TestHttpClients
 
+import static com.github.dreamhead.moco.Moco.by
+import static com.github.dreamhead.moco.Moco.uri
+
 this.metaClass.mixin(Hooks)
 this.metaClass.mixin(EN)
 
@@ -64,11 +67,20 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be started"
     assert json.flix.processId
 }
 
+Given(~"Flix json for sheet (.*)") { sheet ->
+    server.request(by(uri("/repository/file/urn:flix:score:en_GB:$sheet")))
+            .response('{"a":"1"}')
+    server.request(by(uri("/product/eancode/$sheet")))
+            .response('<eancodes><eancode material="$sheet" code="4905524328974"/></eancodes>')
+
+}
+
 When(~"I request flix sheet import for process (.*) sheet (.*)") { process, sheet ->
     get("flix/sheet/urn:flix:score:en_GB:$sheet?processId=$process")
 }
 
 Then(~"Flix sheet import for process (.*) sheet (.*) should be started") { process, sheet ->
+    //Thread.wait(3000)
     assert response.statusCode == 202
     def json = parseJson(response)
     assert json.status == 202
