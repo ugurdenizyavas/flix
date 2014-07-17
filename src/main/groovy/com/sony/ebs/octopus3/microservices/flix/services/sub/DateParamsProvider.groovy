@@ -66,7 +66,7 @@ public class DateParamsProvider {
             if (sdate) {
                 sb.append("?sdate=").append(sdate)
             }
-            if (!flix.edate) {
+            if (flix.edate) {
                 sb.size() == 0 ? sb.append("?") : "&"
                 sb.append("edate=").append(flix.edate)
             }

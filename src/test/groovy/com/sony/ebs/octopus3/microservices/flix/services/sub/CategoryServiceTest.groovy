@@ -39,7 +39,7 @@ class CategoryServiceTest {
                 rx.Observable.from("xxx")
             }
             doPost(1) { String url, String data ->
-                assert url == "/repository/file/urn:flixmedia:flixcategory:score:en_gb"
+                assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
                 assert data == "xxx"
                 rx.Observable.from("done")
             }
@@ -60,7 +60,7 @@ class CategoryServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
-        assert result == "success for urn:flixmedia:flixcategory:score:en_gb"
+        assert result == "success for urn:flixmedia:score:en_gb:category"
     }
 
 }

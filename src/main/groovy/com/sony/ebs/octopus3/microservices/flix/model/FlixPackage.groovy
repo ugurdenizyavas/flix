@@ -10,7 +10,7 @@ class FlixPackage {
     String locale
 
     URN getBaseUrn() {
-        new URNImpl("flixMedia", [publication, locale])
+        new URNImpl(FlixConstants.FLIX_MEDIA, [publication, locale])
     }
 
 }

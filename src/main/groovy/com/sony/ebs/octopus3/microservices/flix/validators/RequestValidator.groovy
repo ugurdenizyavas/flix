@@ -22,8 +22,8 @@ class RequestValidator {
         def errors = []
         validatePublication(errors, flix.publication)
         validateLocale(errors, flix.locale)
-        validateDate(errors, flix.sdate, "sdate")
-        validateDate(errors, flix.edate, "edate")
+        if (flix.sdate) validateDate(errors, flix.sdate, "sdate")
+        if (flix.edate) validateDate(errors, flix.edate, "edate")
         errors
     }
 

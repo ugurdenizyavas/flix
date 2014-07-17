@@ -43,7 +43,7 @@ class FlixSheetServiceTest {
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
             doPost(1) { String url, String data ->
-                assert url == "/repository/file/urn:flixmedia:flixsheet:score:en_gb:a"
+                assert url == "/repository/file/urn:flixmedia:score:en_gb:a"
                 assert data == "some xml"
                 rx.Observable.from("done")
             }

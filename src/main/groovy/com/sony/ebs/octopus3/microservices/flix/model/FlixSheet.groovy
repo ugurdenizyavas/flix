@@ -15,7 +15,6 @@ class FlixSheet {
     }
 
     URN getSheetUrn() {
-        def values = ["flixSheet"] + new URNImpl(urnStr).values
-        new URNImpl("flixMedia", values)
+        new URNImpl(FlixConstants.FLIX_MEDIA, new URNImpl(urnStr).values)
     }
 }

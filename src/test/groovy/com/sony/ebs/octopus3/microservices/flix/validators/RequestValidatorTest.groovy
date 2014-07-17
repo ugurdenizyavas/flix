@@ -8,47 +8,57 @@ import org.junit.Test
 class RequestValidatorTest {
 
     RequestValidator validator
-    Flix flix
 
     @Before
     void before() {
         validator = new RequestValidator()
-        flix = new Flix(publication: "SCORE", locale: "en_GB", sdate: "2014-07-09T00:00:00.000Z", edate: "2014-07-09T00:00:00.000Z")
     }
 
     @Test
     void "all valid"() {
+        def flix = new Flix(publication: "GLOBAL", locale: "en_GB")
         assert !validator.validateFlix(flix)
     }
 
     @Test
     void "invalid publication "() {
-        flix.publication = "??"
+        def flix = new Flix(publication: "??", locale: "en_GB")
         assert validator.validateFlix(flix) == ["publication parameter is invalid"]
     }
 
     @Test
     void "invalid locale "() {
-        flix.locale = "_tr"
+        def flix = new Flix(publication: "GLOBAL", locale: "_tr")
         assert validator.validateFlix(flix) == ["locale parameter is invalid"]
     }
 
     @Test
+    void "valid sdate "() {
+        def flix = new Flix(publication: "GLOBAL", locale: "en_GB", sdate: "2014-07-09T00:00:00.000Z")
+        assert !validator.validateFlix(flix)
+    }
+
+    @Test
     void "invalid sdate "() {
-        flix.sdate = "s1"
+        def flix = new Flix(publication: "GLOBAL", locale: "en_GB", sdate: "s1")
         assert validator.validateFlix(flix) == ["sdate parameter is invalid"]
     }
 
     @Test
+    void "valid edate "() {
+        def flix = new Flix(publication: "GLOBAL", locale: "en_GB", edate: "2014-07-09T00:00:00.000Z")
+        assert !validator.validateFlix(flix)
+    }
+
+    @Test
     void "invalid edate "() {
-        flix.edate = "s1"
+        def flix = new Flix(publication: "GLOBAL", locale: "en_GB", edate: "s1")
         assert validator.validateFlix(flix) == ["edate parameter is invalid"]
     }
 
     @Test
     void " more than one invalid params"() {
-        flix.locale = "_tr"
-        flix.sdate = "s1"
+        def flix = new Flix(publication: "GLOBAL", locale: "_tr", sdate: "s1")
         def errors = validator.validateFlix(flix)
         assert errors.size() == 2
         assert errors.contains("locale parameter is invalid")

@@ -15,19 +15,19 @@ class Flix {
     String edate
 
     URN getCategoryUrn() {
-        new URNImpl("flixMedia", ["flixCategory", publication, locale])
+        new URNImpl(FlixConstants.FLIX_MEDIA, [publication, locale, FlixConstants.CATEGORY])
     }
 
     URN getDeltaUrn() {
-        new URNImpl("global_sku", [publication, locale])
+        new URNImpl(FlixConstants.GLOBAL_SKU, [publication, locale])
     }
 
     URN getLastModifiedUrn() {
-        new URNImpl("last_modified", [publication, locale])
+        new URNImpl(FlixConstants.LAST_MODIFIED, [publication, locale])
     }
 
     URN getBaseUrn() {
-        new URNImpl("flixMedia", [publication, locale])
+        new URNImpl(FlixConstants.FLIX_MEDIA, [publication, locale])
     }
 
 }
