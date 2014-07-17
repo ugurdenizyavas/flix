@@ -1,6 +1,5 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
-import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.custommonkey.xmlunit.Diff

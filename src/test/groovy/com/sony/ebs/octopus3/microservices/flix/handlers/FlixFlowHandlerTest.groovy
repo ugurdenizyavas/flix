@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.services.FlixService
+import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
