@@ -14,7 +14,7 @@ import static ratpack.rx.RxRatpack.observe
 class NingHttpClient {
 
     enum RequestType {
-        GET, POST
+        GET, POST, DELETE
     }
 
     ExecControl execControl
@@ -50,6 +50,8 @@ class NingHttpClient {
         def f
         if (RequestType.GET == requestType) {
             f = asyncHttpClient.prepareGet(url).addHeader('Accept-Charset', 'UTF-8').setRealm(realm).execute()
+        } else if (RequestType.DELETE == requestType) {
+            f = asyncHttpClient.prepareDelete(url).addHeader('Accept-Charset', 'UTF-8').setRealm(realm).execute()
         } else {
             f = asyncHttpClient.preparePost(url).addHeader('Accept-Charset', 'UTF-8').setRealm(realm).setBody(data).execute()
         }
@@ -77,5 +79,9 @@ class NingHttpClient {
 
     rx.Observable<String> doPost(String url, String data) {
         getObservableNing(RequestType.POST, url, data)
+    }
+
+    rx.Observable<String> doDelete(String url) {
+        getObservableNing(RequestType.DELETE, url)
     }
 }

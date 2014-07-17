@@ -21,7 +21,8 @@ class FlixServiceTest {
     @Before
     void before() {
         execController = LaunchConfigBuilder.noBaseDir().build().execController
-        flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet", repositoryDeltaUrl: "/delta/:urn")
+        flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet",
+                repositoryDeltaUrl: "/delta/:urn", repositoryFileUrl: "/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDateParamsProvider = new StubFor(DateParamsProvider)
@@ -46,6 +47,10 @@ class FlixServiceTest {
                 if (url.startsWith("/flix/sheet")) result = "$url"
                 log.info "getLocal url $url"
                 rx.Observable.from(result)
+            }
+            doDelete(1) { String url ->
+                assert url == "/file/urn:flixmedia:score:en_gb"
+                rx.Observable.from("deleted")
             }
         }
         mockCategoryService.demand.with {

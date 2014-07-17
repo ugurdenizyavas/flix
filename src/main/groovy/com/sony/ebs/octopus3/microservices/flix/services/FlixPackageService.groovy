@@ -21,7 +21,7 @@ class FlixPackageService {
     NingHttpClient httpClient
 
     String createOpsRecipe(FlixPackage flixPackage) {
-        def packageUrn = flixPackage.packageUrn
+        def packageUrn = flixPackage.baseUrn
         def archiveUrn = new URNImpl("archive", [packageUrn.type] + packageUrn.values)
 
         def builder = new groovy.json.JsonBuilder()

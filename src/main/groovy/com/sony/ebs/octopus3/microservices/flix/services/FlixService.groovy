@@ -20,6 +20,9 @@ class FlixService {
     @Value('${octopus3.flix.repositoryDeltaUrl}')
     String repositoryDeltaUrl
 
+    @Value('${octopus3.flix.repositoryFileUrl}')
+    String repositoryFileUrl
+
     @Value('${octopus3.flix.sheetUrl}')
     String sheetUrl
 
@@ -50,17 +53,26 @@ class FlixService {
     }
 
     rx.Observable<String> flixFlow(Flix flix) {
+
         observe(execControl.blocking {
             repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParamsProvider.createDateParams(flix)
         }).flatMap({ deltaUrl ->
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
         }).flatMap({ deltaResult ->
-            observe(execControl.blocking {
-                dateParamsProvider.updateLastModified(flix)
-
-                log.info "parsing delta json"
-                new JsonSlurper().parseText(deltaResult)
+            def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
+            rx.Observable.zip(
+                    observe(execControl.blocking {
+                        log.info "parsing delta json"
+                        new JsonSlurper().parseText(deltaResult)
+                    }),
+                    observe(execControl.blocking {
+                        dateParamsProvider.updateLastModified(flix)
+                        "updated updateLastModified for $flix"
+                    }),
+                    httpClient.doDelete(deleteUrl)
+                    , { jsonResult, lastModifiedResult, deleteResult ->
+                jsonResult
             })
         }).flatMap({ jsonResult ->
             List list = jsonResult?.results?.collect { String sheetUrn ->
