@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired

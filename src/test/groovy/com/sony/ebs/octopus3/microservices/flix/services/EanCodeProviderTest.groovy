@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After

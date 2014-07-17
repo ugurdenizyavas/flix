@@ -1,6 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor

@@ -1,5 +1,10 @@
+import com.sony.ebs.octopus3.commons.ratpack.handlers.ErrorHandler
+import com.sony.ebs.octopus3.commons.ratpack.handlers.HealthCheckHandler
+import com.sony.ebs.octopus3.commons.ratpack.monitoring.MonitoringService
 import com.sony.ebs.octopus3.microservices.flix.SpringConfig
-import com.sony.ebs.octopus3.microservices.flix.handlers.*
+import com.sony.ebs.octopus3.microservices.flix.handlers.FlixFlowHandler
+import com.sony.ebs.octopus3.microservices.flix.handlers.FlixPackageFlowHandler
+import com.sony.ebs.octopus3.microservices.flix.handlers.FlixSheetFlowHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -31,7 +36,7 @@ ratpack {
             flixFlowHandler = ctx.getBean(FlixFlowHandler.class)
             flixSheetFlowHandler = ctx.getBean(FlixSheetFlowHandler.class)
             flixPackageFlowHandler = ctx.getBean(FlixPackageFlowHandler.class)
-            healthCheckHandler = ctx.getBean(HealthCheckHandler.class)
+            healthCheckHandler = new HealthCheckHandler(monitoringService: new MonitoringService())
 
             RxRatpack.initialize()
         }

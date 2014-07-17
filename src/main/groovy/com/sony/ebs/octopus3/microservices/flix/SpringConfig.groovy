@@ -1,6 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix
 
-import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
