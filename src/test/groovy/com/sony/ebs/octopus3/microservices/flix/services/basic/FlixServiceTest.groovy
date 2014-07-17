@@ -90,6 +90,7 @@ class FlixServiceTest {
         synchronized (finished) {
             finished.wait 5000
         }
+        assert result.size() == 4
         assert result.contains("success for urn:category:score:en_gb")
         assert result.contains("success for urn:flix:a")
         assert result.contains("success for urn:flix:b")

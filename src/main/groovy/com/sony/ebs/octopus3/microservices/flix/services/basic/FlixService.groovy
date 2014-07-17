@@ -62,20 +62,20 @@ class FlixService {
 
     rx.Observable<String> flixFlow(Flix flix) {
 
-        String deltaResult
+        Map jsonResult
         dateParamsProvider.createDateParams(flix).flatMap({ dateParams ->
             def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParams
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
+        }).flatMap({ deltaResult ->
+            parseDelta(deltaResult)
         }).flatMap({
-            deltaResult = it
+            jsonResult = it
             def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).flatMap({
             dateParamsProvider.updateLastModified(flix)
-        }).flatMap({ jsonResult ->
-            parseDelta(deltaResult)
-        }).flatMap({ jsonResult ->
+        }).flatMap({
             List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }
