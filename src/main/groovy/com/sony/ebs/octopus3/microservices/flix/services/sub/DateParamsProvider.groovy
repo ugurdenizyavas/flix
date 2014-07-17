@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services
+package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.sony.ebs.octopus3.commons.date.ISODateUtils
 import com.sony.ebs.octopus3.commons.file.FileUtils
