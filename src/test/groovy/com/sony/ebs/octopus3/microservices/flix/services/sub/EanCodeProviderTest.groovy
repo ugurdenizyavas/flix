@@ -29,10 +29,12 @@ class EanCodeProviderTest {
         if (execController) execController.close()
     }
 
-    void "run flow"(String expected, String xml) {
+    void runFlow(String expected, String xml) {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/ean/a"
+                if (xml == 'exception')
+                    throw new Exception("error in doGet")
                 rx.Observable.from(xml)
             }
         }
@@ -40,7 +42,7 @@ class EanCodeProviderTest {
         eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
-        def result
+        def result = ""
         execController.start {
             eanCodeProvider.getEanCode(new URNImpl("urn:flix:a"))
                     .doOnError({
@@ -63,12 +65,17 @@ class EanCodeProviderTest {
 
     @Test
     void "success case"() {
-        "run flow"("4905524328974", '<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
+        runFlow("4905524328974", '<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
     }
 
     @Test
     void "error case"() {
-        "run flow"("error", 'invalid xml')
+        runFlow(null, 'invalid xml')
+    }
+
+    @Test
+    void "get from octopus issue case"() {
+        runFlow(null, 'exception')
     }
 
 }

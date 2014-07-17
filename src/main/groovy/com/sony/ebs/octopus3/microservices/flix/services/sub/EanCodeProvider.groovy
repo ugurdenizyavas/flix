@@ -35,6 +35,9 @@ class EanCodeProvider {
                 def xml = new XmlSlurper().parseText(result)
                 xml.eancode?.@code?.toString()
             })
+        }).onErrorReturn({ e ->
+            log.error "error getting ean code for $urn", e
+            null
         })
     }
 }

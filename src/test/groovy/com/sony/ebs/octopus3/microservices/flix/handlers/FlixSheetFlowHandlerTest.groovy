@@ -29,7 +29,7 @@ class FlixSheetFlowHandlerTest {
     void "main flow"() {
 
         mockFlixSheetService.demand.with {
-            importSheet(1) { FlixSheet flixSheet ->
+            sheetFlow(1) { FlixSheet flixSheet ->
                 assert flixSheet.processId == PROCESS_ID
                 assert flixSheet.urnStr == URN
                 log.info "service assertions finished"

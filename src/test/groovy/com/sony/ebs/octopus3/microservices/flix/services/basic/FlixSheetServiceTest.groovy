@@ -71,7 +71,7 @@ class FlixSheetServiceTest {
         def finished = new Object()
         def result
         execController.start {
-            flixSheetService.importSheet(flixSheet).subscribe { String res ->
+            flixSheetService.sheetFlow(flixSheet).subscribe { String res ->
                 synchronized (finished) {
                     result = res
                     finished.notifyAll()

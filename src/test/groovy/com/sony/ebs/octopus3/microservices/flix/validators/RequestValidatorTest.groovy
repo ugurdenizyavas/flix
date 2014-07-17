@@ -67,6 +67,11 @@ class RequestValidatorTest {
         assert validator.validateFlixSheet(flixSheet) == ["urn parameter is invalid"]
     }
 
+    @Test
+    void "no processId"() {
+        def flixSheet = new FlixSheet(urnStr: "urn:flix:score:en_gb")
+        assert !validator.validateFlixSheet(flixSheet)
+    }
 
     @Test
     void "invalid processId"() {

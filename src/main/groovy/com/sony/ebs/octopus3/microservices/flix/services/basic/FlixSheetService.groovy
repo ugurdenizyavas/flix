@@ -49,7 +49,7 @@ class FlixSheetService {
         })
     }
 
-    rx.Observable<String> importSheet(FlixSheet flixSheet) {
+    rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
         log.info "reading json"
         def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
         httpClient.doGet(readUrl)
@@ -59,7 +59,7 @@ class FlixSheetService {
                     eanCodeProvider.getEanCode(flixSheet.urn)
             ) { json, eanCode ->
                 log.info "merging results"
-                json.eanCode = eanCode
+                json.eanCode = eanCode ?: ""
                 json
             }
         }).flatMap({ jsonResult ->
