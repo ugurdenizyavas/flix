@@ -28,7 +28,7 @@ class FlixPackageService {
         builder.ops {
             copy {
                 source "${packageUrn.toString()}.zip"
-                desstination "${archiveUrn.toString()}.zip"
+                destination "${archiveUrn.toString()}.zip"
             }
             zip {
                 source "${packageUrn.toString()}.zip"

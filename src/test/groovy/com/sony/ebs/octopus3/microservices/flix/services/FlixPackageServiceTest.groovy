@@ -2,13 +2,11 @@ package com.sony.ebs.octopus3.microservices.flix.services
 
 import com.sony.ebs.octopus3.microservices.flix.http.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
-import groovy.json.JsonParser
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before
 import org.junit.Test
-import org.springframework.core.io.DefaultResourceLoader
 
 @Slf4j
 class FlixPackageServiceTest {
@@ -47,9 +45,21 @@ class FlixPackageServiceTest {
 
     @Test
     void "test ops recipe"() {
-        def expected = new DefaultResourceLoader().getResource("classpath:com/sony/ebs/octopus3/microservices/flix/services/ops1.json")?.file?.text
         def actual = flixPackageService.createOpsRecipe(new FlixPackage(publication: "SCORE", locale: "fr_FR"))
-        assertJson(expected, actual)
+        assertJson(RECIPE, actual)
     }
 
+    def RECIPE = """
+{
+    "ops": {
+        "copy": {
+            "source": "urn:flixmedia:score:fr_fr.zip",
+            "destination": "urn:archive:flixmedia:score:fr_fr.zip"
+        },
+        "zip": {
+            "source": "urn:flixmedia:score:fr_fr.zip"
+        }
+    }
+}
+"""
 }

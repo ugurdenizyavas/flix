@@ -52,28 +52,28 @@ class FlixService {
         })
     }
 
+    rx.Observable<String> parseDelta(String deltaResult) {
+        observe(execControl.blocking {
+            log.info "parsing delta json"
+            new JsonSlurper().parseText(deltaResult)
+        })
+    }
+
     rx.Observable<String> flixFlow(Flix flix) {
 
-        observe(execControl.blocking {
-            repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParamsProvider.createDateParams(flix)
-        }).flatMap({ deltaUrl ->
+        String deltaResult
+        dateParamsProvider.createDateParams(flix).flatMap({ dateParams ->
+            def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParams
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
-        }).flatMap({ deltaResult ->
+        }).flatMap({
+            deltaResult = it
             def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
-            rx.Observable.zip(
-                    observe(execControl.blocking {
-                        log.info "parsing delta json"
-                        new JsonSlurper().parseText(deltaResult)
-                    }),
-                    observe(execControl.blocking {
-                        dateParamsProvider.updateLastModified(flix)
-                        "updated updateLastModified for $flix"
-                    }),
-                    httpClient.doDelete(deleteUrl)
-                    , { jsonResult, lastModifiedResult, deleteResult ->
-                jsonResult
-            })
+            httpClient.doDelete(deleteUrl)
+        }).flatMap({
+            dateParamsProvider.updateLastModified(flix)
+        }).flatMap({ jsonResult ->
+            parseDelta(deltaResult)
         }).flatMap({ jsonResult ->
             List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)

@@ -63,10 +63,11 @@ class FlixServiceTest {
         mockDateParamsProvider.demand.with {
             createDateParams(1) { f ->
                 assert f == flix
-                "?dates"
+                rx.Observable.from("?dates")
             }
             updateLastModified(1) { f ->
                 assert f == flix
+                rx.Observable.from("done")
             }
         }
 
