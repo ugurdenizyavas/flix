@@ -23,7 +23,7 @@ class Flix {
     }
 
     URN getLastModifiedUrn() {
-        new URNImpl("flix_media_last_modified", [publication, locale])
+        new URNImpl("last_modified", [publication, locale])
     }
 
     URN getBaseUrn() {
