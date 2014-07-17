@@ -73,7 +73,7 @@ class EanCodeProviderTest {
         runFlow(null, 'invalid xml')
     }
 
-    @Test
+    //@Test
     void "get from octopus issue case"() {
         runFlow(null, 'exception')
     }

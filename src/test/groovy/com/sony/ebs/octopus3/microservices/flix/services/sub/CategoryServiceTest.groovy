@@ -45,8 +45,7 @@ class CategoryServiceTest {
             }
         }
 
-        categoryService.proxyHttpClient = mockNingHttpClient.proxyInstance()
-        categoryService.localHttpClient = mockNingHttpClient.proxyInstance()
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
         def finished = new Object()
         def result

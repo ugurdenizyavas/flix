@@ -26,42 +26,22 @@ class SpringConfig {
     ExecControl execControl
 
     @Bean
-    @Qualifier("proxyHttpClient")
-    @org.springframework.context.annotation.Lazy
-    public NingHttpClient cadcHttpClient() {
-        new NingHttpClient(execControl, proxyHost, proxyPort, proxyUser, proxyPassword, "", "")
-    }
-
-    @Value('${octopus3.flix.proxyHost}')
-    String proxyHost
-
-    @Value('${octopus3.flix.proxyPort}')
-    int proxyPort
-
-    @Value('${octopus3.flix.proxyUser}')
-    String proxyUser
-
-    @Value('${octopus3.flix.proxyPassword}')
-    String proxyPassword
-
-
-    @Bean
     @Qualifier("localHttpClient")
     @org.springframework.context.annotation.Lazy
     public NingHttpClient localHttpClient() {
         new NingHttpClient(execControl, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, "", "")
     }
 
-    @Value('${octopus3.flix.localProxyHost}')
+    @Value('${octopus3.flix.local.proxy.host}')
     String localProxyHost
 
-    @Value('${octopus3.flix.localProxyPort}')
+    @Value('${octopus3.flix.local.proxy.port}')
     int localProxyPort
 
-    @Value('${octopus3.flix.localProxyUser}')
+    @Value('${octopus3.flix.local.proxy.user}')
     String localProxyUser
 
-    @Value('${octopus3.flix.localProxyPassword}')
+    @Value('${octopus3.flix.local.proxy.password}')
     String localProxyPassword
 
 }

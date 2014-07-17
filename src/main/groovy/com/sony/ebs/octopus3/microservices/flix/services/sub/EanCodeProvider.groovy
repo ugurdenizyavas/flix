@@ -19,7 +19,7 @@ class EanCodeProvider {
     String serviceUrl
 
     @Autowired
-    @Qualifier("proxyHttpClient")
+    @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
     @Autowired
