@@ -1,19 +1,18 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.urn.URN
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import ratpack.exec.ExecControl
 
 import static ratpack.rx.RxRatpack.observe
 
-@Component
 @Slf4j
-@org.springframework.context.annotation.Lazy
+@Service
 class EanCodeProvider {
 
     @Value('${octopus3.flix.eanCodeUrl}')
