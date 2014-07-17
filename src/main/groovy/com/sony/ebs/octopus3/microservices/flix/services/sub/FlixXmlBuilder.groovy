@@ -27,9 +27,7 @@ class FlixXmlBuilder {
                 } else if (v instanceof List) {
                     builder."${nonAlphanumeric(k)}" {
                         v.each { item ->
-                            builder.item {
-                                mkp.yieldUnescaped(cdata(item))
-                            }
+                            generate(it, [item: item])
                         }
                     }
                 } else {
@@ -44,7 +42,7 @@ class FlixXmlBuilder {
         def xml = builder.bind() {
             mkp.xmlDeclaration()
             //mkp.yieldUnescaped('<!DOCTYPE gsafeed PUBLIC "-//Google//DTD GSA Feeds//EN" "gsafeed.dtd">')
-            sheet {
+            product(xmlns: "http://www.sony.eu/syndication") {
                 generate(it, json)
             }
         }

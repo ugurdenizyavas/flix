@@ -1,0 +1,277 @@
+<?xml version='1.0'?>
+<product xmlns="http://www.sony.eu/syndication">
+    <id><![CDATA[urn:sony:product:sku:[sku]accdcbx.ce7_en_gb]]></id>
+    <businessUnit><![CDATA[DI]]></businessUnit>
+    <categories></categories>
+    <createdAt><![CDATA[1384941911698]]></createdAt>
+    <differentiators></differentiators>
+    <eanCodes>
+        <item><![CDATA[4905524951158]]></item>
+    </eanCodes>
+    <elevatorPitch><![CDATA[You&#xe2;&#x80;&#x99;ve got the power]]></elevatorPitch>
+    <envLink>
+        <label><![CDATA[Visit our eco website]]></label>
+        <linkType><![CDATA[text]]></linkType>
+        <openInNewWindow><![CDATA[No]]></openInNewWindow>
+        <targetType><![CDATA[url]]></targetType>
+        <type><![CDATA[urn:sony:link]]></type>
+        <url><![CDATA[http://www.sony.co.uk/hub/eco]]></url>
+    </envLink>
+    <envStatement>
+        <![CDATA[Learn about energy saving features and our commitment to a more sustainable future.]]></envStatement>
+    <factualShortDescription>
+        <![CDATA[Accessory kit with car battery adapter, micro USB cable, and battery for Action Cam]]></factualShortDescription>
+    <featureBenefits>
+        <item>
+            <bodyCopy>
+                <![CDATA[run out of power on the go? Just attach your spare battery and don&#xe2;&#x80;&#x99;t miss any of the action]]></bodyCopy>
+            <headline><![CDATA[Always have power]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[insert the car battery adapter into the cigarette lighter socket and connect the micro USB cable to your Action Cam for extra power]]></bodyCopy>
+            <headline><![CDATA[Charge in your car]]></headline>
+        </item>
+    </featureBenefits>
+    <images>
+        <primaryShot>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb]]></id>
+                    <bucket><![CDATA[gwtprod]]></bucket>
+                    <createdAt><![CDATA[1.38493231242E+12]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[1320]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png]]></internalUrl>
+                            <md5><![CDATA[168c4965c6678ae822e80e6d4348431f]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[308983]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1320]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black]]></masterId>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1390323908062]]></updatedAt>
+                    <version><![CDATA[20140118131633]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </primaryShot>
+        <productShots>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb]]></id>
+                    <bucket><![CDATA[gwtprod]]></bucket>
+                    <createdAt><![CDATA[1.38493231242E+12]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[1320]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png]]></internalUrl>
+                            <md5><![CDATA[168c4965c6678ae822e80e6d4348431f]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[308983]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1320]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black]]></masterId>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1390323908062]]></updatedAt>
+                    <version><![CDATA[20140118131633]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </productShots>
+    </images>
+    <legacy><![CDATA[Yes]]></legacy>
+    <locale><![CDATA[en_GB]]></locale>
+    <mainCategories></mainCategories>
+    <mainProductType>
+        <displayName><![CDATA[battery]]></displayName>
+        <id><![CDATA[ID_battery]]></id>
+        <rootId><![CDATA[battery]]></rootId>
+    </mainProductType>
+    <marketingProductName><![CDATA[DCBX Battery accessory kit for Action Cam]]></marketingProductName>
+    <marketingProductNameUpperCase><![CDATA[DCBX BATTERY ACCESSORY KIT FOR ACTION CAM]]></marketingProductNameUpperCase>
+    <masterId><![CDATA[urn:sony:product:sku:[sku]accdcbx.ce7]]></masterId>
+    <minVisibleTechSpecNumber><![CDATA[]]></minVisibleTechSpecNumber>
+    <model>
+        <featureBenefits>
+            <item>
+                <bodyCopy>
+                    <![CDATA[run out of power on the go? Just attach your spare battery and don&#xe2;&#x80;&#x99;t miss any of the action]]></bodyCopy>
+                <headline><![CDATA[Always have power]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[insert the car battery adapter into the cigarette lighter socket and connect the micro USB cable to your Action Cam for extra power]]></bodyCopy>
+                <headline><![CDATA[Charge in your car]]></headline>
+            </item>
+        </featureBenefits>
+        <images>
+            <primaryShot>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1.38493231242E+12]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[1320]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png]]></internalUrl>
+                                <md5><![CDATA[168c4965c6678ae822e80e6d4348431f]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[308983]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1320]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black]]></masterId>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1390323908062]]></updatedAt>
+                        <version><![CDATA[20140118131633]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </primaryShot>
+            <productShots>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1.38493231242E+12]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[1320]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png]]></internalUrl>
+                                <md5><![CDATA[168c4965c6678ae822e80e6d4348431f]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[308983]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1320]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black]]></masterId>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1390323908062]]></updatedAt>
+                        <version><![CDATA[20140118131633]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </productShots>
+        </images>
+        <locale><![CDATA[en_GB]]></locale>
+        <marketingProductName><![CDATA[Car Charger Kit]]></marketingProductName>
+        <masterId><![CDATA[urn:sony:product:model:[model]acc_dcbx]]></masterId>
+        <number><![CDATA[ACC-DCBX]]></number>
+        <slug><![CDATA[acc-dcbx]]></slug>
+        <topFeatures>
+            <item><![CDATA[Car battery adapter]]></item>
+            <item><![CDATA[Micro USB cable]]></item>
+            <item><![CDATA[Rechargeable battery]]></item>
+        </topFeatures>
+        <updatedAt><![CDATA[1404134110081]]></updatedAt>
+    </model>
+    <modelName><![CDATA[ACC-DCBX]]></modelName>
+    <name><![CDATA[ACCDCBX.CE7]]></name>
+    <number><![CDATA[ACCDCBX.CE7]]></number>
+    <parentId><![CDATA[urn:sony:product:model:[model]acc_dcbx]]></parentId>
+    <price>
+        <ecommerce>
+            <id><![CDATA[urn:sony:pricing:ecommerce:en_GB:sku:[sku]accdcbx.ce7]]></id>
+            <amount><![CDATA[59]]></amount>
+            <createdAt><![CDATA[1404806105944]]></createdAt>
+            <currency><![CDATA[GBP]]></currency>
+            <locale><![CDATA[en_GB]]></locale>
+            <masterId><![CDATA[urn:sony:product:sku:[sku]accdcbx.ce7]]></masterId>
+            <priceType><![CDATA[pricing.for]]></priceType>
+            <source><![CDATA[ecommerce]]></source>
+            <updatedAt><![CDATA[1405398609824]]></updatedAt>
+        </ecommerce>
+        <msrp></msrp>
+    </price>
+    <productRank><![CDATA[122]]></productRank>
+    <productRegions>
+        <item>
+            <displayName><![CDATA[EU]]></displayName>
+            <id><![CDATA[EU]]></id>
+            <rootId><![CDATA[EU]]></rootId>
+        </item>
+    </productRegions>
+    <purpose><![CDATA[Approval]]></purpose>
+    <skuName><![CDATA[ACCDCBX.CE7]]></skuName>
+    <slug><![CDATA[accdcbx.ce7]]></slug>
+    <sourceLocale><![CDATA[en_GB]]></sourceLocale>
+    <sunriseDateTime><![CDATA[1.3790232E+12]]></sunriseDateTime>
+    <targetLocales>
+        <item><![CDATA[bg_BG]]></item>
+        <item><![CDATA[cs_CZ]]></item>
+        <item><![CDATA[da_DK]]></item>
+        <item><![CDATA[de_CH]]></item>
+        <item><![CDATA[de_DE]]></item>
+        <item><![CDATA[de_AT]]></item>
+        <item><![CDATA[de_LU]]></item>
+        <item><![CDATA[el_GR]]></item>
+        <item><![CDATA[en_EE]]></item>
+        <item><![CDATA[en_GB]]></item>
+        <item><![CDATA[en_LV]]></item>
+        <item><![CDATA[es_ES]]></item>
+        <item><![CDATA[fi_FI]]></item>
+        <item><![CDATA[fr_BE]]></item>
+        <item><![CDATA[fr_CH]]></item>
+        <item><![CDATA[fr_FR]]></item>
+        <item><![CDATA[fr_LU]]></item>
+        <item><![CDATA[hr_BA]]></item>
+        <item><![CDATA[hr_HR]]></item>
+        <item><![CDATA[hu_HU]]></item>
+        <item><![CDATA[it_IT]]></item>
+        <item><![CDATA[lt_LT]]></item>
+        <item><![CDATA[mk_MK]]></item>
+        <item><![CDATA[nl_BE]]></item>
+        <item><![CDATA[nl_NL]]></item>
+        <item><![CDATA[no_NO]]></item>
+        <item><![CDATA[pl_PL]]></item>
+        <item><![CDATA[pt_PT]]></item>
+        <item><![CDATA[ro_RO]]></item>
+        <item><![CDATA[ru_KZ]]></item>
+        <item><![CDATA[ru_RU]]></item>
+        <item><![CDATA[sk_SK]]></item>
+        <item><![CDATA[sl_SI]]></item>
+        <item><![CDATA[sr_YU]]></item>
+        <item><![CDATA[sv_SE]]></item>
+        <item><![CDATA[tr_TR]]></item>
+        <item><![CDATA[uk_UA]]></item>
+    </targetLocales>
+    <tier><![CDATA[4]]></tier>
+    <topFeatures>
+        <item><![CDATA[Car battery adapter]]></item>
+        <item><![CDATA[Micro USB cable]]></item>
+        <item><![CDATA[Rechargeable battery]]></item>
+    </topFeatures>
+    <type><![CDATA[urn:sony:product:sku]]></type>
+    <updatedAt><![CDATA[1404806105948]]></updatedAt>
+    <version><![CDATA[20140708035232]]></version>
+    <videos></videos>
+</product>

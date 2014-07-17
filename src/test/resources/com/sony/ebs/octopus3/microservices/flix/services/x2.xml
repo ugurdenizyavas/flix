@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<sheet>
+<product xmlns="http://www.sony.eu/syndication">
     <a1x><![CDATA[1]]></a1x>
     <b2>
         <e>
@@ -11,4 +11,4 @@
         </e>
         <g><![CDATA[z]]></g>
     </b2>
-</sheet>
+</product>

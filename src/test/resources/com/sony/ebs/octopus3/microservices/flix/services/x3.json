@@ -1,0 +1,173 @@
+{"_id": "urn:sony:product:sku:[sku]accdcbx.ce7_en_gb", "businessUnit": "DI", "createdAt": 1384941911698, "elevatorPitch": "Youâve got the power", "envStatement": "Learn about energy saving features and our commitment to a more sustainable future.", "factualShortDescription": "Accessory kit with car battery adapter, micro USB cable, and battery for Action Cam", "legacy": "Yes", "locale": "en_GB", "marketingProductNameUpperCase": "DCBX BATTERY ACCESSORY KIT FOR ACTION CAM", "masterId": "urn:sony:product:sku:[sku]accdcbx.ce7", "minVisibleTechSpecNumber": 0.0, "modelName": "ACC-DCBX", "name": "ACCDCBX.CE7", "parentId": "urn:sony:product:model:[model]acc_dcbx", "productRank": 122.0, "purpose": "Approval", "skuName": "ACCDCBX.CE7", "slug": "accdcbx.ce7", "sourceLocale": "en_GB", "sunriseDateTime": 1.3790232E+12, "tier": "4", "type": "urn:sony:product:sku", "updatedAt": 1404806105948, "version": "20140708035232", "differentiators": [], "eanCodes": ["4905524951158"], "productRegions": [
+    {
+        "displayName": "EU",
+        "id": "EU",
+        "rootId": "EU"
+    }
+], "targetLocales": ["bg_BG", "cs_CZ", "da_DK", "de_CH", "de_DE", "de_AT", "de_LU", "el_GR", "en_EE", "en_GB", "en_LV", "es_ES", "fi_FI", "fr_BE", "fr_CH", "fr_FR", "fr_LU", "hr_BA", "hr_HR", "hu_HU", "it_IT", "lt_LT", "mk_MK", "nl_BE", "nl_NL", "no_NO", "pl_PL", "pt_PT", "ro_RO", "ru_KZ", "ru_RU", "sk_SK", "sl_SI", "sr_YU", "sv_SE", "tr_TR", "uk_UA"], "categories": {}, "envLink": {
+    "label": "Visit our eco website",
+    "openInNewWindow": "No",
+    "type": "urn:sony:link",
+    "linkType": "text",
+    "targetType": "url",
+    "url": "http://www.sony.co.uk/hub/eco"
+}, "mainCategories": {}, "mainProductType": {
+    "displayName": "battery",
+    "id": "ID_battery",
+    "rootId": "battery"
+}, "model": {
+    "locale": "en_GB",
+    "masterId": "urn:sony:product:model:[model]acc_dcbx",
+    "slug": "acc-dcbx",
+    "updatedAt": 1404134110081,
+    "featureBenefits": [
+        {
+            "bodyCopy": "run out of power on the go? Just attach your spare battery and donât miss any of the action",
+            "headline": "Always have power"
+        },
+        {
+            "headline": "Charge in your car",
+            "bodyCopy": "insert the car battery adapter into the cigarette lighter socket and connect the micro USB cable to your Action Cam for extra power"
+        }
+    ],
+    "images": {
+        "primaryShot": [
+            {
+                "imageFamily": {
+                    "_id": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb",
+                    "bucket": "gwtprod",
+                    "createdAt": 1.38493231242E+12,
+                    "disclaimerCopy": "Colours and features may vary by country and model",
+                    "locale": "en_GB",
+                    "masterId": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black",
+                    "type": "urn:sony:media:image_family",
+                    "updatedAt": 1390323908062,
+                    "version": "20140118131633",
+                    "images": {
+                        "desktop": {
+                            "internalUrl": "https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png",
+                            "height": 1320.0,
+                            "mimeType": "image/png",
+                            "sizeInBytes": 308983.0,
+                            "width": 1320.0,
+                            "status": "published",
+                            "md5": "168c4965c6678ae822e80e6d4348431f",
+                            "externalUrl": "//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha"
+                        }
+                    }
+                },
+                "rank": 0.0
+            }
+        ],
+        "productShots": [
+            {
+                "imageFamily": {
+                    "_id": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb",
+                    "bucket": "gwtprod",
+                    "createdAt": 1.38493231242E+12,
+                    "disclaimerCopy": "Colours and features may vary by country and model",
+                    "locale": "en_GB",
+                    "masterId": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black",
+                    "type": "urn:sony:media:image_family",
+                    "updatedAt": 1390323908062,
+                    "version": "20140118131633",
+                    "images": {
+                        "desktop": {
+                            "internalUrl": "https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png",
+                            "height": 1320.0,
+                            "mimeType": "image/png",
+                            "sizeInBytes": 308983.0,
+                            "width": 1320.0,
+                            "status": "published",
+                            "md5": "168c4965c6678ae822e80e6d4348431f",
+                            "externalUrl": "//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha"
+                        }
+                    }
+                },
+                "rank": 0.0
+            }
+        ]
+    },
+    "topFeatures": ["Car battery adapter", "Micro USB cable", "Rechargeable battery"],
+    "marketingProductName": "Car Charger Kit",
+    "number": "ACC-DCBX"
+}, "price": {
+    "msrp": {},
+    "ecommerce": {
+        "_id": "urn:sony:pricing:ecommerce:en_GB:sku:[sku]accdcbx.ce7",
+        "amount": 59.0,
+        "createdAt": 1404806105944,
+        "currency": "GBP",
+        "locale": "en_GB",
+        "masterId": "urn:sony:product:sku:[sku]accdcbx.ce7",
+        "priceType": "pricing.for",
+        "source": "ecommerce",
+        "updatedAt": 1405398609824
+    }
+}, "topFeatures": ["Car battery adapter", "Micro USB cable", "Rechargeable battery"], "marketingProductName": "DCBX Battery accessory kit for Action Cam", "number": "ACCDCBX.CE7", "images": {
+    "primaryShot": [
+        {
+            "imageFamily": {
+                "_id": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb",
+                "bucket": "gwtprod",
+                "createdAt": 1.38493231242E+12,
+                "disclaimerCopy": "Colours and features may vary by country and model",
+                "locale": "en_GB",
+                "masterId": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black",
+                "type": "urn:sony:media:image_family",
+                "updatedAt": 1390323908062,
+                "version": "20140118131633",
+                "images": {
+                    "desktop": {
+                        "internalUrl": "https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png",
+                        "height": 1320.0,
+                        "mimeType": "image/png",
+                        "sizeInBytes": 308983.0,
+                        "width": 1320.0,
+                        "status": "published",
+                        "md5": "168c4965c6678ae822e80e6d4348431f",
+                        "externalUrl": "//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha"
+                    }
+                }
+            },
+            "rank": 0.0
+        }
+    ],
+    "productShots": [
+        {
+            "imageFamily": {
+                "_id": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black_en_gb",
+                "bucket": "gwtprod",
+                "createdAt": 1.38493231242E+12,
+                "disclaimerCopy": "Colours and features may vary by country and model",
+                "locale": "en_GB",
+                "masterId": "urn:sony:media:image_family:if_accdcbx.ce7_primary_front_black",
+                "type": "urn:sony:media:image_family",
+                "updatedAt": 1390323908062,
+                "version": "20140118131633",
+                "images": {
+                    "desktop": {
+                        "internalUrl": "https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/98/60/1229860.png",
+                        "height": 1320.0,
+                        "mimeType": "image/png",
+                        "sizeInBytes": 308983.0,
+                        "width": 1320.0,
+                        "status": "published",
+                        "md5": "168c4965c6678ae822e80e6d4348431f",
+                        "externalUrl": "//sonyglobal.scene7.com/is/image/gwtprod/168c4965c6678ae822e80e6d4348431f?fmt=png-alpha"
+                    }
+                }
+            },
+            "rank": 0.0
+        }
+    ]
+}, "videos": {}, "featureBenefits": [
+    {
+        "bodyCopy": "run out of power on the go? Just attach your spare battery and donât miss any of the action",
+        "headline": "Always have power"
+    },
+    {
+        "headline": "Charge in your car",
+        "bodyCopy": "insert the car battery adapter into the cigarette lighter socket and connect the micro USB cable to your Action Cam for extra power"
+    }
+]}

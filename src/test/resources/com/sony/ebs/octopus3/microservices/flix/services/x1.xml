@@ -1,21 +1,32 @@
 <?xml version='1.0'?>
-<sheet>
-    <a>1</a>
-    <b>x</b>
+<product xmlns="http://www.sony.eu/syndication">
+    <a><![CDATA[1]]></a>
+    <b><![CDATA[x]]></b>
     <c>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
+        <item><![CDATA[10]]></item>
+        <item><![CDATA[15]]></item>
+        <item><![CDATA[20]]></item>
     </c>
     <d>
         <e>
             <f>
-                <item>30</item>
-                <item>40</item>
+                <item><![CDATA[30]]></item>
+                <item><![CDATA[40]]></item>
             </f>
-            <h>w</h>
+            <h><![CDATA[w]]></h>
         </e>
-        <g></g>
-        <i>z</i>
+        <g><![CDATA[]]></g>
+        <i><![CDATA[z]]></i>
+        <j>
+            <item>
+                <ja1><![CDATA[a]]></ja1>
+                <ja2><![CDATA[b]]></ja2>
+                <ja3><![CDATA[c]]></ja3>
+            </item>
+            <item>
+                <jb1><![CDATA[x]]></jb1>
+                <jb2><![CDATA[y]]></jb2>
+            </item>
+        </j>
     </d>
-</sheet>
+</product>
