@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
+import spock.util.concurrent.BlockingVariable
 
 @Slf4j
 class FlixServiceTest {
@@ -77,24 +78,13 @@ class FlixServiceTest {
         flixService.categoryService = mockCategoryService.proxyInstance()
         flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
 
-        def finished = new Object()
-        def result = [].asSynchronized()
+        def result = new BlockingVariable<List<String>>(5)
         execController.start {
-            flixService.flixFlow(flix).subscribe { String res ->
-                synchronized (finished) {
-                    result << res
-                    finished.notifyAll()
-                }
+            flixService.flixFlow(flix).toList().subscribe {
+                result.set(it)
             }
         }
-        synchronized (finished) {
-            finished.wait 5000
-        }
-        assert result.size() == 4
-        assert result.contains("success for urn:category:score:en_gb")
-        assert result.contains("success for urn:flix:a")
-        assert result.contains("success for urn:flix:b")
-        assert result.contains("success for urn:flix:c")
+        assert result.get().sort() == ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"]
     }
 
 }

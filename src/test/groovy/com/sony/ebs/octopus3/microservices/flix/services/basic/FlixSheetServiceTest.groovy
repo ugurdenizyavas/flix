@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
+import spock.util.concurrent.BlockingVariable
 
 @Slf4j
 class FlixSheetServiceTest {
@@ -59,7 +60,7 @@ class FlixSheetServiceTest {
             buildXml(1) { json ->
                 assert json.eanCode == "ea1"
                 assert json.a == "1"
-                assert json.b.c == ["2","3"]
+                assert json.b.c == ["2", "3"]
                 "some xml"
             }
         }
@@ -68,20 +69,13 @@ class FlixSheetServiceTest {
         flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
         flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
 
-        def finished = new Object()
-        def result
+        def result = new BlockingVariable<String>(5)
         execController.start {
-            flixSheetService.sheetFlow(flixSheet).subscribe { String res ->
-                synchronized (finished) {
-                    result = res
-                    finished.notifyAll()
-                }
-            }
+            flixSheetService.sheetFlow(flixSheet).subscribe({
+                result.set(it)
+            })
         }
-        synchronized (finished) {
-            finished.wait 5000
-        }
-        assert result == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
+        assert result.get() == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
     }
 
 }

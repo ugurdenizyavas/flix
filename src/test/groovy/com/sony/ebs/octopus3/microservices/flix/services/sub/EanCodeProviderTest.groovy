@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
+import spock.util.concurrent.BlockingVariable
 
 @Slf4j
 class EanCodeProviderTest {
@@ -41,26 +42,16 @@ class EanCodeProviderTest {
 
         eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
-        def finished = new Object()
-        def result = ""
+        def result = new BlockingVariable<String>(5)
         execController.start {
             eanCodeProvider.getEanCode(new URNImpl("urn:flix:a"))
                     .doOnError({
-                synchronized (finished) {
-                    result = "error"
-                    finished.notifyAll()
-                }
-            }).subscribe { String res ->
-                synchronized (finished) {
-                    result = res
-                    finished.notifyAll()
-                }
-            }
+                result.set("error")
+            }).subscribe({
+                result.set(it)
+            })
         }
-        synchronized (finished) {
-            finished.wait 5000
-        }
-        assert result == expected
+        assert result.get() == expected
     }
 
     @Test

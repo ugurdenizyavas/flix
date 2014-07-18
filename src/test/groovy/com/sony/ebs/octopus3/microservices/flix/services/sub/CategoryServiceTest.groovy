@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
+import spock.util.concurrent.BlockingVariable
 
 @Slf4j
 class CategoryServiceTest {
@@ -47,20 +48,14 @@ class CategoryServiceTest {
 
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def finished = new Object()
-        def result
+        def result = new BlockingVariable<String>(5)
         execController.start {
-            categoryService.doCategoryFeed(flix).subscribe { String res ->
-                synchronized (finished) {
-                    result = res
-                    finished.notifyAll()
-                }
-            }
+            categoryService.doCategoryFeed(flix).subscribe({
+                result.set(it)
+            })
         }
-        synchronized (finished) {
-            finished.wait 5000
-        }
-        assert result == "success for urn:flixmedia:score:en_gb:category"
+        assert result.get() == "success for urn:flixmedia:score:en_gb:category"
+
     }
 
     @Test
@@ -74,19 +69,12 @@ class CategoryServiceTest {
 
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def finished = new Object()
-        def result = ""
+        def result = new BlockingVariable<String>(5)
         execController.start {
-            categoryService.doCategoryFeed(flix).subscribe { String res ->
-                synchronized (finished) {
-                    result = res
-                    finished.notifyAll()
-                }
-            }
+            categoryService.doCategoryFeed(flix).subscribe({
+                result.set(it)
+            })
         }
-        synchronized (finished) {
-            finished.wait 10000
-        }
-        assert result == null
+        assert result.get() == null
     }
 }
