@@ -29,7 +29,7 @@ class SpringConfig {
     @Qualifier("localHttpClient")
     @org.springframework.context.annotation.Lazy
     public NingHttpClient localHttpClient() {
-        new NingHttpClient(execControl, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, "", "")
+        new NingHttpClient(execControl, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, localNonProxyHosts, "", "")
     }
 
     @Value('${octopus3.flix.local.proxy.host}')
@@ -44,5 +44,7 @@ class SpringConfig {
     @Value('${octopus3.flix.local.proxy.password}')
     String localProxyPassword
 
+    @Value('${octopus3.flix.local.proxy.nonProxyHosts}')
+    String localNonProxyHosts
 }
 

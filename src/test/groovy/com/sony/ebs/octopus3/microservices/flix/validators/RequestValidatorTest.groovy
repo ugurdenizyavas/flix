@@ -84,8 +84,14 @@ class RequestValidatorTest {
     }
 
     @Test
+    void "valid processId"() {
+        def flixSheet = new FlixSheet(processId: "a8ff962c-1410-49bc-a8fd-896309033171", urnStr: "urn:flix:a")
+        assert !validator.validateFlixSheet(flixSheet)
+    }
+
+    @Test
     void "invalid processId"() {
-        def flixSheet = new FlixSheet(processId: "aa", urnStr: "urn:flix:score:en_gb")
+        def flixSheet = new FlixSheet(processId: "a123?", urnStr: "urn:flix:score:en_gb")
         assert validator.validateFlixSheet(flixSheet) == ["processId parameter is invalid"]
     }
 }

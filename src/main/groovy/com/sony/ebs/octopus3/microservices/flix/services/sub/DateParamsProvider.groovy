@@ -48,7 +48,7 @@ public class DateParamsProvider {
         observe(execControl.blocking {
             def path = createLastModifiedPath(flix)
             log.info "starting update last modified time for $flix"
-            FileUtils.writeFile(path, "", true, true)
+            FileUtils.writeFile(path, "".bytes, true, true)
             def lmt = getLastModifiedTime(path)
             log.info "finished update last modified time for $flix as $lmt"
             lmt

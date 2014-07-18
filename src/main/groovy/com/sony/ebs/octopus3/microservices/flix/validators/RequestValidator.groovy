@@ -65,7 +65,7 @@ class RequestValidator {
     List validateFlixSheet(FlixSheet flixSheet) {
         def errors = []
 
-        if (flixSheet.processId && !(flixSheet.processId ==~ /[0-9\-]+/)) {
+        if (flixSheet.processId && !(flixSheet.processId ==~ /[a-zA-Z0-9\-]+/)) {
             errors << "processId parameter is invalid"
         }
         try {

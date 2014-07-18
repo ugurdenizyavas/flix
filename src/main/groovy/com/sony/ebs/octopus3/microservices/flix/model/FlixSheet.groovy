@@ -15,6 +15,6 @@ class FlixSheet {
     }
 
     URN getSheetUrn() {
-        new URNImpl(FlixConstants.FLIX_MEDIA, new URNImpl(urnStr).values)
+        new URNImpl(FlixUrnValue.flixMedia.toString(), new URNImpl(urnStr).values)
     }
 }

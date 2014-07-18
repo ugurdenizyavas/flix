@@ -33,6 +33,9 @@ class CategoryService {
             httpClient.doPost(categorySaveUrl, categoryResult).flatMap({
                 rx.Observable.from("success for $categoryUrnStr")
             })
+        }).onErrorReturn({ e ->
+            log.error "error getting category for $flix", e
+            null
         })
     }
 }

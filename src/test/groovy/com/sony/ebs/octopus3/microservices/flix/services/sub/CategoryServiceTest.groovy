@@ -63,4 +63,30 @@ class CategoryServiceTest {
         assert result == "success for urn:flixmedia:score:en_gb:category"
     }
 
+    @Test
+    void "on error"() {
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        mockNingHttpClient.demand.with {
+            doGet(1) { rx.Observable.from("xxx") }
+            //doGet(1) { throw new RuntimeException("error in post") }
+            doPost(1) { url, data -> throw new RuntimeException("error in post") }
+        }
+
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+
+        def finished = new Object()
+        def result = ""
+        execController.start {
+            categoryService.doCategoryFeed(flix).subscribe { String res ->
+                synchronized (finished) {
+                    result = res
+                    finished.notifyAll()
+                }
+            }
+        }
+        synchronized (finished) {
+            finished.wait 10000
+        }
+        assert result == null
+    }
 }
