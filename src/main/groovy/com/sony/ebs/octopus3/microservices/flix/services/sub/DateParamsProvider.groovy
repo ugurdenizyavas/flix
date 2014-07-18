@@ -64,11 +64,11 @@ public class DateParamsProvider {
                 sdate = getLastModifiedTime(createLastModifiedPath(flix))
             }
             if (sdate) {
-                sb.append("?sdate=").append(sdate)
+                sb.append("?sdate=").append(URLEncoder.encode(sdate, "UTF-8"))
             }
             if (flix.edate) {
                 sb.size() == 0 ? sb.append("?") : "&"
-                sb.append("edate=").append(flix.edate)
+                sb.append("edate=").append(URLEncoder.encode(flix.edate, "UTF-8"))
             }
             sb.toString()
         })
