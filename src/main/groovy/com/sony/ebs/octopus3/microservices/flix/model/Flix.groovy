@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.sony.ebs.octopus3.commons.process.ProcessId
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -14,18 +15,22 @@ class Flix {
     String sdate
     String edate
 
+    @JsonIgnore
     URN getCategoryUrn() {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale, FlixUrnValue.category.toString()])
     }
 
+    @JsonIgnore
     URN getDeltaUrn() {
         new URNImpl(FlixUrnValue.global_sku.toString(), [publication, locale])
     }
 
+    @JsonIgnore
     URN getLastModifiedUrn() {
         new URNImpl(FlixUrnValue.last_modified.toString(), [publication, locale])
     }
 
+    @JsonIgnore
     URN getBaseUrn() {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale])
     }

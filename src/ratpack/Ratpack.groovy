@@ -46,6 +46,6 @@ ratpack {
         get("flix/healthcheck", healthCheckHandler)
         get("flix/delta/publication/:publication/locale/:locale", flixFlowHandler)
         get("flix/sheet/:urn", flixSheetFlowHandler)
-        get("flix/package/:publication/locale/:locale", flixPackageFlowHandler)
+        get("flix/package/publication/:publication/locale/:locale", flixPackageFlowHandler)
     }
 }
