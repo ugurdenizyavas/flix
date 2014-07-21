@@ -35,31 +35,16 @@ class FlixPackageServiceTest {
         assert result == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
     }
 
-
-    def assertJson = { String t1, String t2 ->
-        def jsonSlurper = new JsonSlurper()
-        def expected = jsonSlurper.parseText(t1)
-        def actual = jsonSlurper.parseText(t2)
-        assert expected == actual
-    }
-
     @Test
     void "test ops recipe"() {
-        def actual = flixPackageService.createOpsRecipe(new FlixPackage(publication: "SCORE", locale: "fr_FR"))
-        assertJson(RECIPE, actual)
+        def recipe = flixPackageService.createOpsRecipe(new FlixPackage(publication: "SCORE", locale: "fr_BE"))
+
+        def actual = new JsonSlurper().parseText(recipe)
+
+        assert actual.ops.zip.source == "urn:flixmedia:score:fr_be"
+
+        assert actual.ops.copy.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops.copy.destination ==~ /urn:thirdparty:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
     }
 
-    def RECIPE = """
-{
-    "ops": {
-        "copy": {
-            "source": "urn:flixmedia:score:fr_fr.zip",
-            "destination": "urn:archive:flixmedia:score:fr_fr.zip"
-        },
-        "zip": {
-            "source": "urn:flixmedia:score:fr_fr.zip"
-        }
-    }
-}
-"""
 }

@@ -21,17 +21,16 @@ class FlixPackageService {
     NingHttpClient httpClient
 
     String createOpsRecipe(FlixPackage flixPackage) {
-        def packageUrn = flixPackage.baseUrn
-        def archiveUrn = new URNImpl("archive", [packageUrn.type] + packageUrn.values)
+        def packageUrnStr = flixPackage.baseUrn.toString()
 
         def builder = new groovy.json.JsonBuilder()
         builder.ops {
-            copy {
-                source "${packageUrn.toString()}.zip"
-                destination "${archiveUrn.toString()}.zip"
-            }
             zip {
-                source "${packageUrn.toString()}.zip"
+                source packageUrnStr
+            }
+            copy {
+                source "${packageUrnStr}.zip"
+                destination flixPackage.destinationUrn.toString()
             }
         }
         def result = builder.toString()
