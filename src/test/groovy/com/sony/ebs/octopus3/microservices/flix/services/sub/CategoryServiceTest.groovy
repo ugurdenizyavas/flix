@@ -26,6 +26,21 @@ class CategoryServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
+    def runRetrieveCategoryFeed(expected) {
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+
+        def result = new BlockingVariable<String>(5)
+        execController.start {
+            categoryService.retrieveCategoryFeed(flix).doOnError({
+                result.set("error")
+            }).subscribe({
+                result.set(it)
+            })
+        }
+        assert result.get() == expected
+    }
+
     @After
     void after() {
         if (execController) execController.close()
@@ -33,7 +48,6 @@ class CategoryServiceTest {
 
     @Test
     void "get category feed"() {
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
@@ -45,36 +59,31 @@ class CategoryServiceTest {
                 rx.Observable.from("done")
             }
         }
-
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
-
-        def result = new BlockingVariable<String>(5)
-        execController.start {
-            categoryService.doCategoryFeed(flix).subscribe({
-                result.set(it)
-            })
-        }
-        assert result.get() == "success for urn:flixmedia:score:en_gb:category"
-
+        runRetrieveCategoryFeed("success for urn:flixmedia:score:en_gb:category")
     }
 
     @Test
-    void "on error"() {
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+    void "error in get"() {
         mockNingHttpClient.demand.with {
-            doGet(1) { rx.Observable.from("xxx") }
-            //doGet(1) { throw new RuntimeException("error in post") }
-            doPost(1) { url, data -> throw new RuntimeException("error in post") }
+            doGet(1) {
+                throw new Exception("error in get")
+            }
         }
-
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        runRetrieveCategoryFeed("error")
+    }
 
-        def result = new BlockingVariable<String>(5)
-        execController.start {
-            categoryService.doCategoryFeed(flix).subscribe({
-                result.set(it)
-            })
+    @Test
+    void "error in post"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from("xxx")
+            }
+            doPost(1) { url, data ->
+                throw new Exception("error in post")
+            }
         }
-        assert result.get() == null
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        runRetrieveCategoryFeed("error")
     }
 }

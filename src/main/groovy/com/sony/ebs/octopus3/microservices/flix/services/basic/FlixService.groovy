@@ -79,7 +79,7 @@ class FlixService {
             List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }
-            list << categoryService.doCategoryFeed(flix)
+            list << categoryService.retrieveCategoryFeed(flix)
             rx.Observable.merge(list)
         })
     }

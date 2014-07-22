@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
@@ -34,10 +35,27 @@ class FlixSheetServiceTest {
         if (execController) execController.close()
     }
 
-    @Test
-    void "import sheet"() {
+    void runFlow(String expected) {
+        flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
+        flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
+        flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
+
         def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
 
+        def result = new BlockingVariable<String>(5)
+        execController.start {
+            flixSheetService.sheetFlow(flixSheet)
+                    .doOnError({
+                result.set("error")
+            }).subscribe({
+                result.set(it)
+            })
+        }
+        assert result.get() == expected
+    }
+
+    @Test
+    void "success"() {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/repository/file/urn:flix:score:en_gb:a"
@@ -64,18 +82,36 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-
-        flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
-        flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
-        flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
-
-        def result = new BlockingVariable<String>(5)
-        execController.start {
-            flixSheetService.sheetFlow(flixSheet).subscribe({
-                result.set(it)
-            })
-        }
-        assert result.get() == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
+        runFlow("success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)")
     }
 
+    @Test
+    void "ean code error"() {
+        mockEanCodeProvider.demand.with {
+            getEanCode(1) {
+                throw new Exception()
+            }
+        }
+        runFlow("error")
+    }
+
+    @Test
+    void "read json error"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) { String url ->
+                throw new Exception()
+            }
+        }
+        runFlow("error")
+    }
+
+    @Test
+    void "parse json error"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) { String url ->
+                rx.Observable.from('invalid json')
+            }
+        }
+        runFlow("error")
+    }
 }

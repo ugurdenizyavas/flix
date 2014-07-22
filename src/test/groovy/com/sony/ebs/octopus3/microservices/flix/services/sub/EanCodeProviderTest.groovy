@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.mock.interceptor.StubFor
@@ -30,16 +31,7 @@ class EanCodeProviderTest {
         if (execController) execController.close()
     }
 
-    void runFlow(String expected, String xml) {
-        mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
-                assert url == "/ean/a"
-                if (xml == 'exception')
-                    throw new Exception("error in doGet")
-                rx.Observable.from(xml)
-            }
-        }
-
+    void runGetEanCode(String expected) {
         eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
@@ -56,17 +48,23 @@ class EanCodeProviderTest {
 
     @Test
     void "success case"() {
-        runFlow("4905524328974", '<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
+        mockNingHttpClient.demand.with {
+            doGet(1) { String url ->
+                assert url == "/ean/a"
+                rx.Observable.from('<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
+            }
+        }
+        runGetEanCode("4905524328974")
     }
 
     @Test
     void "error case"() {
-        runFlow(null, 'invalid xml')
-    }
-
-    //@Test
-    void "get from octopus issue case"() {
-        runFlow(null, 'exception')
+        mockNingHttpClient.demand.with {
+            doGet(1) { String url ->
+                rx.Observable.from("invalid xml")
+            }
+        }
+        runGetEanCode("error")
     }
 
 }

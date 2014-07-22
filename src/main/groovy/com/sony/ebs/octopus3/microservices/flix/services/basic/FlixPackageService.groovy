@@ -43,12 +43,12 @@ class FlixPackageService {
 
     rx.Observable<String> packageFlow(FlixPackage flixPackage) {
         log.info "creating package"
-        def recipe = createOpsRecipe(flixPackage)
-        httpClient.doPost(repositoryOpsUrl, recipe).flatMap({
-            rx.Observable.from("success for $flixPackage")
-        }).onErrorReturn({
-            log.error "error in $flixPackage", it
-            "error in $flixPackage"
+        rx.Observable.from("starting").map({
+            createOpsRecipe(flixPackage)
+        }).flatMap({
+            httpClient.doPost(repositoryOpsUrl, it)
+        }).map({
+            "success for $flixPackage"
         })
     }
 

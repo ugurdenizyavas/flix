@@ -57,7 +57,7 @@ class FlixServiceTest {
             }
         }
         mockCategoryService.demand.with {
-            doCategoryFeed(1) { f ->
+            retrieveCategoryFeed(1) { f ->
                 assert f == flix
                 log.info "doCategoryFeed"
                 rx.Observable.from("success for urn:category:score:en_gb")

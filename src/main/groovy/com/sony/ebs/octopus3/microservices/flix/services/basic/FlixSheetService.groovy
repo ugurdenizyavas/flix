@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ratpack.exec.ExecControl
 
-import static ratpack.rx.RxRatpack.observe
-
 @Slf4j
 @Service
 class FlixSheetService {
@@ -35,42 +33,33 @@ class FlixSheetService {
     @Autowired
     FlixXmlBuilder flixXmlBuilder
 
-    def parseJson(readResult) {
-        observe(execControl.blocking {
-            log.info "parsing json"
-            new JsonSlurper().parseText(readResult)
-        })
-    }
-
-    def buildXml(jsonResult) {
-        observe(execControl.blocking {
-            log.info "building xml"
-            flixXmlBuilder.buildXml(jsonResult)
-        })
-    }
-
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
-        log.info "reading json"
-        def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
-        httpClient.doGet(readUrl)
-                .flatMap({ String readResult ->
-            rx.Observable.zip(
-                    parseJson(readResult),
-                    eanCodeProvider.getEanCode(flixSheet.urn)
-            ) { json, eanCode ->
-                log.info "merging results"
-                json.eanCode = eanCode ?: ""
-                json
-            }
-        }).flatMap({ jsonResult ->
-            buildXml(jsonResult)
-        }).flatMap({ String xmlResult ->
+        def eanCode
+        rx.Observable.from("starting").flatMap({
+            eanCodeProvider.getEanCode(flixSheet.urn)
+        }).flatMap({
+            eanCode = it
+            log.debug "eancode is $eanCode"
+            log.info "reading json"
+            def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
+            httpClient.doGet(readUrl)
+        }).map({
+            log.info "parsing json"
+            def json = new JsonSlurper().parseText(it)
+            json.eanCode = eanCode ?: ""
+            json
+        }).map({
+            log.debug "json is $it"
+            log.info "building xml"
+            flixXmlBuilder.buildXml(it)
+        }).flatMap({
+            log.debug "xml is $it"
             log.info "saving xml"
             def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.sheetUrn.toString())
-            httpClient.doPost(saveUrl, xmlResult)
-        }).flatMap({ String saveResult ->
-            log.debug "save xml result: $saveResult"
-            rx.Observable.from("success for $flixSheet")
+            httpClient.doPost(saveUrl, it)
+        }).map({
+            log.debug "save xml result is $it"
+            "success for $flixSheet"
         })
     }
 

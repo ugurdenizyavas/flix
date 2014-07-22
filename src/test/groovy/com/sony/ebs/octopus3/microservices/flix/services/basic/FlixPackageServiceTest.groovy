@@ -7,17 +7,38 @@ import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before
 import org.junit.Test
+import ratpack.exec.ExecController
+import ratpack.launch.LaunchConfigBuilder
+import spock.util.concurrent.BlockingVariable
 
 @Slf4j
 class FlixPackageServiceTest {
 
     FlixPackageService flixPackageService
     StubFor mockNingHttpClient
+    ExecController execController
 
     @Before
     void before() {
         flixPackageService = new FlixPackageService(repositoryOpsUrl: "/ops")
+        execController = LaunchConfigBuilder.noBaseDir().build().execController
         mockNingHttpClient = new StubFor(NingHttpClient)
+    }
+
+    void runFlow(String expected) {
+        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
+        flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
+
+        def result = new BlockingVariable<String>(5)
+        execController.start {
+            flixPackageService.packageFlow(flixPackage)
+                    .doOnError({
+                result.set("error")
+            }).subscribe({
+                result.set(it)
+            })
+        }
+        assert result.get() == expected
     }
 
     @Test
@@ -28,11 +49,17 @@ class FlixPackageServiceTest {
                 rx.Observable.from("xxx")
             }
         }
-        flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
+        runFlow("success for FlixPackage(publication:SCORE, locale:fr_FR)")
+    }
 
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
-        def result = flixPackageService.packageFlow(flixPackage).toBlocking().single()
-        assert result == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
+    @Test
+    void "package flow error"() {
+        mockNingHttpClient.demand.with {
+            doPost(1) { String url, String data ->
+                throw new Exception("error post")
+            }
+        }
+        runFlow("error")
     }
 
     @Test

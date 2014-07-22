@@ -29,15 +29,12 @@ class EanCodeProvider {
     rx.Observable<String> getEanCode(URN urn) {
         def url = serviceUrl.replace(":product", urn.values.last())
         log.info "ean code service url for $urn is $url"
-        httpClient.doGet(url).flatMap({ result ->
-            observe(execControl.blocking {
-                log.info "parsing eanCode xml"
-                def xml = new XmlSlurper().parseText(result)
-                xml.eancode?.@code?.toString()
-            })
-        }).onErrorReturn({ e ->
-            log.error "error getting ean code for $urn", e
-            null
+        rx.Observable.from("starting").flatMap({
+            httpClient.doGet(url)
+        }).map({
+            log.info "parsing eanCode xml"
+            def xml = new XmlSlurper().parseText(it)
+            xml.eancode?.@code?.toString()
         })
     }
 }

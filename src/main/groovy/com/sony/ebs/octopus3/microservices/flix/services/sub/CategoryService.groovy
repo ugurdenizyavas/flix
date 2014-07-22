@@ -22,20 +22,20 @@ class CategoryService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    rx.Observable<String> doCategoryFeed(Flix flix) {
-        def categoryReadUrl = categoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
-        log.info "category service url for $flix is $categoryReadUrl"
-        httpClient.doGet(categoryReadUrl).flatMap({ categoryResult ->
-            def categoryUrnStr = flix.categoryUrn.toString()
-            def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrnStr)
+    rx.Observable<String> retrieveCategoryFeed(Flix flix) {
+        def categoryUrnStr = flix.categoryUrn.toString()
 
+        rx.Observable.from("starting").flatMap({
+            def categoryReadUrl = categoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
+            log.info "category service url for $flix is $categoryReadUrl"
+            httpClient.doGet(categoryReadUrl)
+        }).flatMap({ categoryXml ->
+            def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrnStr)
             log.info "category save url for $flix is $categorySaveUrl"
-            httpClient.doPost(categorySaveUrl, categoryResult).flatMap({
-                rx.Observable.from("success for $categoryUrnStr")
-            })
-        }).onErrorReturn({ e ->
-            log.error "error getting category for $flix", e
-            null
+
+            httpClient.doPost(categorySaveUrl, categoryXml)
+        }).map({
+            "success for $categoryUrnStr"
         })
     }
 }
