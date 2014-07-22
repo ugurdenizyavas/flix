@@ -5,15 +5,8 @@ import org.junit.Test
 class FlixPackageTest {
 
     @Test
-    void "test destinationUrn type"() {
-        assert new FlixPackage(publication: "GLOBAL", locale: "fr_BE").destinationUrn.type == FlixUrnValue.thirdparty.toString()
-    }
-
-    @Test
-    void "test destinationUrn value"() {
-        def values = new FlixPackage(publication: "GLOBAL", locale: "fr_BE").destinationUrn.values
-        assert values.size() == 1
-        assert values[0] ==~ /flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
+    void "test destinationUrn"() {
+        assert new FlixPackage(publication: "GLOBAL", locale: "fr_BE").destinationUrn.toString() ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
     }
 
     @Test

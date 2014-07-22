@@ -32,6 +32,9 @@ class FlixPackageService {
                 source "${packageUrnStr}.zip"
                 destination flixPackage.destinationUrn.toString()
             }
+            delete {
+                source "${packageUrnStr}.zip"
+            }
         }
         def result = builder.toString()
         log.info "recipe for $flixPackage is $result"

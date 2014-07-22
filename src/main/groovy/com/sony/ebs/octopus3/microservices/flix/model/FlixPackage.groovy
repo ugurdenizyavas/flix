@@ -27,7 +27,7 @@ class FlixPackage {
     @JsonIgnore
     URN getDestinationUrn() {
         def name = "Flix_${locale}_${new DateTime().toString(FMT)}.zip"
-        new URNImpl(FlixUrnValue.thirdparty.toString(), [name])
+        new URNImpl(FlixUrnValue.thirdparty.toString(), [FlixUrnValue.flixMedia.toString(), name])
     }
 
 }
