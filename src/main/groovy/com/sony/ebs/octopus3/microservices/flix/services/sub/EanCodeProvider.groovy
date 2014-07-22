@@ -34,7 +34,9 @@ class EanCodeProvider {
         }).map({
             log.info "parsing eanCode xml"
             def xml = new XmlSlurper().parseText(it)
-            xml.eancode?.@code?.toString()
+            def eanCode = xml.eancode?.@code?.toString()
+            log.info "ean code for $urn is $eanCode"
+            eanCode
         })
     }
 }
