@@ -44,31 +44,27 @@ class FlixService {
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
         log.info "importing sheet"
         def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
-        httpClient.doGet(importUrl).flatMap({
-            log.info "finished $importUrl"
-            rx.Observable.from("success for $sheetUrn")
-        }).onErrorReturn({
-            log.error "error in $sheetUrn", it
-            "error in $sheetUrn"
-        })
-    }
 
-    rx.Observable<String> parseDelta(String deltaResult) {
-        observe(execControl.blocking {
-            log.info "parsing delta json"
-            new JsonSlurper().parseText(deltaResult)
+        rx.Observable.from("starting").flatMap({
+            httpClient.doGet(importUrl)
+        }).map({
+            log.info "finished $importUrl"
+            "success for $sheetUrn"
         })
     }
 
     rx.Observable<String> flixFlow(Flix flix) {
 
         Map jsonResult
-        dateParamsProvider.createDateParams(flix).flatMap({ dateParams ->
-            def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + dateParams
+        rx.Observable.from("starting").flatMap({
+            dateParamsProvider.createDateParams(flix)
+        }).flatMap({
+            def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
-        }).flatMap({ deltaResult ->
-            parseDelta(deltaResult)
+        }).map({
+            log.info "parsing delta json"
+            new JsonSlurper().parseText(it)
         }).flatMap({
             jsonResult = it
             def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())

@@ -5,7 +5,9 @@ import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
+import org.junit.AfterClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
@@ -16,12 +18,22 @@ class FlixPackageServiceTest {
 
     FlixPackageService flixPackageService
     StubFor mockNingHttpClient
-    ExecController execController
+
+    static ExecController execController
+
+    @BeforeClass
+    static void beforeClass() {
+        execController = LaunchConfigBuilder.noBaseDir().build().execController
+    }
+
+    @AfterClass
+    static void afterClass() {
+        if (execController) execController.close()
+    }
 
     @Before
     void before() {
         flixPackageService = new FlixPackageService(repositoryOpsUrl: "/ops")
-        execController = LaunchConfigBuilder.noBaseDir().build().execController
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 

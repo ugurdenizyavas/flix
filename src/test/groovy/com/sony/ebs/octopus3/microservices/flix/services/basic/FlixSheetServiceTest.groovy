@@ -8,7 +8,9 @@ import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
@@ -18,24 +20,31 @@ import spock.util.concurrent.BlockingVariable
 class FlixSheetServiceTest {
 
     FlixSheetService flixSheetService
-    ExecController execController
     StubFor mockNingHttpClient, mockEanCodeProvider, mockFlixXmlBuilder
+
+    static ExecController execController
+
+    @BeforeClass
+    static void beforeClass() {
+        execController = LaunchConfigBuilder.noBaseDir().build().execController
+    }
+
+    @AfterClass
+    static void afterClass() {
+        if (execController) execController.close()
+    }
 
     @Before
     void before() {
-        execController = LaunchConfigBuilder.noBaseDir().build().execController
         flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file/:urn")
+
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockEanCodeProvider = new StubFor(EanCodeProvider)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
     }
 
-    @After
-    void after() {
-        if (execController) execController.close()
-    }
-
     void runFlow(String expected) {
+
         flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
         flixSheetService.eanCodeProvider = mockEanCodeProvider.proxyInstance()
         flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
@@ -97,8 +106,13 @@ class FlixSheetServiceTest {
 
     @Test
     void "read json error"() {
+        mockEanCodeProvider.demand.with {
+            getEanCode(1) {
+                rx.Observable.from("ea1")
+            }
+        }
         mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
+            doGet(1) {
                 throw new Exception()
             }
         }
@@ -107,9 +121,57 @@ class FlixSheetServiceTest {
 
     @Test
     void "parse json error"() {
+        mockEanCodeProvider.demand.with {
+            getEanCode(1) {
+                rx.Observable.from("ea1")
+            }
+        }
         mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
+            doGet(1) {
                 rx.Observable.from('invalid json')
+            }
+        }
+        runFlow("error")
+    }
+
+    @Test
+    void "building xml"() {
+        mockEanCodeProvider.demand.with {
+            getEanCode(1) {
+                rx.Observable.from("ea1")
+            }
+        }
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
+            }
+        }
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) {
+                throw new Exception()
+            }
+        }
+        runFlow("error")
+    }
+
+    @Test
+    void "saving xml"() {
+        mockEanCodeProvider.demand.with {
+            getEanCode(1) {
+                rx.Observable.from("ea1")
+            }
+        }
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
+            }
+            doPost(1) { String url, String data ->
+                throw new Exception()
+            }
+        }
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) { json ->
+                "some xml"
             }
         }
         runFlow("error")

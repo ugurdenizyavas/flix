@@ -1,12 +1,13 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
@@ -16,22 +17,27 @@ import spock.util.concurrent.BlockingVariable
 class EanCodeProviderTest {
 
     EanCodeProvider eanCodeProvider
-    ExecController execController
     StubFor mockNingHttpClient
+
+    static ExecController execController
+
+    @BeforeClass
+    static void beforeClass() {
+        execController = LaunchConfigBuilder.noBaseDir().build().execController
+    }
+
+    @AfterClass
+    static void afterClass() {
+        if (execController) execController.close()
+    }
 
     @Before
     void before() {
-        execController = LaunchConfigBuilder.noBaseDir().build().execController
         eanCodeProvider = new EanCodeProvider(execControl: execController.control, serviceUrl: "/ean/:product")
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    @After
-    void after() {
-        if (execController) execController.close()
-    }
-
-    void runGetEanCode(String expected) {
+    void runFlow(String expected) {
         eanCodeProvider.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
@@ -54,7 +60,7 @@ class EanCodeProviderTest {
                 rx.Observable.from('<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
             }
         }
-        runGetEanCode("4905524328974")
+        runFlow("4905524328974")
     }
 
     @Test
@@ -64,7 +70,7 @@ class EanCodeProviderTest {
                 rx.Observable.from("invalid xml")
             }
         }
-        runGetEanCode("error")
+        runFlow("error")
     }
 
 }

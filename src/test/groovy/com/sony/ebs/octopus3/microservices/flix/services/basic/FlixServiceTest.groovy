@@ -8,7 +8,9 @@ import com.sony.ebs.octopus3.microservices.flix.services.sub.DateParamsProvider
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
@@ -18,12 +20,22 @@ import spock.util.concurrent.BlockingVariable
 class FlixServiceTest {
 
     FlixService flixService
-    ExecController execController
     StubFor mockNingHttpClient, mockCategoryService, mockDateParamsProvider
+
+    static ExecController execController
+
+    @BeforeClass
+    static void beforeClass() {
+        execController = LaunchConfigBuilder.noBaseDir().build().execController
+    }
+
+    @AfterClass
+    static void afterClass() {
+        if (execController) execController.close()
+    }
 
     @Before
     void before() {
-        execController = LaunchConfigBuilder.noBaseDir().build().execController
         flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet",
                 repositoryDeltaUrl: "/delta/:urn", repositoryFileUrl: "/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
@@ -31,15 +43,25 @@ class FlixServiceTest {
         mockDateParamsProvider = new StubFor(DateParamsProvider)
     }
 
-    @After
-    void after() {
-        if (execController) execController.close()
+    def runFlow(flix, List expected) {
+        flixService.httpClient = mockNingHttpClient.proxyInstance()
+        flixService.categoryService = mockCategoryService.proxyInstance()
+        flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
+
+        def result = new BlockingVariable<List<String>>(5)
+        execController.start {
+            flixService.flixFlow(flix).doOnError({
+                result.set(["error"])
+            }).toList().subscribe({
+                result.set(it)
+            })
+        }
+        assert result.get().sort() == expected
     }
 
     @Test
-    void "flix flow"() {
+    void "success"() {
         def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
-
         mockNingHttpClient.demand.with {
             doGet(4) { String url ->
                 String result = ""
@@ -58,8 +80,8 @@ class FlixServiceTest {
         }
         mockCategoryService.demand.with {
             retrieveCategoryFeed(1) { f ->
-                assert f == flix
                 log.info "doCategoryFeed"
+                assert f == flix
                 rx.Observable.from("success for urn:category:score:en_gb")
             }
         }
@@ -73,18 +95,20 @@ class FlixServiceTest {
                 rx.Observable.from("done")
             }
         }
+        runFlow(flix, ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"])
+    }
 
-        flixService.httpClient = mockNingHttpClient.proxyInstance()
-        flixService.categoryService = mockCategoryService.proxyInstance()
-        flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
-
-        def result = new BlockingVariable<List<String>>(5)
-        execController.start {
-            flixService.flixFlow(flix).toList().subscribe {
-                result.set(it)
+    @Test
+    void "error getting delta"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                throw new Exception()
             }
         }
-        assert result.get().sort() == ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"]
+        mockDateParamsProvider.demand.with {
+            createDateParams(1) { rx.Observable.from("?dates") }
+        }
+        runFlow(new Flix(), ["error"])
     }
 
 }
