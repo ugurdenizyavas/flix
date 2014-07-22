@@ -35,6 +35,8 @@ class FlixPackageFlowHandler extends GroovyHandler {
             } else {
                 flixPackageService.packageFlow(flixPackage).subscribe({ result ->
                     log.info "$result"
+                }, { e ->
+                    log.error "error for $flixPackage", e
                 })
                 log.info "$flixPackage started"
                 response.status(202)
