@@ -56,7 +56,7 @@ class EanCodeProviderTest {
     void "success case"() {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
-                assert url == "/ean/a"
+                assert url == "/ean/A"
                 rx.Observable.from('<eancodes><eancode material="DSC-500" code="4905524328974"/></eancodes>')
             }
         }
