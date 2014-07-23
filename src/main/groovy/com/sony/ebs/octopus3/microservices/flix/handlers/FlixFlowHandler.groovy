@@ -32,7 +32,7 @@ class FlixFlowHandler extends GroovyHandler {
 
             List errors = validator.validateFlix(flix)
             if (errors) {
-                log.error "error for $flix : $errors"
+                log.error "error validating $flix : $errors"
                 response.status(400)
                 render json(status: 400, errors: errors, flix: flix)
             } else {
