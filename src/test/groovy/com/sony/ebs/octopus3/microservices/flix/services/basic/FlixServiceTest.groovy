@@ -7,7 +7,6 @@ import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.DateParamsProvider
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -51,6 +50,7 @@ class FlixServiceTest {
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
             flixService.flixFlow(flix).doOnError({
+                log.error "error", it
                 result.set(["error"])
             }).toList().subscribe({
                 result.set(it)
@@ -88,11 +88,11 @@ class FlixServiceTest {
         mockDateParamsProvider.demand.with {
             createDateParams(1) { f ->
                 assert f == flix
-                rx.Observable.from("?dates")
+                "?dates"
             }
             updateLastModified(1) { f ->
                 assert f == flix
-                rx.Observable.from("done")
+                "done"
             }
         }
         runFlow(flix, ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"])
@@ -106,7 +106,7 @@ class FlixServiceTest {
             }
         }
         mockDateParamsProvider.demand.with {
-            createDateParams(1) { rx.Observable.from("?dates") }
+            createDateParams(1) { "?dates" }
         }
         runFlow(new Flix(), ["error"])
     }

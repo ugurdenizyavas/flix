@@ -26,17 +26,23 @@ class EanCodeProvider {
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
+    String getEanCode(URN urn, String feed) {
+        log.info "parsing eanCode xml"
+        def xml = new XmlSlurper().parseText(feed)
+        def eanCode = xml.eancode?.@code?.toString()
+        log.info "ean code for $urn is $eanCode"
+        eanCode
+    }
+
     rx.Observable<String> getEanCode(URN urn) {
         def url = serviceUrl.replace(":product", urn.values.last()?.toUpperCase())
         log.info "ean code service url for $urn is $url"
         rx.Observable.from("starting").flatMap({
             httpClient.doGet(url)
-        }).map({
-            log.info "parsing eanCode xml"
-            def xml = new XmlSlurper().parseText(it)
-            def eanCode = xml.eancode?.@code?.toString()
-            log.info "ean code for $urn is $eanCode"
-            eanCode
+        }).flatMap({ String feed ->
+            observe(execControl.blocking {
+                getEanCode(urn, feed)
+            })
         })
     }
 }

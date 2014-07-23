@@ -44,10 +44,11 @@ class CategoryServiceTest {
 
         def result = new BlockingVariable<String>(5)
         execController.start {
-            categoryService.retrieveCategoryFeed(flix).doOnError({
-                result.set("error")
-            }).subscribe({
+            categoryService.retrieveCategoryFeed(flix).subscribe({
                 result.set(it)
+            }, {
+                log.error "error", it
+                result.set("error")
             })
         }
         assert result.get() == expected

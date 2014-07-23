@@ -5,17 +5,13 @@ import com.sony.ebs.octopus3.commons.file.FileUtils
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import ratpack.exec.ExecControl
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.BasicFileAttributes
-
-import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
 @Service
@@ -23,10 +19,6 @@ public class DateParamsProvider {
 
     @Value('${octopus3.flix.storageFolder}')
     String storageFolder
-
-    @Autowired
-    @org.springframework.context.annotation.Lazy
-    ExecControl execControl
 
     private Path createLastModifiedPath(Flix flix) {
         Paths.get("$storageFolder/${flix?.lastModifiedUrn?.toPath()}")
@@ -44,34 +36,30 @@ public class DateParamsProvider {
         }
     }
 
-    rx.Observable<String> updateLastModified(Flix flix) {
-        observe(execControl.blocking {
-            def path = createLastModifiedPath(flix)
-            log.info "starting update last modified time for $flix"
-            FileUtils.writeFile(path, "".bytes, true, true)
-            def lmt = getLastModifiedTime(path)
-            log.info "finished update last modified time for $flix as $lmt"
-            lmt
-        })
+    String updateLastModified(Flix flix) {
+        def path = createLastModifiedPath(flix)
+        log.info "starting update last modified time for $flix"
+        FileUtils.writeFile(path, "".bytes, true, true)
+        def lmt = getLastModifiedTime(path)
+        log.info "finished update last modified time for $flix as $lmt"
+        lmt
     }
 
-    rx.Observable<String> createDateParams(Flix flix) {
-        observe(execControl.blocking {
-            def sb = new StringBuilder()
+    String createDateParams(Flix flix) {
+        def sb = new StringBuilder()
 
-            def sdate = flix.sdate
-            if (!sdate) {
-                sdate = getLastModifiedTime(createLastModifiedPath(flix))
-            }
-            if (sdate) {
-                sb.append("?sdate=").append(URLEncoder.encode(sdate, "UTF-8"))
-            }
-            if (flix.edate) {
-                sb.size() == 0 ? sb.append("?") : "&"
-                sb.append("edate=").append(URLEncoder.encode(flix.edate, "UTF-8"))
-            }
-            sb.toString()
-        })
+        def sdate = flix.sdate
+        if (!sdate) {
+            sdate = getLastModifiedTime(createLastModifiedPath(flix))
+        }
+        if (sdate) {
+            sb.append("?sdate=").append(URLEncoder.encode(sdate, "UTF-8"))
+        }
+        if (flix.edate) {
+            sb.size() == 0 ? sb.append("?") : "&"
+            sb.append("edate=").append(URLEncoder.encode(flix.edate, "UTF-8"))
+        }
+        sb.toString()
     }
 
 }

@@ -33,7 +33,7 @@ class FlixPackageServiceTest {
 
     @Before
     void before() {
-        flixPackageService = new FlixPackageService(repositoryOpsUrl: "/ops")
+        flixPackageService = new FlixPackageService(repositoryOpsUrl: "/ops", execControl: execController.control)
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
@@ -43,11 +43,11 @@ class FlixPackageServiceTest {
 
         def result = new BlockingVariable<String>(5)
         execController.start {
-            flixPackageService.packageFlow(flixPackage)
-                    .doOnError({
-                result.set("error")
-            }).subscribe({
+            flixPackageService.packageFlow(flixPackage).subscribe({
                 result.set(it)
+            }, {
+                log.error "error", it
+                result.set("error")
             })
         }
         assert result.get() == expected

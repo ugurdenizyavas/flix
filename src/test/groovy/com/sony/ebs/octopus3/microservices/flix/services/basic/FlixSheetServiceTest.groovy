@@ -53,11 +53,11 @@ class FlixSheetServiceTest {
 
         def result = new BlockingVariable<String>(5)
         execController.start {
-            flixSheetService.sheetFlow(flixSheet)
-                    .doOnError({
-                result.set("error")
-            }).subscribe({
+            flixSheetService.sheetFlow(flixSheet).subscribe({
                 result.set(it)
+            }, {
+                log.error "error", it
+                result.set("error")
             })
         }
         assert result.get() == expected

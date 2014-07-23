@@ -18,6 +18,10 @@ import static ratpack.rx.RxRatpack.observe
 @Service
 class FlixService {
 
+    @Autowired
+    @org.springframework.context.annotation.Lazy
+    ExecControl execControl
+
     @Value('${octopus3.flix.repositoryDeltaUrl}')
     String repositoryDeltaUrl
 
@@ -33,10 +37,6 @@ class FlixService {
 
     @Autowired
     CategoryService categoryService
-
-    @Autowired
-    @org.springframework.context.annotation.Lazy
-    ExecControl execControl
 
     @Autowired
     DateParamsProvider dateParamsProvider
@@ -57,20 +57,26 @@ class FlixService {
 
         Map jsonResult
         rx.Observable.from("starting").flatMap({
-            dateParamsProvider.createDateParams(flix)
+            observe(execControl.blocking {
+                dateParamsProvider.createDateParams(flix)
+            })
         }).flatMap({
             def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
-        }).map({
-            log.info "parsing delta json"
-            new JsonSlurper().parseText(it)
+        }).flatMap({ String deltaFeed ->
+            observe(execControl.blocking({
+                log.info "parsing delta json"
+                new JsonSlurper().parseText(deltaFeed)
+            }))
         }).flatMap({
             jsonResult = it
             def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).flatMap({
-            dateParamsProvider.updateLastModified(flix)
+            observe(execControl.blocking {
+                dateParamsProvider.updateLastModified(flix)
+            })
         }).flatMap({
             List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ratpack.exec.ExecControl
 
+import static ratpack.rx.RxRatpack.observe
+
 @Slf4j
 @Service
 class FlixSheetService {
@@ -39,24 +41,27 @@ class FlixSheetService {
             eanCodeProvider.getEanCode(flixSheet.urn)
         }).flatMap({
             eanCode = it
-            log.debug "eancode is $eanCode"
             log.info "reading json"
             def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
-        }).map({
-            log.info "parsing json"
-            def json = new JsonSlurper().parseText(it)
-            json.eanCode = eanCode ?: ""
-            json
-        }).map({
-            log.debug "json is $it"
-            log.info "building xml"
-            flixXmlBuilder.buildXml(it)
-        }).flatMap({
-            log.debug "xml is $it"
+        }).flatMap({ String feed ->
+            observe(execControl.blocking {
+                log.info "parsing json"
+                def json = new JsonSlurper().parseText(feed)
+                json.eanCode = eanCode ?: ""
+                json
+            })
+        }).flatMap({ json ->
+            observe(execControl.blocking {
+                log.debug "json is $json"
+                log.info "building xml"
+                flixXmlBuilder.buildXml(json)
+            })
+        }).flatMap({ String xml ->
+            log.debug "xml is $xml"
             log.info "saving xml"
             def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.sheetUrn.toString())
-            httpClient.doPost(saveUrl, it)
+            httpClient.doPost(saveUrl, xml)
         }).map({
             log.debug "save xml result is $it"
             "success for $flixSheet"

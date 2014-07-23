@@ -42,11 +42,11 @@ class EanCodeProviderTest {
 
         def result = new BlockingVariable<String>(5)
         execController.start {
-            eanCodeProvider.getEanCode(new URNImpl("urn:flix:a"))
-                    .doOnError({
-                result.set("error")
-            }).subscribe({
+            eanCodeProvider.getEanCode(new URNImpl("urn:flix:a")).subscribe({
                 result.set(it)
+            }, {
+                log.error "error", it
+                result.set("error")
             })
         }
         assert result.get() == expected
