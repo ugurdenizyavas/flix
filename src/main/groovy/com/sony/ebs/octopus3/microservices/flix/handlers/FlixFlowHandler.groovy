@@ -39,7 +39,7 @@ class FlixFlowHandler extends GroovyHandler {
                 flixService.flixFlow(flix).subscribe({ result ->
                     log.info "$result"
                 }, { e ->
-                    log.error "error for $flix", e
+                    log.error "error in $flix", e
                 })
                 log.info "$flix started"
                 response.status(202)
