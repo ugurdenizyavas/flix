@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
-import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -30,7 +30,8 @@ class FlixSheetService {
     ExecControl execControl
 
     @Autowired
-    EanCodeProvider eanCodeProvider
+    @Qualifier("eanCodeEnhancer")
+    EanCodeEnhancer eanCodeEnhancer
 
     @Autowired
     FlixXmlBuilder flixXmlBuilder
@@ -38,9 +39,13 @@ class FlixSheetService {
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
         def eanCode
         rx.Observable.from("starting").flatMap({
-            eanCodeProvider.getEanCode(flixSheet.urn)
+            eanCodeEnhancer.enhance([sku: flixSheet.urn.values.last()])
+        }).filter({
+            if (it.eanCode) {
+                eanCode = it.eanCode
+            }
+            it.eanCode as boolean
         }).flatMap({
-            eanCode = it
             log.info "reading json"
             def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
@@ -48,7 +53,7 @@ class FlixSheetService {
             observe(execControl.blocking {
                 log.info "parsing json"
                 def json = new JsonSlurper().parseText(feed)
-                json.eanCode = eanCode ?: ""
+                json.eanCode = eanCode
                 json
             })
         }).flatMap({ json ->

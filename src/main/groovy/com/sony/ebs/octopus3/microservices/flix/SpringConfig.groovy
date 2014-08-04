@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -46,5 +47,16 @@ class SpringConfig {
 
     @Value('${octopus3.flix.local.proxy.nonProxyHosts}')
     String localNonProxyHosts
+
+    @Value('${octopus3.flix.eanCodeUrl}')
+    String eanCodeUrl
+
+    @Bean
+    @Qualifier("eanCodeEnhancer")
+    @org.springframework.context.annotation.Lazy
+    public EanCodeEnhancer eanCodeEnhancer() {
+        new EanCodeEnhancer(execControl: execControl, serviceUrl: eanCodeUrl, httpClient: localHttpClient())
+    }
+
 }
 
