@@ -1,10 +1,10 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
-import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -43,12 +43,16 @@ class CategoryServiceTest {
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
+        boolean valueSet = false
         execController.start {
             categoryService.retrieveCategoryFeed(flix).subscribe({
+                valueSet = true
                 result.set(it)
             }, {
                 log.error "error", it
                 result.set("error")
+            }, {
+                if (!valueSet)result.set("outOfFlow")
             })
         }
         assert result.get() == expected
@@ -57,23 +61,48 @@ class CategoryServiceTest {
     @Test
     void "get category feed"() {
         mockNingHttpClient.demand.with {
-            doGetAsString(1) { String url ->
+            doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
-                rx.Observable.from("xxx")
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: "xxx"))
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
                 assert data == "xxx"
-                rx.Observable.from("done")
+                rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
         }
         runFlow("success for urn:flixmedia:score:en_gb:category")
     }
 
     @Test
-    void "error in get"() {
+    void "category not found"() {
         mockNingHttpClient.demand.with {
-            doGetAsString(1) {
+            doGet(1) {
+                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+            }
+        }
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        runFlow("outOfFlow")
+    }
+
+    @Test
+    void "could not save"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: "xxx"))
+            }
+            doPost(1) { url, data ->
+                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+            }
+        }
+        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        runFlow("outOfFlow")
+    }
+
+    @Test
+    void "exception in get"() {
+        mockNingHttpClient.demand.with {
+            doGet(1) {
                 throw new Exception("error in get")
             }
         }
@@ -81,17 +110,4 @@ class CategoryServiceTest {
         runFlow("error")
     }
 
-    @Test
-    void "error in post"() {
-        mockNingHttpClient.demand.with {
-            doGetAsString(1) {
-                rx.Observable.from("xxx")
-            }
-            doPost(1) { url, data ->
-                throw new Exception("error in post")
-            }
-        }
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        runFlow("error")
-    }
 }

@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
+import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
@@ -44,10 +45,12 @@ class FlixService {
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
         log.info "importing sheet"
-        def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
+        def importUrl = "$sheetUrl/$sheetUrn?processId=${flix?.processId?.id}"
 
         rx.Observable.from("starting").flatMap({
-            httpClient.doGetAsString(importUrl)
+            httpClient.doGet(importUrl)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
         }).map({
             log.info "finished $importUrl"
             "success for $sheetUrn"
@@ -64,16 +67,20 @@ class FlixService {
         }).flatMap({
             def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
-            httpClient.doGetAsString(deltaUrl)
-        }).flatMap({ String deltaFeed ->
+            httpClient.doGet(deltaUrl)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
+        }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                new JsonSlurper().parseText(deltaFeed)
+                new JsonSlurper().parseText(response.responseBody)
             }))
         }).flatMap({
             jsonResult = it
             def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
         }).flatMap({
             observe(execControl.blocking {
                 dateParamsProvider.updateLastModified(flix)

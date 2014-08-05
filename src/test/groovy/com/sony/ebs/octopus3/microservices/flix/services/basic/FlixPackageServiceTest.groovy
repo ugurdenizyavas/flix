@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.json.JsonSlurper
@@ -42,12 +43,16 @@ class FlixPackageServiceTest {
         flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
+        boolean valueSet = false
         execController.start {
             flixPackageService.packageFlow(flixPackage).subscribe({
+                valueSet = true
                 result.set(it)
             }, {
                 log.error "error", it
                 result.set("error")
+            }, {
+                if (!valueSet)result.set("outOfFlow")
             })
         }
         assert result.get() == expected
@@ -58,20 +63,20 @@ class FlixPackageServiceTest {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, String data ->
                 assert url == "/ops"
-                rx.Observable.from("xxx")
+                rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
         }
         runFlow("success for FlixPackage(publication:SCORE, locale:fr_FR)")
     }
 
     @Test
-    void "package flow error"() {
+    void "error calling ops service"() {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, String data ->
-                throw new Exception("error post")
+                rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
-        runFlow("error")
+        runFlow("outOfFlow")
     }
 
     @Test

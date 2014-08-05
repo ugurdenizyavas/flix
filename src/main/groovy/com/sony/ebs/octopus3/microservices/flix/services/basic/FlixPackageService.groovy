@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
+import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.util.logging.Slf4j
@@ -56,6 +57,8 @@ class FlixPackageService {
             })
         }).flatMap({
             httpClient.doPost(repositoryOpsUrl, it)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
         }).map({
             "success for $flixPackage"
         })

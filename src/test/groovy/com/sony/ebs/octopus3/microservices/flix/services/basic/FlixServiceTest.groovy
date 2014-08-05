@@ -1,10 +1,12 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.DateParamsProvider
+import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.AfterClass
@@ -18,8 +20,11 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class FlixServiceTest {
 
+    final static String DELTA_FEED = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
+
     FlixService flixService
-    StubFor mockNingHttpClient, mockCategoryService, mockDateParamsProvider
+    StubFor mockCategoryService, mockDateParamsProvider
+    MockFor mockNingHttpClient
 
     static ExecController execController
 
@@ -37,7 +42,7 @@ class FlixServiceTest {
     void before() {
         flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet",
                 repositoryDeltaUrl: "/delta/:urn", repositoryFileUrl: "/file/:urn")
-        mockNingHttpClient = new StubFor(NingHttpClient)
+        mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDateParamsProvider = new StubFor(DateParamsProvider)
     }
@@ -49,11 +54,11 @@ class FlixServiceTest {
 
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
-            flixService.flixFlow(flix).doOnError({
+            flixService.flixFlow(flix).toList().subscribe({
+                result.set(it)
+            }, {
                 log.error "error", it
                 result.set(["error"])
-            }).toList().subscribe({
-                result.set(it)
             })
         }
         assert result.get().sort() == expected
@@ -63,19 +68,16 @@ class FlixServiceTest {
     void "success"() {
         def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
         mockNingHttpClient.demand.with {
-            doGetAsString(4) { String url ->
-                String result = ""
-                if (url.startsWith("/delta")) {
-                    result = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
-                    assert url == "/delta/urn:global_sku:score:en_gb?dates"
-                }
-                if (url.startsWith("/flix/sheet")) result = "$url"
-                log.info "getLocal url $url"
-                rx.Observable.from(result)
+            doGet(1) { String url ->
+                assert url == "/delta/urn:global_sku:score:en_gb?dates"
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
             }
             doDelete(1) { String url ->
                 assert url == "/file/urn:flixmedia:score:en_gb"
-                rx.Observable.from("deleted")
+                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+            }
+            doGet(3) { String url ->
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: url))
             }
         }
         mockCategoryService.demand.with {
@@ -100,15 +102,51 @@ class FlixServiceTest {
 
     @Test
     void "error getting delta"() {
-        mockNingHttpClient.demand.with {
-            doGetAsString(1) {
-                throw new Exception()
-            }
-        }
         mockDateParamsProvider.demand.with {
             createDateParams(1) { "?dates" }
         }
-        runFlow(new Flix(), ["error"])
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+            }
+        }
+        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), [])
+    }
+
+    @Test
+    void "error deleting existing feeds"() {
+        mockDateParamsProvider.demand.with {
+            createDateParams(1) { "?dates" }
+        }
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+            }
+            doDelete(1) { String url ->
+                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+            }
+        }
+        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), [])
+    }
+
+
+    @Test
+    void "error updating last modified time"() {
+        mockDateParamsProvider.demand.with {
+            createDateParams(1) { "?dates" }
+            updateLastModified(1) {
+                throw new Exception("error updating last modified time")
+            }
+        }
+        mockNingHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+            }
+            doDelete(1) { String url ->
+                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+            }
+        }
+        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), ["error"])
     }
 
 }

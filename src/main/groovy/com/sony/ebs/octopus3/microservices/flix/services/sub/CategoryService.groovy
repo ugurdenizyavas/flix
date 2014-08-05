@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
+import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
@@ -29,12 +30,16 @@ class CategoryService {
         rx.Observable.from("starting").flatMap({
             def categoryReadUrl = categoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
             log.info "category service url for $flix is $categoryReadUrl"
-            httpClient.doGetAsString(categoryReadUrl)
-        }).flatMap({ categoryXml ->
+            httpClient.doGet(categoryReadUrl)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
+        }).flatMap({ Response response ->
             def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrnStr)
             log.info "category save url for $flix is $categorySaveUrl"
 
-            httpClient.doPost(categorySaveUrl, categoryXml)
+            httpClient.doPost(categorySaveUrl, response.responseBody)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
         }).map({
             "success for $categoryUrnStr"
         })

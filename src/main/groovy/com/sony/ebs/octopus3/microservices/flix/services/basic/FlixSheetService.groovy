@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
+import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
@@ -49,11 +50,13 @@ class FlixSheetService {
         }).flatMap({
             log.info "reading json"
             def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
-            httpClient.doGetAsString(readUrl)
-        }).flatMap({ String feed ->
+            httpClient.doGet(readUrl)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
+        }).flatMap({ Response response ->
             observe(execControl.blocking {
                 log.info "parsing json"
-                def json = new JsonSlurper().parseText(feed)
+                def json = new JsonSlurper().parseText(response.responseBody)
                 json.eanCode = eanCode
                 json
             })
@@ -68,6 +71,8 @@ class FlixSheetService {
             log.info "saving xml"
             def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.sheetUrn.toString())
             httpClient.doPost(saveUrl, xml)
+        }).filter({ Response response ->
+            NingHttpClient.isSuccess(response)
         }).map({
             log.debug "save xml result is $it"
             "success for $flixSheet"
