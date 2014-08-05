@@ -16,6 +16,7 @@ import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
 @Service
+@org.springframework.context.annotation.Lazy
 class FlixSheetService {
 
     @Value('${octopus3.flix.repositoryFileUrl}')
@@ -41,14 +42,14 @@ class FlixSheetService {
         rx.Observable.from("starting").flatMap({
             eanCodeEnhancer.enhance([sku: flixSheet.urn.values.last()])
         }).filter({
-            if (it.eanCode) {
-                eanCode = it.eanCode
+            if (it?.eanCode) {
+                eanCode = it?.eanCode
             }
-            it.eanCode as boolean
+            it?.eanCode as boolean
         }).flatMap({
             log.info "reading json"
             def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
-            httpClient.doGet(readUrl)
+            httpClient.doGetAsString(readUrl)
         }).flatMap({ String feed ->
             observe(execControl.blocking {
                 log.info "parsing json"

@@ -68,7 +68,7 @@ class FlixSheetServiceTest {
     @Test
     void "success"() {
         mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
+            doGetAsString(1) { String url ->
                 assert url == "/repository/file/urn:flix:score:en_gb:a"
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
@@ -116,7 +116,7 @@ class FlixSheetServiceTest {
             }
         }
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 throw new Exception()
             }
         }
@@ -132,7 +132,7 @@ class FlixSheetServiceTest {
             }
         }
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 rx.Observable.from('invalid json')
             }
         }
@@ -148,7 +148,7 @@ class FlixSheetServiceTest {
             }
         }
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
         }
@@ -169,7 +169,7 @@ class FlixSheetServiceTest {
             }
         }
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 rx.Observable.from('{"a":"1", "b": { "c" : ["2","3"]}}')
             }
             doPost(1) { String url, String data ->

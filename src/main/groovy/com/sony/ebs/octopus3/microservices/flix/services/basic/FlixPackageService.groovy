@@ -13,6 +13,7 @@ import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
 @Service
+@org.springframework.context.annotation.Lazy
 class FlixPackageService {
 
     @Autowired

@@ -29,6 +29,8 @@ ratpack {
         bind ClientErrorHandler, new ErrorHandler()
         bind ServerErrorHandler, new ErrorHandler()
         init {
+            RxRatpack.initialize()
+
             AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class)
             ctx.beanFactory.registerSingleton "launchConfig", launchConfig
             ctx.beanFactory.registerSingleton "execControl", launchConfig.execController.control
@@ -37,8 +39,6 @@ ratpack {
             flixSheetFlowHandler = ctx.getBean(FlixSheetFlowHandler.class)
             flixPackageFlowHandler = ctx.getBean(FlixPackageFlowHandler.class)
             healthCheckHandler = new HealthCheckHandler(monitoringService: new MonitoringService())
-
-            RxRatpack.initialize()
         }
     }
 

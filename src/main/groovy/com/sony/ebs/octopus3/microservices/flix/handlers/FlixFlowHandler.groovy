@@ -14,6 +14,7 @@ import static ratpack.jackson.Jackson.json
 
 @Slf4j
 @Component
+@org.springframework.context.annotation.Lazy
 class FlixFlowHandler extends GroovyHandler {
 
     @Autowired

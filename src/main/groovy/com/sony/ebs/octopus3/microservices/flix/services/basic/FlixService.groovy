@@ -16,6 +16,7 @@ import static ratpack.rx.RxRatpack.observe
 
 @Slf4j
 @Service
+@org.springframework.context.annotation.Lazy
 class FlixService {
 
     @Autowired
@@ -46,7 +47,7 @@ class FlixService {
         def importUrl = "$sheetUrl/$sheetUrn?processId=$flix.processId.id"
 
         rx.Observable.from("starting").flatMap({
-            httpClient.doGet(importUrl)
+            httpClient.doGetAsString(importUrl)
         }).map({
             log.info "finished $importUrl"
             "success for $sheetUrn"
@@ -63,7 +64,7 @@ class FlixService {
         }).flatMap({
             def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
-            httpClient.doGet(deltaUrl)
+            httpClient.doGetAsString(deltaUrl)
         }).flatMap({ String deltaFeed ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
@@ -78,6 +79,7 @@ class FlixService {
                 dateParamsProvider.updateLastModified(flix)
             })
         }).flatMap({
+            log.info "${jsonResult?.results?.size()} products in delta for $flix"
             List list = jsonResult?.results?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }

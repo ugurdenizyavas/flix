@@ -63,7 +63,7 @@ class FlixServiceTest {
     void "success"() {
         def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
         mockNingHttpClient.demand.with {
-            doGet(4) { String url ->
+            doGetAsString(4) { String url ->
                 String result = ""
                 if (url.startsWith("/delta")) {
                     result = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
@@ -101,7 +101,7 @@ class FlixServiceTest {
     @Test
     void "error getting delta"() {
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 throw new Exception()
             }
         }

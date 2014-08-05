@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 import ratpack.exec.ExecControl
+import ratpack.launch.LaunchConfig
 
 @Configuration
 @ComponentScan(value = "com.sony.ebs.octopus3.microservices.flix")
@@ -26,11 +27,15 @@ class SpringConfig {
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
+    @Autowired
+    @org.springframework.context.annotation.Lazy
+    LaunchConfig launchConfig
+
     @Bean
     @Qualifier("localHttpClient")
     @org.springframework.context.annotation.Lazy
     public NingHttpClient localHttpClient() {
-        new NingHttpClient(execControl, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, localNonProxyHosts, "", "")
+        new NingHttpClient(launchConfig, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, localNonProxyHosts, "", "")
     }
 
     @Value('${octopus3.flix.local.proxy.host}')

@@ -57,7 +57,7 @@ class CategoryServiceTest {
     @Test
     void "get category feed"() {
         mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
+            doGetAsString(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
                 rx.Observable.from("xxx")
             }
@@ -73,7 +73,7 @@ class CategoryServiceTest {
     @Test
     void "error in get"() {
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 throw new Exception("error in get")
             }
         }
@@ -84,7 +84,7 @@ class CategoryServiceTest {
     @Test
     void "error in post"() {
         mockNingHttpClient.demand.with {
-            doGet(1) {
+            doGetAsString(1) {
                 rx.Observable.from("xxx")
             }
             doPost(1) { url, data ->
