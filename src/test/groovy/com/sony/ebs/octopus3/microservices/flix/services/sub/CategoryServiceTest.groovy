@@ -16,6 +16,8 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class CategoryServiceTest {
 
+    final static String CATEGORY_FEED = "<categories/>"
+
     CategoryService categoryService
     StubFor mockNingHttpClient
 
@@ -33,12 +35,14 @@ class CategoryServiceTest {
 
     @Before
     void before() {
-        categoryService = new CategoryService(octopusCategoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
+        categoryService = new CategoryService(
+                execControl: execController.control,
+                octopusCategoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
                 repositoryFileServiceUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runFlow(String expected) {
+    def runRetrieveCategoryFeed() {
         def flix = new Flix(publication: "SCORE", locale: "en_GB")
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
@@ -55,7 +59,7 @@ class CategoryServiceTest {
                 if (!valueSet)result.set("outOfFlow")
             })
         }
-        assert result.get() == expected
+        result.get()
     }
 
     @Test
@@ -63,15 +67,15 @@ class CategoryServiceTest {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: "xxx"))
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
-                assert data == "xxx"
+                assert data == CATEGORY_FEED
                 rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
         }
-        runFlow("success for urn:flixmedia:score:en_gb:category")
+        assert runRetrieveCategoryFeed() == CATEGORY_FEED
     }
 
     @Test
@@ -82,21 +86,21 @@ class CategoryServiceTest {
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        runFlow("outOfFlow")
+        assert runRetrieveCategoryFeed() == "outOfFlow"
     }
 
     @Test
     void "could not save"() {
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: "xxx"))
+                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
             }
             doPost(1) { url, data ->
                 rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        runFlow("outOfFlow")
+        assert runRetrieveCategoryFeed() == "outOfFlow"
     }
 
     @Test
@@ -107,7 +111,61 @@ class CategoryServiceTest {
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        runFlow("error")
+        assert runRetrieveCategoryFeed() == "error"
+    }
+
+    def runFilterForCategory(List products, String categoryXml) {
+        def result = new BlockingVariable<List>(5)
+        boolean valueSet = false
+        execController.start {
+            categoryService.filterForCategory(products, categoryXml).subscribe({
+                valueSet = true
+                result.set(it)
+            }, {
+                log.error "error", it
+                result.set("error")
+            }, {
+                if (!valueSet)result.set("outOfFlow")
+            })
+        }
+        result.get()
+    }
+
+    @Test
+    void "filter for category"() {
+        def xml = """
+<ProductHierarchy name="category" publication="SCORE" locale="en_GB">
+    <node>
+        <name><![CDATA[SCORE]]></name>
+        <displayName><![CDATA[SCORE]]></displayName>
+        <nodes>
+            <node>
+                <name><![CDATA[TVH TV and Home Cinema]]></name>
+                <displayName><![CDATA[TV & home cinema]]></displayName>
+                <nodes>
+                    <node>
+                        <name><![CDATA[HCS Home Cinema Projectors]]></name>
+                        <displayName><![CDATA[Projectors]]></displayName>
+                        <products>
+                            <product><![CDATA[a1]]></product>
+                            <product><![CDATA[a2]]></product>
+                        </products>
+                    </node>
+                    <node>
+                        <name><![CDATA[HCS Home Cinema Projectors]]></name>
+                        <displayName><![CDATA[Projectors]]></displayName>
+                        <products>
+                            <product><![CDATA[c1]]></product>
+                            <product><![CDATA[c2]]></product>
+                        </products>
+                    </node>
+                </nodes>
+            </node>
+        </nodes>
+    </node>
+</ProductHierarchy>
+"""
+        assert runFilterForCategory(["urn:flix:a1", "urn:flix:b", "urn:flix:c2"], xml) == ["urn:flix:a1", "urn:flix:c2"]
     }
 
 }

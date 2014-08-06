@@ -45,7 +45,7 @@ class FlixService {
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
 
-        def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) +  "?processId=${flix?.processId?.id}"
+        def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) + "?processId=${flix?.processId?.id}"
 
         rx.Observable.from("starting").flatMap({
             httpClient.doGet(importUrl)
@@ -88,11 +88,14 @@ class FlixService {
                 dateParamsProvider.updateLastModified(flix)
             })
         }).flatMap({
-            log.info "${jsonResult?.results?.size()} products in delta for $flix"
-            List list = jsonResult?.results?.collect { String sheetUrn ->
+            categoryService.retrieveCategoryFeed(flix)
+        }).flatMap({ String categoryFeed ->
+            categoryService.filterForCategory(jsonResult?.results, categoryFeed)
+        }).flatMap({ List productUrns ->
+            log.info "${productUrns?.size()} products in delta for $flix"
+            List list = productUrns?.collect { String sheetUrn ->
                 singleSheet(flix, sheetUrn)
             }
-            list << categoryService.retrieveCategoryFeed(flix)
             rx.Observable.merge(list, 30)
         })
     }

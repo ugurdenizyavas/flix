@@ -20,7 +20,9 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class FlixServiceTest {
 
-    final static String DELTA_FEED = '{ "results" : ["urn:global_sku:score:en_gb:a", "urn:global_sku:score:en_gb:b", "urn:global_sku:score:en_gb:c"]}'
+    final
+    static String DELTA_FEED = '{ "results" : ["urn:global_sku:score:en_gb:a", "urn:global_sku:score:en_gb:b", "urn:global_sku:score:en_gb:c"]}'
+    final static String CATEGORY_FEED = "<categories/>"
 
     FlixService flixService
     StubFor mockCategoryService, mockDateParamsProvider
@@ -47,7 +49,7 @@ class FlixServiceTest {
         mockDateParamsProvider = new StubFor(DateParamsProvider)
     }
 
-    def runFlow(flix, List expected) {
+    def runFlow(flix) {
         flixService.httpClient = mockNingHttpClient.proxyInstance()
         flixService.categoryService = mockCategoryService.proxyInstance()
         flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
@@ -61,7 +63,7 @@ class FlixServiceTest {
                 result.set(["error"])
             })
         }
-        assert result.get().sort() == expected
+        result.get()
     }
 
     @Test
@@ -85,7 +87,11 @@ class FlixServiceTest {
             retrieveCategoryFeed(1) { f ->
                 log.info "doCategoryFeed"
                 assert f == flix
-                rx.Observable.from("success for urn:category:score:en_gb")
+                rx.Observable.from(CATEGORY_FEED)
+            }
+            filterForCategory(1) { List productUrns, categoryFeed ->
+                log.info "filterForCategory"
+                rx.Observable.just(productUrns - productUrns.last())
             }
         }
         mockDateParamsProvider.demand.with {
@@ -98,7 +104,7 @@ class FlixServiceTest {
                 "done"
             }
         }
-        runFlow(flix, ["success for urn:category:score:en_gb", "success for urn:global_sku:score:en_gb:a", "success for urn:global_sku:score:en_gb:b", "success for urn:global_sku:score:en_gb:c"])
+        assert runFlow(flix)?.sort() == ["success for urn:global_sku:score:en_gb:a", "success for urn:global_sku:score:en_gb:b"]
     }
 
     @Test
@@ -111,7 +117,7 @@ class FlixServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
-        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), [])
+        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
     }
 
     @Test
@@ -127,7 +133,7 @@ class FlixServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
-        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), [])
+        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
     }
 
 
@@ -147,7 +153,7 @@ class FlixServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
         }
-        runFlow(new Flix(publication: "SCORE", locale: "en_GB"), ["error"])
+        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == ["error"]
     }
 
 }
