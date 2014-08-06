@@ -52,8 +52,10 @@ class FlixService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
         }).map({
-            log.info "finished $importUrl"
             "success for $sheetUrn"
+        }).onErrorReturn({
+            log.error "error for $sheetUrn", it
+            "error for $sheetUrn"
         })
     }
 
