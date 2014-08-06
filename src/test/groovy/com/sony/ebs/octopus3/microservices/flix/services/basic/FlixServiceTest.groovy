@@ -20,7 +20,7 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class FlixServiceTest {
 
-    final static String DELTA_FEED = '{ "results" : ["urn:flix:a", "urn:flix:b", "urn:flix:c"]}'
+    final static String DELTA_FEED = '{ "results" : ["urn:global_sku:score:en_gb:a", "urn:global_sku:score:en_gb:b", "urn:global_sku:score:en_gb:c"]}'
 
     FlixService flixService
     StubFor mockCategoryService, mockDateParamsProvider
@@ -40,7 +40,7 @@ class FlixServiceTest {
 
     @Before
     void before() {
-        flixService = new FlixService(execControl: execController.control, flixSheetServiceUrl: "/flix/sheet",
+        flixService = new FlixService(execControl: execController.control, flixSheetServiceUrl: "/flix/sheet/:urn",
                 repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
@@ -77,6 +77,7 @@ class FlixServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
             doGet(3) { String url ->
+                assert url.startsWith("/flix/sheet/urn:global_sku:score:en_gb")
                 rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: url))
             }
         }
@@ -97,7 +98,7 @@ class FlixServiceTest {
                 "done"
             }
         }
-        runFlow(flix, ["success for urn:category:score:en_gb", "success for urn:flix:a", "success for urn:flix:b", "success for urn:flix:c"])
+        runFlow(flix, ["success for urn:category:score:en_gb", "success for urn:global_sku:score:en_gb:a", "success for urn:global_sku:score:en_gb:b", "success for urn:global_sku:score:en_gb:c"])
     }
 
     @Test
