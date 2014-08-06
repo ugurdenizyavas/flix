@@ -38,7 +38,7 @@ class FlixPackageServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    void runFlow(String expected) {
+    def runFlow() {
         FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
         flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
 
@@ -55,7 +55,7 @@ class FlixPackageServiceTest {
                 if (!valueSet)result.set("outOfFlow")
             })
         }
-        assert result.get() == expected
+        result.get()
     }
 
     @Test
@@ -66,7 +66,7 @@ class FlixPackageServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 200))
             }
         }
-        runFlow("success for FlixPackage(publication:SCORE, locale:fr_FR)")
+        assert runFlow() == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
     }
 
     @Test
@@ -76,7 +76,7 @@ class FlixPackageServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
-        runFlow("outOfFlow")
+        assert runFlow() == "outOfFlow"
     }
 
     @Test

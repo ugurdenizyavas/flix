@@ -44,8 +44,7 @@ class FlixSheetServiceTest {
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
     }
 
-    void runFlow(String expected) {
-
+    def runFlow() {
         flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
         flixSheetService.eanCodeEnhancer = mockEanCodeEnhancer.proxyInstance()
         flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
@@ -62,10 +61,10 @@ class FlixSheetServiceTest {
                 log.error "error", it
                 result.set("error")
             }, {
-                if (!valueSet)result.set("outOfFlow")
+                if (!valueSet) result.set("outOfFlow")
             })
         }
-        assert result.get() == expected
+        result.get()
     }
 
     @Test
@@ -97,7 +96,7 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        runFlow("success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)")
+        assert runFlow() == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
     }
 
     @Test
@@ -107,7 +106,7 @@ class FlixSheetServiceTest {
                 rx.Observable.from(obj)
             }
         }
-        runFlow("outOfFlow")
+        assert runFlow() == "outOfFlow"
     }
 
     @Test
@@ -123,7 +122,7 @@ class FlixSheetServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 404))
             }
         }
-        runFlow("outOfFlow")
+        assert runFlow() == "outOfFlow"
     }
 
     @Test
@@ -139,7 +138,7 @@ class FlixSheetServiceTest {
                 rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
             }
         }
-        runFlow("error")
+        assert runFlow() == "error"
     }
 
     @Test
@@ -160,7 +159,7 @@ class FlixSheetServiceTest {
                 throw new Exception("error building xml")
             }
         }
-        runFlow("error")
+        assert runFlow() == "error"
     }
 
     @Test
@@ -184,6 +183,6 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        runFlow("outOfFlow")
+        assert runFlow() == "outOfFlow"
     }
 }
