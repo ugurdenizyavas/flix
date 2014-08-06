@@ -19,7 +19,7 @@ buildscript {
         maven { url "http://oss.jfrog.org/repo" }
     }
     dependencies {
-        classpath "io.ratpack:ratpack-gradle:0.9.7-SNAPSHOT"
+        classpath "io.ratpack:ratpack-gradle:0.9.7"
         classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.0.2"
     }
@@ -38,7 +38,7 @@ repositories {
 // PLUGINS
 //======================================================================
 
-apply plugin: "ratpack-groovy"
+apply plugin: 'io.ratpack.ratpack-groovy'
 apply plugin: "groovy"
 apply plugin: 'idea'
 apply plugin: 'nexus'
@@ -108,8 +108,8 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0", {
         exclude module: "groovy-all"
     }
-    compile 'io.ratpack:ratpack-rx:0.9.7-SNAPSHOT'
-    compile 'io.ratpack:ratpack-jackson:0.9.7-SNAPSHOT'
+    compile 'io.ratpack:ratpack-rx:0.9.7'
+    compile 'io.ratpack:ratpack-jackson:0.9.7'
 
     // logging
     compile group:"org.slf4j", name:"slf4j-api", version:"1.7.5"
