@@ -93,7 +93,7 @@ class FlixService {
                 singleSheet(flix, sheetUrn)
             }
             list << categoryService.retrieveCategoryFeed(flix)
-            rx.Observable.merge(list)
+            rx.Observable.merge(list, 30)
         })
     }
 
