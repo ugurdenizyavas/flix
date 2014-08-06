@@ -37,7 +37,7 @@ class FlixSheetServiceTest {
 
     @Before
     void before() {
-        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileUrl: "/repository/file/:urn")
+        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
 
         mockNingHttpClient = new StubFor(NingHttpClient)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)

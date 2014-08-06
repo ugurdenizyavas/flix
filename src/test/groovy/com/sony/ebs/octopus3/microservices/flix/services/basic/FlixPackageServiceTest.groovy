@@ -34,7 +34,7 @@ class FlixPackageServiceTest {
 
     @Before
     void before() {
-        flixPackageService = new FlixPackageService(repositoryOpsUrl: "/ops", execControl: execController.control)
+        flixPackageService = new FlixPackageService(repositoryOpsServiceUrl: "/ops", execControl: execController.control)
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 

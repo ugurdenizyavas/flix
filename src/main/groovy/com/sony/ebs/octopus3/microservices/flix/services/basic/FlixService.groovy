@@ -24,14 +24,14 @@ class FlixService {
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
-    @Value('${octopus3.flix.repositoryDeltaUrl}')
-    String repositoryDeltaUrl
+    @Value('${octopus3.flix.repositoryDeltaServiceUrl}')
+    String repositoryDeltaServiceUrl
 
-    @Value('${octopus3.flix.repositoryFileUrl}')
-    String repositoryFileUrl
+    @Value('${octopus3.flix.repositoryFileServiceUrl}')
+    String repositoryFileServiceUrl
 
-    @Value('${octopus3.flix.sheetUrl}')
-    String sheetUrl
+    @Value('${octopus3.flix.flixSheetServiceUrl}')
+    String flixSheetServiceUrl
 
     @Autowired
     @Qualifier("localHttpClient")
@@ -44,8 +44,8 @@ class FlixService {
     DateParamsProvider dateParamsProvider
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
-        log.info "importing sheet"
-        def importUrl = "$sheetUrl/$sheetUrn?processId=${flix?.processId?.id}"
+
+        def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) +  "?processId=${flix?.processId?.id}"
 
         rx.Observable.from("starting").flatMap({
             httpClient.doGet(importUrl)
@@ -54,7 +54,7 @@ class FlixService {
         }).map({
             "success for $sheetUrn"
         }).onErrorReturn({
-            log.error "error for $sheetUrn", it
+            log.error "error for $importUrl", it
             "error for $sheetUrn"
         })
     }
@@ -67,7 +67,7 @@ class FlixService {
                 dateParamsProvider.createDateParams(flix)
             })
         }).flatMap({
-            def deltaUrl = repositoryDeltaUrl.replace(":urn", flix.deltaUrn.toString()) + it
+            def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
         }).filter({ Response response ->
@@ -79,7 +79,7 @@ class FlixService {
             }))
         }).flatMap({
             jsonResult = it
-            def deleteUrl = repositoryFileUrl.replace(":urn", flix.baseUrn.toString())
+            def deleteUrl = repositoryFileServiceUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)

@@ -53,14 +53,14 @@ class SpringConfig {
     @Value('${octopus3.flix.local.proxy.nonProxyHosts}')
     String localNonProxyHosts
 
-    @Value('${octopus3.flix.eanCodeUrl}')
-    String eanCodeUrl
+    @Value('${octopus3.flix.octopusEanCodeServiceUrl}')
+    String octopusEanCodeServiceUrl
 
     @Bean
     @Qualifier("eanCodeEnhancer")
     @org.springframework.context.annotation.Lazy
     public EanCodeEnhancer eanCodeEnhancer() {
-        new EanCodeEnhancer(execControl: execControl, serviceUrl: eanCodeUrl, httpClient: localHttpClient())
+        new EanCodeEnhancer(execControl: execControl, serviceUrl: octopusEanCodeServiceUrl, httpClient: localHttpClient())
     }
 
 }

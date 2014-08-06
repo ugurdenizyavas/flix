@@ -21,8 +21,8 @@ class FlixPackageService {
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
-    @Value('${octopus3.flix.repositoryOpsUrl}')
-    String repositoryOpsUrl
+    @Value('${octopus3.flix.repositoryOpsServiceUrl}')
+    String repositoryOpsServiceUrl
 
     @Autowired
     @Qualifier("localHttpClient")
@@ -56,7 +56,7 @@ class FlixPackageService {
                 createOpsRecipe(flixPackage)
             })
         }).flatMap({
-            httpClient.doPost(repositoryOpsUrl, it)
+            httpClient.doPost(repositoryOpsServiceUrl, it)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
         }).map({

@@ -33,8 +33,8 @@ class CategoryServiceTest {
 
     @Before
     void before() {
-        categoryService = new CategoryService(categoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
-                repositoryFileUrl: "/repository/file/:urn")
+        categoryService = new CategoryService(octopusCategoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
+                repositoryFileServiceUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 

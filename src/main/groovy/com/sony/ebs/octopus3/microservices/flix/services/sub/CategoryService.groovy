@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service
 @org.springframework.context.annotation.Lazy
 class CategoryService {
 
-    @Value('${octopus3.flix.categoryUrl}')
-    String categoryServiceUrl
+    @Value('${octopus3.flix.octopusCategoryServiceUrl}')
+    String octopusCategoryServiceUrl
 
-    @Value('${octopus3.flix.repositoryFileUrl}')
-    String repositoryFileUrl
+    @Value('${octopus3.flix.repositoryFileServiceUrl}')
+    String repositoryFileServiceUrl
 
     @Autowired
     @Qualifier("localHttpClient")
@@ -28,13 +28,13 @@ class CategoryService {
         def categoryUrnStr = flix.categoryUrn.toString()
 
         rx.Observable.from("starting").flatMap({
-            def categoryReadUrl = categoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
+            def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
             log.info "category service url for $flix is $categoryReadUrl"
             httpClient.doGet(categoryReadUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
         }).flatMap({ Response response ->
-            def categorySaveUrl = repositoryFileUrl.replace(":urn", categoryUrnStr)
+            def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrnStr)
             log.info "category save url for $flix is $categorySaveUrl"
 
             httpClient.doPost(categorySaveUrl, response.responseBody)

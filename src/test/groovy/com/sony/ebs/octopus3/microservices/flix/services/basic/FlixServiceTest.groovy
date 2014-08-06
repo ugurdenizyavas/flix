@@ -40,8 +40,8 @@ class FlixServiceTest {
 
     @Before
     void before() {
-        flixService = new FlixService(execControl: execController.control, sheetUrl: "/flix/sheet",
-                repositoryDeltaUrl: "/delta/:urn", repositoryFileUrl: "/file/:urn")
+        flixService = new FlixService(execControl: execController.control, flixSheetServiceUrl: "/flix/sheet",
+                repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDateParamsProvider = new StubFor(DateParamsProvider)

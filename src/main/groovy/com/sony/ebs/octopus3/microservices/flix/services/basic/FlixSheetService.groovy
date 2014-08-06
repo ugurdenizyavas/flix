@@ -20,8 +20,8 @@ import static ratpack.rx.RxRatpack.observe
 @org.springframework.context.annotation.Lazy
 class FlixSheetService {
 
-    @Value('${octopus3.flix.repositoryFileUrl}')
-    String repositoryFileUrl
+    @Value('${octopus3.flix.repositoryFileServiceUrl}')
+    String repositoryFileServiceUrl
 
     @Autowired
     @Qualifier("localHttpClient")
@@ -49,7 +49,7 @@ class FlixSheetService {
             it?.eanCode as boolean
         }).flatMap({
             log.info "reading json"
-            def readUrl = repositoryFileUrl.replace(":urn", flixSheet.urnStr)
+            def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
@@ -69,7 +69,7 @@ class FlixSheetService {
         }).flatMap({ String xml ->
             log.debug "xml is $xml"
             log.info "saving xml"
-            def saveUrl = repositoryFileUrl.replace(":urn", flixSheet.sheetUrn.toString())
+            def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.sheetUrn.toString())
             httpClient.doPost(saveUrl, xml)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
