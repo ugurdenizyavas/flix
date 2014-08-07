@@ -61,7 +61,7 @@ class FlixService {
 
     rx.Observable<String> flixFlow(Flix flix) {
 
-        Map jsonResult
+        List deltaProductUrns
         rx.Observable.from("starting").flatMap({
             observe(execControl.blocking {
                 dateParamsProvider.createDateParams(flix)
@@ -78,7 +78,10 @@ class FlixService {
                 new JsonSlurper().parseText(response.responseBody)
             }))
         }).flatMap({
-            jsonResult = it
+            deltaProductUrns = it?.results
+            log.info "${deltaProductUrns?.size()} products found in delta"
+
+            log.info "deleting current flix xmls"
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).filter({ Response response ->
@@ -90,12 +93,10 @@ class FlixService {
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->
-            categoryService.filterForCategory(jsonResult?.results, categoryFeed)
-        }).flatMap({ List productUrns ->
-            log.info "${productUrns?.size()} products in delta for $flix"
-            List list = productUrns?.collect { String sheetUrn ->
-                singleSheet(flix, sheetUrn)
-            }
+            categoryService.filterForCategory(deltaProductUrns, categoryFeed)
+        }).flatMap({ List filteredProductUrns ->
+            log.info "${filteredProductUrns?.size()} calls will be made to flix sheet"
+            List list = filteredProductUrns?.collect { singleSheet(flix, it) }
             rx.Observable.merge(list, 30)
         })
     }

@@ -67,7 +67,7 @@ class CategoryService {
                 productsInCategoryTree.contains(sku)
             }
             log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${productUrns.size()}"
-            log.info "${productUrns - filteredProductUrns} are filtered out"
+            log.debug "${productUrns - filteredProductUrns} are filtered out"
             filteredProductUrns
         })
     }
