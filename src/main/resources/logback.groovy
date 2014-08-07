@@ -38,6 +38,7 @@ createStandardAppender("activityAppender", "activity")
 // Create the loggers
 root(defaultLevel, ["consoleAppender", "defaultAppender"])
 logger("activity", DEBUG, ["activityAppender"])
+logger("com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer", DEBUG)
 
 if (environment == "production") {
     root(INFO, ["consoleAppender", "defaultAppender"])
