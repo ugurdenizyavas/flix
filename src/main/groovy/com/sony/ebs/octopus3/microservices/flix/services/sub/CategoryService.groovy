@@ -60,9 +60,11 @@ class CategoryService {
         observe(execControl.blocking {
             log.info "starting category filtering"
             def categoryXml = new XmlSlurper().parseText(categoryFeed)
+
+            List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product'}).collect({it.text()?.toLowerCase()})
             def filteredProductUrns = productUrns.findAll { urnStr ->
                 def sku = new URNImpl(urnStr).values?.last()
-                categoryXml.depthFirst().findAll { it.name() == 'product' && sku.equalsIgnoreCase(it.text()) }
+                productsInCategoryTree.contains(sku)
             }
             log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${productUrns.size()}"
             log.info "${productUrns - filteredProductUrns} are filtered out"

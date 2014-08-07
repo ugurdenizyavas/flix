@@ -45,6 +45,8 @@ class FlixSheetService {
         }).filter({
             if (it?.eanCode) {
                 eanCode = it?.eanCode
+            } else {
+                log.info "eliminated by eanCode: $it.sku"
             }
             it?.eanCode as boolean
         }).flatMap({

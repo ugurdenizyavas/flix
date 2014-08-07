@@ -147,16 +147,16 @@ class CategoryServiceTest {
                         <name><![CDATA[HCS Home Cinema Projectors]]></name>
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
-                            <product><![CDATA[a1]]></product>
-                            <product><![CDATA[a2]]></product>
+                            <product><![CDATA[A1]]></product>
+                            <product><![CDATA[A2]]></product>
                         </products>
                     </node>
                     <node>
                         <name><![CDATA[HCS Home Cinema Projectors]]></name>
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
-                            <product><![CDATA[c1]]></product>
-                            <product><![CDATA[c2]]></product>
+                            <product><![CDATA[C1]]></product>
+                            <product><![CDATA[C2]]></product>
                         </products>
                     </node>
                 </nodes>
