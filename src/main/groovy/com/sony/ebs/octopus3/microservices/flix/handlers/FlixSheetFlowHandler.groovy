@@ -11,7 +11,7 @@ import ratpack.groovy.handling.GroovyHandler
 
 import static ratpack.jackson.Jackson.json
 
-@Slf4j
+@Slf4j(value = "activity")
 @Component
 @org.springframework.context.annotation.Lazy
 class FlixSheetFlowHandler extends GroovyHandler {
@@ -26,21 +26,21 @@ class FlixSheetFlowHandler extends GroovyHandler {
     @Override
     protected void handle(GroovyContext context) {
         context.with {
-            log.info "starting flixSheet"
             FlixSheet flixSheet = new FlixSheet(processId: request.queryParams.processId, urnStr: pathTokens.urn)
+            activity.info "starting $flixSheet"
 
             List errors = validator.validateFlixSheet(flixSheet)
             if (errors) {
-                log.error "error validating $flixSheet : $errors"
+                activity.error "error validating $flixSheet : $errors"
                 response.status(400)
                 render json(status: 400, errors: errors, flixSheet: flixSheet)
             } else {
                 flixSheetService.sheetFlow(flixSheet).subscribe({ result ->
-                    log.info "$result"
+                    activity.info "$result"
                 }, { e ->
-                    log.error "error in $flixSheet", e
+                    activity.error "error in $flixSheet", e
                 })
-                log.info "$flixSheet started"
+                activity.info "$flixSheet started"
                 response.status(202)
                 render json(status: 202, message: "flixSheet started", flixSheet: flixSheet)
             }
