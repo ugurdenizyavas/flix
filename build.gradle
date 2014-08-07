@@ -71,6 +71,8 @@ idea {
 }
 
 shadowJar {
+    baseName = "${project.name}-app"
+    classifier = group
     transform(AppendingTransformer) {
         resource = "META-INF/spring.handlers"
     }
