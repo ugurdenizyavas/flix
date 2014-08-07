@@ -38,7 +38,7 @@ class FlixXmlBuilder {
             }
         }
 
-        def builder = new StreamingMarkupBuilder()
+        def builder = new StreamingMarkupBuilder(encoding: "UTF-8")
         def xml = builder.bind() {
             mkp.xmlDeclaration()
             //mkp.yieldUnescaped('<!DOCTYPE gsafeed PUBLIC "-//Google//DTD GSA Feeds//EN" "gsafeed.dtd">')
