@@ -87,7 +87,7 @@ class FlixServiceTest {
             retrieveCategoryFeed(1) { f ->
                 log.info "doCategoryFeed"
                 assert f == flix
-                rx.Observable.from(CATEGORY_FEED)
+                rx.Observable.just(CATEGORY_FEED)
             }
             filterForCategory(1) { List productUrns, categoryFeed ->
                 log.info "filterForCategory"
@@ -97,11 +97,11 @@ class FlixServiceTest {
         mockDeltaDatesProvider.demand.with {
             createDateParams(1) { f ->
                 assert f == flix
-                "?dates"
+                rx.Observable.just("?dates")
             }
             updateLastModified(1) { f ->
                 assert f == flix
-                "done"
+                rx.Observable.just("done")
             }
         }
         assert runFlow(flix)?.sort() == ["success for urn:global_sku:score:en_gb:a", "success for urn:global_sku:score:en_gb:b"]
@@ -110,7 +110,7 @@ class FlixServiceTest {
     @Test
     void "error getting delta"() {
         mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { "?dates" }
+            createDateParams(1) { rx.Observable.just("?dates") }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
@@ -123,7 +123,7 @@ class FlixServiceTest {
     @Test
     void "error deleting existing feeds"() {
         mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { "?dates" }
+            createDateParams(1) { rx.Observable.just("?dates") }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
@@ -140,7 +140,7 @@ class FlixServiceTest {
     @Test
     void "error updating last modified time"() {
         mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { "?dates" }
+            createDateParams(1) { rx.Observable.just("?dates") }
             updateLastModified(1) {
                 throw new Exception("error updating last modified time")
             }

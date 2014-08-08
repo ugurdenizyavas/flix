@@ -41,6 +41,7 @@ class FlixService {
     CategoryService categoryService
 
     @Autowired
+    @Qualifier("repoBasedDeltaDatesProvider")
     DeltaDatesProvider deltaDatesProvider
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
@@ -63,9 +64,7 @@ class FlixService {
 
         List deltaProductUrns
         rx.Observable.from("starting").flatMap({
-            observe(execControl.blocking {
-                deltaDatesProvider.createDateParams(flix)
-            })
+            deltaDatesProvider.createDateParams(flix)
         }).flatMap({
             def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it
             log.info "deltaUrl for $flix is $deltaUrl"
@@ -87,9 +86,7 @@ class FlixService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
         }).flatMap({
-            observe(execControl.blocking {
-                deltaDatesProvider.updateLastModified(flix)
-            })
+            deltaDatesProvider.updateLastModified(flix)
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->

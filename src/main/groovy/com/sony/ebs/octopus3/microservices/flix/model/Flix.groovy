@@ -29,7 +29,7 @@ class Flix {
 
     @JsonIgnore
     URN getLastModifiedUrn() {
-        new URNImpl(FlixUrnValue.last_modified.toString(), [publication, locale])
+        new URNImpl(FlixUrnValue.flixMedia.toString(), [FlixUrnValue.last_modified.toString(), publication, locale])
     }
 
     @JsonIgnore

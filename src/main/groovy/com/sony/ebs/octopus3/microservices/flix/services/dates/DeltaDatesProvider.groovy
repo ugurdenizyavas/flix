@@ -4,7 +4,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.Flix
 
 public interface DeltaDatesProvider {
 
-    String updateLastModified(Flix flix)
+    rx.Observable<String> updateLastModified(Flix flix)
 
-    String createDateParams(Flix flix)
+    rx.Observable<String> createDateParams(Flix flix)
 }
