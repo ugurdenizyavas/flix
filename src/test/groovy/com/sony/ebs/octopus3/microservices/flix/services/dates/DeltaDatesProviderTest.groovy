@@ -17,9 +17,9 @@ import ratpack.launch.LaunchConfigBuilder
 import spock.util.concurrent.BlockingVariable
 
 @Slf4j
-class RepoBasedDeltaDatesProviderTest {
+class DeltaDatesProviderTest {
 
-    RepoBasedDeltaDatesProvider deltaDatesProvider
+    DeltaDatesProvider deltaDatesProvider
     StubFor mockNingHttpClient, mockFileAttributesProvider
 
     static ExecController execController
@@ -36,7 +36,7 @@ class RepoBasedDeltaDatesProviderTest {
 
     @Before
     void before() {
-        deltaDatesProvider = new RepoBasedDeltaDatesProvider(
+        deltaDatesProvider = new DeltaDatesProvider(
                 execControl: execController.control,
                 repositoryFileServiceUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)

@@ -41,7 +41,6 @@ class FlixService {
     CategoryService categoryService
 
     @Autowired
-    @Qualifier("repoBasedDeltaDatesProvider")
     DeltaDatesProvider deltaDatesProvider
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
