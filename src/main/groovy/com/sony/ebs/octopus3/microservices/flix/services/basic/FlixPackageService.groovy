@@ -31,21 +31,30 @@ class FlixPackageService {
     String createOpsRecipe(FlixPackage flixPackage) {
         def packageUrnStr = flixPackage.baseUrn.toString()
 
-        def builder = new groovy.json.JsonBuilder()
-        builder.ops {
-            zip {
+        def getZip = {
+            it.zip {
                 source packageUrnStr
             }
-            copy {
+        }
+        def getCopy = {
+            it.copy {
                 source "${packageUrnStr}.zip"
                 destination flixPackage.destinationUrn.toString()
             }
-            delete {
+        }
+        def getDelete = {
+            it.delete {
                 source "${packageUrnStr}.zip"
             }
         }
+
+        def builder = new groovy.json.JsonBuilder()
+        builder {
+            ops getZip(builder), getCopy(builder), getDelete(builder)
+        }
+
         def result = builder.toString()
-        log.info "recipe for $flixPackage is $result"
+        log.info "recipe for $flixPackage is $result "
         result
     }
 

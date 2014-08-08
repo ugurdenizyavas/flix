@@ -85,11 +85,12 @@ class FlixPackageServiceTest {
 
         def actual = new JsonSlurper().parseText(recipe)
 
-        assert actual.ops.zip.source == "urn:flixmedia:score:fr_be"
+        assert actual.ops[0].zip.source == "urn:flixmedia:score:fr_be"
 
-        assert actual.ops.copy.source == "urn:flixmedia:score:fr_be.zip"
-        assert actual.ops.copy.destination ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
-        assert actual.ops.delete.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[1].copy.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[1].copy.destination ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
+
+        assert actual.ops[2].delete.source == "urn:flixmedia:score:fr_be.zip"
     }
 
 }
