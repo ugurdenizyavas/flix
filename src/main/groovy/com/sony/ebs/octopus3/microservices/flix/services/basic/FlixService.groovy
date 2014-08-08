@@ -4,7 +4,7 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
+import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired

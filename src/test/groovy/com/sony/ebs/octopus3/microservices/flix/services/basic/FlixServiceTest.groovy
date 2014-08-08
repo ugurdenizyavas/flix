@@ -5,7 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
+import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j

@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services.sub
+package com.sony.ebs.octopus3.microservices.flix.services.dates
 
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 
