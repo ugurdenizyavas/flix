@@ -1,7 +1,10 @@
 package com.sony.ebs.octopus3.microservices.flix.services.dates
 
+import com.sony.ebs.octopus3.commons.ratpack.file.FileAttribute
+import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -16,22 +19,8 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class RepoBasedDeltaDatesProviderTest {
 
-    final static String FILE_ATTR_FEED = '''
-{
-    "status": 200,
-    "result": {
-        "lastModifiedTime": "2014-08-08T08:18:27.000+02:00",
-        "lastAccessTime": "2014-08-07T07:45:57.000+02:00",
-        "creationTime": "2014-08-08T08:18:27.000+02:00",
-        "regularFile": false,
-        "directory": true,
-        "size": 60416
-    }
-}
-'''
-
     RepoBasedDeltaDatesProvider deltaDatesProvider
-    StubFor mockNingHttpClient
+    StubFor mockNingHttpClient, mockFileAttributesProvider
 
     static ExecController execController
 
@@ -49,9 +38,9 @@ class RepoBasedDeltaDatesProviderTest {
     void before() {
         deltaDatesProvider = new RepoBasedDeltaDatesProvider(
                 execControl: execController.control,
-                repositoryFileAttributesServiceUrl: "/repository/fileattributes/:urn",
                 repositoryFileServiceUrl: "/repository/file/:urn")
         mockNingHttpClient = new StubFor(NingHttpClient)
+        mockFileAttributesProvider = new StubFor(FileAttributesProvider)
     }
 
     def runUpdateLastModified() {
@@ -108,7 +97,7 @@ class RepoBasedDeltaDatesProviderTest {
     }
 
     def runCreateDateParams(sdate, edate) {
-        deltaDatesProvider.httpClient = mockNingHttpClient.proxyInstance()
+        deltaDatesProvider.fileAttributesProvider = mockFileAttributesProvider.proxyInstance()
 
         def flix = new Flix(publication: "SCORE", locale: "fr_BE", sdate: sdate, edate: edate)
 
@@ -130,21 +119,21 @@ class RepoBasedDeltaDatesProviderTest {
 
     @Test
     void "create date params"() {
-        mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
-                assert url == "/repository/fileattributes/urn:flixmedia:last_modified:score:fr_be"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: FILE_ATTR_FEED))
+        mockFileAttributesProvider.demand.with {
+            getLastModifiedTime(1) { URN urn ->
+                assert urn.toString() == "urn:flixmedia:last_modified:score:fr_be"
+                rx.Observable.just(new FileAttribute(found: true, value: "s1"))
             }
         }
-        assert runCreateDateParams(null, null) == "?sdate=2014-08-08T08%3A18%3A27.000%2B02%3A00"
+        assert runCreateDateParams(null, null) == "?sdate=s1"
     }
 
     @Test
     void "create date params sdate not found and edate"() {
-        mockNingHttpClient.demand.with {
-            doGet(1) { String url ->
-                assert url == "/repository/fileattributes/urn:flixmedia:last_modified:score:fr_be"
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+        mockFileAttributesProvider.demand.with {
+            getLastModifiedTime(1) { URN urn ->
+                assert urn.toString() == "urn:flixmedia:last_modified:score:fr_be"
+                rx.Observable.just(new FileAttribute(found: false))
             }
         }
         assert runCreateDateParams(null, "s2") == "?edate=s2"

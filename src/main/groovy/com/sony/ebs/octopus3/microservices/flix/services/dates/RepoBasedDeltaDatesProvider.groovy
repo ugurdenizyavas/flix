@@ -1,10 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services.dates
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -27,12 +26,12 @@ class RepoBasedDeltaDatesProvider implements DeltaDatesProvider {
     @Value('${octopus3.flix.repositoryFileServiceUrl}')
     String repositoryFileServiceUrl
 
-    @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
-    String repositoryFileAttributesServiceUrl
-
     @Autowired
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
+
+    @Autowired
+    FileAttributesProvider fileAttributesProvider
 
     @Override
     rx.Observable<String> updateLastModified(Flix flix) {
@@ -43,25 +42,6 @@ class RepoBasedDeltaDatesProvider implements DeltaDatesProvider {
             NingHttpClient.isSuccess(response)
         }).map({
             "done"
-        })
-    }
-
-    rx.Observable<Map> getLastModifiedTime(URN urn) {
-        rx.Observable.just("starting").flatMap({
-            def url = repositoryFileAttributesServiceUrl.replace(":urn", urn.toString())
-            httpClient.doGet(url)
-        }).flatMap({ Response response ->
-            if (NingHttpClient.isSuccess(response)) {
-                observe(execControl.blocking {
-                    def json = new JsonSlurper().parseText(response.responseBody)
-                    def lastModifiedTime = json.result.lastModifiedTime
-                    log.info "lastModifiedTime for $urn is $lastModifiedTime"
-                    return [found: true, lastModifiedTime: lastModifiedTime]
-                })
-            } else {
-                return rx.Observable.just([found: false])
-
-            }
         })
     }
 
@@ -85,10 +65,10 @@ class RepoBasedDeltaDatesProvider implements DeltaDatesProvider {
     @Override
     rx.Observable<String> createDateParams(Flix flix) {
         if (!flix.sdate) {
-            getLastModifiedTime(flix.lastModifiedUrn)
-                    .flatMap({ Map result ->
+            fileAttributesProvider.getLastModifiedTime(flix.lastModifiedUrn)
+                    .flatMap({ result ->
                 observe(execControl.blocking {
-                    String lmt = result.found ? result.lastModifiedTime : null
+                    String lmt = result.found ? result.value : null
                     createDateParamsInner(flix, lmt)
                 })
             })

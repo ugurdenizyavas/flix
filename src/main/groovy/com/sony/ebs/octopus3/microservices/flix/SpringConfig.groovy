@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix
 
+import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import org.springframework.beans.factory.annotation.Autowired
@@ -61,6 +62,17 @@ class SpringConfig {
     @org.springframework.context.annotation.Lazy
     public EanCodeEnhancer eanCodeEnhancer() {
         new EanCodeEnhancer(execControl: execControl, serviceUrl: octopusEanCodeServiceUrl, httpClient: localHttpClient())
+    }
+
+    @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
+    String repositoryFileAttributesServiceUrl
+
+    @Bean
+    @org.springframework.context.annotation.Lazy
+    public FileAttributesProvider attributesProvider() {
+        new FileAttributesProvider(execControl: execControl,
+                repositoryFileAttributesServiceUrl: repositoryFileAttributesServiceUrl,
+                httpClient: localHttpClient())
     }
 
 }
