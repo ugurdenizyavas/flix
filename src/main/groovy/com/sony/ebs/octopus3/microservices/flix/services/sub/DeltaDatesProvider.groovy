@@ -15,7 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes
 
 @Slf4j
 @Service
-public class DateParamsProvider {
+public class DeltaDatesProvider {
 
     @Value('${octopus3.flix.storageFolder}')
     String storageFolder

@@ -5,7 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DateParamsProvider
+import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -25,7 +25,7 @@ class FlixServiceTest {
     final static String CATEGORY_FEED = "<categories/>"
 
     FlixService flixService
-    StubFor mockCategoryService, mockDateParamsProvider
+    StubFor mockCategoryService, mockDeltaDatesProvider
     MockFor mockNingHttpClient
 
     static ExecController execController
@@ -46,13 +46,13 @@ class FlixServiceTest {
                 repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
-        mockDateParamsProvider = new StubFor(DateParamsProvider)
+        mockDeltaDatesProvider = new StubFor(DeltaDatesProvider)
     }
 
     def runFlow(flix) {
         flixService.httpClient = mockNingHttpClient.proxyInstance()
         flixService.categoryService = mockCategoryService.proxyInstance()
-        flixService.dateParamsProvider = mockDateParamsProvider.proxyInstance()
+        flixService.deltaDatesProvider = mockDeltaDatesProvider.proxyInstance()
 
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
@@ -94,7 +94,7 @@ class FlixServiceTest {
                 rx.Observable.just(productUrns - productUrns.last())
             }
         }
-        mockDateParamsProvider.demand.with {
+        mockDeltaDatesProvider.demand.with {
             createDateParams(1) { f ->
                 assert f == flix
                 "?dates"
@@ -109,7 +109,7 @@ class FlixServiceTest {
 
     @Test
     void "error getting delta"() {
-        mockDateParamsProvider.demand.with {
+        mockDeltaDatesProvider.demand.with {
             createDateParams(1) { "?dates" }
         }
         mockNingHttpClient.demand.with {
@@ -122,7 +122,7 @@ class FlixServiceTest {
 
     @Test
     void "error deleting existing feeds"() {
-        mockDateParamsProvider.demand.with {
+        mockDeltaDatesProvider.demand.with {
             createDateParams(1) { "?dates" }
         }
         mockNingHttpClient.demand.with {
@@ -139,7 +139,7 @@ class FlixServiceTest {
 
     @Test
     void "error updating last modified time"() {
-        mockDateParamsProvider.demand.with {
+        mockDeltaDatesProvider.demand.with {
             createDateParams(1) { "?dates" }
             updateLastModified(1) {
                 throw new Exception("error updating last modified time")

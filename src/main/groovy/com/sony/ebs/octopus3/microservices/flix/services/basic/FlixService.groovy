@@ -4,7 +4,7 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DateParamsProvider
+import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +41,7 @@ class FlixService {
     CategoryService categoryService
 
     @Autowired
-    DateParamsProvider dateParamsProvider
+    DeltaDatesProvider deltaDatesProvider
 
     private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
 
@@ -64,7 +64,7 @@ class FlixService {
         List deltaProductUrns
         rx.Observable.from("starting").flatMap({
             observe(execControl.blocking {
-                dateParamsProvider.createDateParams(flix)
+                deltaDatesProvider.createDateParams(flix)
             })
         }).flatMap({
             def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it
@@ -88,7 +88,7 @@ class FlixService {
             NingHttpClient.isSuccess(response)
         }).flatMap({
             observe(execControl.blocking {
-                dateParamsProvider.updateLastModified(flix)
+                deltaDatesProvider.updateLastModified(flix)
             })
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
