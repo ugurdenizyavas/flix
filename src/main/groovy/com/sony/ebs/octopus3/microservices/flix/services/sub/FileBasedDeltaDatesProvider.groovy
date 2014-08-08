@@ -15,7 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes
 
 @Slf4j
 @Service
-public class FileBasedDeltaDatesProvider {
+public class FileBasedDeltaDatesProvider implements DeltaDatesProvider {
 
     @Value('${octopus3.flix.storageFolder}')
     String storageFolder
@@ -36,6 +36,7 @@ public class FileBasedDeltaDatesProvider {
         }
     }
 
+    @Override
     String updateLastModified(Flix flix) {
         def path = createLastModifiedPath(flix)
         log.info "starting update last modified time for $flix"
@@ -45,6 +46,7 @@ public class FileBasedDeltaDatesProvider {
         lmt
     }
 
+    @Override
     String createDateParams(Flix flix) {
         def sb = new StringBuilder()
 
