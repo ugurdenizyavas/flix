@@ -51,7 +51,7 @@ class FlixPackageService {
 
     rx.Observable<String> packageFlow(FlixPackage flixPackage) {
         log.info "creating package"
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             observe(execControl.blocking {
                 createOpsRecipe(flixPackage)
             })

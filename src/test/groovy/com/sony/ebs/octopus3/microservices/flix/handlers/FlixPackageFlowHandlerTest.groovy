@@ -28,7 +28,7 @@ class FlixPackageFlowHandlerTest {
             packageFlow(1) { FlixPackage flixPackage ->
                 assert flixPackage.publication == "SCORE"
                 assert flixPackage.locale == "en_GB"
-                rx.Observable.from("xxx")
+                rx.Observable.just("xxx")
             }
         }
         mockRequestValidator.demand.with {

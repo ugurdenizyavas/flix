@@ -36,7 +36,7 @@ class RepoBasedDeltaDatesProvider implements DeltaDatesProvider {
 
     @Override
     rx.Observable<String> updateLastModified(Flix flix) {
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             def url = repositoryFileServiceUrl.replace(":urn", flix.lastModifiedUrn.toString())
             httpClient.doPost(url, "update")
         }).filter({ Response response ->
@@ -47,7 +47,7 @@ class RepoBasedDeltaDatesProvider implements DeltaDatesProvider {
     }
 
     rx.Observable<Map> getLastModifiedTime(URN urn) {
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             def url = repositoryFileAttributesServiceUrl.replace(":urn", urn.toString())
             httpClient.doGet(url)
         }).flatMap({ Response response ->

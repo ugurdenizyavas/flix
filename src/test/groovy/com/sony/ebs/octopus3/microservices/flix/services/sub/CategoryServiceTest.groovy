@@ -67,12 +67,12 @@ class CategoryServiceTest {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
                 assert data == CATEGORY_FEED
-                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
         assert runRetrieveCategoryFeed() == CATEGORY_FEED
@@ -82,7 +82,7 @@ class CategoryServiceTest {
     void "category not found"() {
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
@@ -93,10 +93,10 @@ class CategoryServiceTest {
     void "could not save"() {
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
             }
             doPost(1) { url, data ->
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()

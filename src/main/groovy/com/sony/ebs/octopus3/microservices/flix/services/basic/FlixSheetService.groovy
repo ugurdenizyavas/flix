@@ -40,7 +40,7 @@ class FlixSheetService {
 
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
         def eanCode
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             eanCodeEnhancer.enhance([sku: flixSheet.urn.values.last()])
         }).filter({
             if (it?.eanCode) {

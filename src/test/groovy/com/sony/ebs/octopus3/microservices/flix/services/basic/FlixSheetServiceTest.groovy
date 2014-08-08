@@ -72,19 +72,19 @@ class FlixSheetServiceTest {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/repository/file/urn:flix:score:en_gb:a"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:a"
                 assert data == "some xml"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
 
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
                 obj.eanCode = "ea1"
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
 
@@ -103,7 +103,7 @@ class FlixSheetServiceTest {
     void "ean code error"() {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
         assert runFlow() == "outOfFlow"
@@ -114,12 +114,12 @@ class FlixSheetServiceTest {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
                 obj.eanCode = "ea1"
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         assert runFlow() == "outOfFlow"
@@ -130,12 +130,12 @@ class FlixSheetServiceTest {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
                 obj.eanCode = "ea1"
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
             }
         }
         assert runFlow() == "error"
@@ -146,12 +146,12 @@ class FlixSheetServiceTest {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
                 obj.eanCode = "ea1"
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
         }
         mockFlixXmlBuilder.demand.with {
@@ -167,15 +167,15 @@ class FlixSheetServiceTest {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj ->
                 obj.eanCode = "ea1"
-                rx.Observable.from(obj)
+                rx.Observable.just(obj)
             }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
             doPost(1) { String url, String data ->
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         mockFlixXmlBuilder.demand.with {

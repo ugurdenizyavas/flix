@@ -63,7 +63,7 @@ class FlixPackageServiceTest {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, String data ->
                 assert url == "/ops"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
         assert runFlow() == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
@@ -73,7 +73,7 @@ class FlixPackageServiceTest {
     void "error calling ops service"() {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, String data ->
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         assert runFlow() == "outOfFlow"

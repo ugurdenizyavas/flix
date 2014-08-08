@@ -32,7 +32,7 @@ class FlixFlowHandlerTest {
                 assert flix.sdate == "s1"
                 assert flix.edate == "s2"
                 log.info "service assertions finished"
-                rx.Observable.from("xxx")
+                rx.Observable.just("xxx")
             }
         }
         mockRequestValidator.demand.with {

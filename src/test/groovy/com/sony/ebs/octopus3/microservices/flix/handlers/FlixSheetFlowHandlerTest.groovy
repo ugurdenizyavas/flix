@@ -33,7 +33,7 @@ class FlixSheetFlowHandlerTest {
                 assert flixSheet.processId == PROCESS_ID
                 assert flixSheet.urnStr == URN
                 log.info "service assertions finished"
-                rx.Observable.from("xxx")
+                rx.Observable.just("xxx")
             }
         }
         mockRequestValidator.demand.with {

@@ -48,7 +48,7 @@ class FlixService {
 
         def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) + "?processId=${flix?.processId?.id}"
 
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             httpClient.doGet(importUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response)
@@ -63,7 +63,7 @@ class FlixService {
     rx.Observable<String> flixFlow(Flix flix) {
 
         List deltaProductUrns
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             deltaDatesProvider.createDateParams(flix)
         }).flatMap({
             def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it

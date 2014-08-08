@@ -72,15 +72,15 @@ class FlixServiceTest {
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/delta/urn:global_sku:score:en_gb?dates"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
             }
             doDelete(1) { String url ->
                 assert url == "/file/urn:flixmedia:score:en_gb"
-                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
             doGet(3) { String url ->
                 assert url.startsWith("/flix/sheet/urn:global_sku:score:en_gb")
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: url))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: url))
             }
         }
         mockCategoryService.demand.with {
@@ -114,7 +114,7 @@ class FlixServiceTest {
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
@@ -127,10 +127,10 @@ class FlixServiceTest {
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
             }
             doDelete(1) { String url ->
-                rx.Observable.from(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
         assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
@@ -147,10 +147,10 @@ class FlixServiceTest {
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.from(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
             }
             doDelete(1) { String url ->
-                rx.Observable.from(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
         assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == ["error"]

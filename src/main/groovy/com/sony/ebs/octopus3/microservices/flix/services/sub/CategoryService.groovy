@@ -36,7 +36,7 @@ class CategoryService {
         def categoryUrnStr = flix.categoryUrn.toString()
 
         String categoryFeed
-        rx.Observable.from("starting").flatMap({
+        rx.Observable.just("starting").flatMap({
             def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
             log.info "category service url for $flix is $categoryReadUrl"
             httpClient.doGet(categoryReadUrl)
