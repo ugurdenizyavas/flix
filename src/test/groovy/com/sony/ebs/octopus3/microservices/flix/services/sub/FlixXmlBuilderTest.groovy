@@ -28,7 +28,7 @@ class FlixXmlBuilderTest {
     }
 
     def getFileText(name) {
-        defaultResourceLoader.getResource(BASE_PATH + name)?.file?.text
+        defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream.text
     }
 
     def testBuildXml(name) {
