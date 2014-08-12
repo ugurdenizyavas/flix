@@ -48,11 +48,11 @@ class FlixSheetService {
             }
             it?.eanCode as boolean
         }).flatMap({
-            log.info "reading json"
+            log.info "getting global sku"
             def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response)
+            NingHttpClient.isSuccess(response, "getting global sku")
         }).flatMap({ Response response ->
             observe(execControl.blocking {
                 log.info "parsing json"
@@ -72,7 +72,7 @@ class FlixSheetService {
             def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.sheetUrn.toString())
             httpClient.doPost(saveUrl, xml)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response)
+            NingHttpClient.isSuccess(response, "saving flix xml")
         }).map({
             log.debug "save xml result is $it"
             "success for $flixSheet"

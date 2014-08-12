@@ -41,7 +41,7 @@ class CategoryService {
             log.info "category service url for $flix is $categoryReadUrl"
             httpClient.doGet(categoryReadUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response)
+            NingHttpClient.isSuccess(response, "getting octopus category feed")
         }).flatMap({ Response response ->
             categoryFeed = response.responseBody
             def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrnStr)
@@ -49,7 +49,7 @@ class CategoryService {
 
             httpClient.doPost(categorySaveUrl, categoryFeed)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response)
+            NingHttpClient.isSuccess(response, "saving octopus category feed")
         }).map({
             categoryFeed
         })
