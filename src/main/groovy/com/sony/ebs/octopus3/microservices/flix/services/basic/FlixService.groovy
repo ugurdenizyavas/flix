@@ -69,7 +69,7 @@ class FlixService {
             log.info "deltaUrl for $flix is $deltaUrl"
             httpClient.doGet(deltaUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "retrieving delta from repo service")
+            NingHttpClient.isSuccess(response, "retrieving delta from repo service", flix.errors)
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
@@ -83,7 +83,7 @@ class FlixService {
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", flix.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "deleting current flix xmls")
+            NingHttpClient.isSuccess(response, "deleting current flix xmls", flix.errors)
         }).flatMap({
             deltaDatesProvider.updateLastModified(flix)
         }).flatMap({

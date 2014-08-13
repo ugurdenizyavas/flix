@@ -18,6 +18,9 @@ class Flix {
     String edate
 
     @JsonIgnore
+    List errors = []
+
+    @JsonIgnore
     URN getCategoryUrn() {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale, FlixUrnValue.category.toString()])
     }

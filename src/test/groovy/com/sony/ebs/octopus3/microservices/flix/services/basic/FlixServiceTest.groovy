@@ -49,7 +49,7 @@ class FlixServiceTest {
         mockDeltaDatesProvider = new StubFor(DeltaDatesProvider)
     }
 
-    def runFlow(flix) {
+    def runFlow(Flix flix) {
         flixService.httpClient = mockNingHttpClient.proxyInstance()
         flixService.categoryService = mockCategoryService.proxyInstance()
         flixService.deltaDatesProvider = mockDeltaDatesProvider.proxyInstance()
@@ -117,7 +117,9 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
-        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runFlow(flix) == []
+        assert flix.errors == ["HTTP 404 error retrieving delta from repo service"]
     }
 
     @Test
@@ -130,10 +132,12 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
             }
             doDelete(1) { String url ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == []
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runFlow(flix) == []
+        assert flix.errors == ["HTTP 500 error deleting current flix xmls"]
     }
 
 

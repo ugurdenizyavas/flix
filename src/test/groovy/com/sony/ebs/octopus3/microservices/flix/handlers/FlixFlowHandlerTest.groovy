@@ -31,7 +31,6 @@ class FlixFlowHandlerTest {
                 assert flix.locale == "en_GB"
                 assert flix.sdate == "s1"
                 assert flix.edate == "s2"
-                log.info "service assertions finished"
                 rx.Observable.just("xxx")
             }
         }
@@ -45,17 +44,16 @@ class FlixFlowHandlerTest {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {
-            assert status.code == 202
-            def result = rendered(DefaultJsonRender).object
-            assert result.message == "flix started"
-            assert result.status == 202
-            assert result.flix.publication == "SCORE"
-            assert result.flix.locale == "en_GB"
-            assert result.flix.sdate == "s1"
-            assert result.flix.edate == "s2"
-            assert result.flix.processId.id != null
-            assert !result.errors
-            log.info "result assertions finished for $result.flix"
+            assert status.code == 200
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 200
+            assert ren.flix.publication == "SCORE"
+            assert ren.flix.locale == "en_GB"
+            assert ren.flix.sdate == "s1"
+            assert ren.flix.edate == "s2"
+            assert ren.flix.processId.id != null
+            assert !ren.errors
+            assert ren.result == ["xxx"]
         }
     }
 
@@ -63,17 +61,49 @@ class FlixFlowHandlerTest {
     void "error in params"() {
         mockRequestValidator.demand.with {
             validateFlix(1) { Flix flix ->
-                ["error"]
+                flix.errors << "error"
+                flix.errors
             }
         }
         handle(new FlixFlowHandler(validator: mockRequestValidator.proxyInstance()), {
             uri "/"
         }).with {
             assert status.code == 400
-            def result = rendered(DefaultJsonRender).object
-            assert result.errors == ["error"]
-            assert result.status == 400
-            assert result.flix.processId != null
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.errors == ["error"]
+            assert ren.status == 400
+            assert ren.flix.processId != null
         }
     }
+
+
+    @Test
+    void "error in flix flow"() {
+        mockFlixService.demand.with {
+            flixFlow(1) { Flix flix ->
+                flix.errors << "error in sheet flow"
+                rx.Observable.just(null)
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlix(1) { Flix flix ->
+                []
+            }
+        }
+
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([publication: "SCORE", locale: "en_GB"])
+            uri "/"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flix.publication == "SCORE"
+            assert ren.flix.locale == "en_GB"
+            assert ren.flix.processId.id != null
+            assert ren.errors == ["error in sheet flow"]
+            assert !ren.result
+        }
+    }
+
 }

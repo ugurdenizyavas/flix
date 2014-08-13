@@ -29,20 +29,27 @@ class FlixSheetFlowHandler extends GroovyHandler {
             FlixSheet flixSheet = new FlixSheet(processId: request.queryParams.processId, urnStr: pathTokens.urn)
             activity.info "starting $flixSheet"
 
-            List errors = validator.validateFlixSheet(flixSheet)
-            if (errors) {
-                activity.error "error validating $flixSheet : $errors"
+            List result = []
+            if (validator.validateFlixSheet(flixSheet)) {
+                activity.error "error validating $flixSheet : $flixSheet.errors"
                 response.status(400)
-                render json(status: 400, errors: errors, flixSheet: flixSheet)
+                render json(status: 400, flixSheet: flixSheet, errors: flixSheet.errors)
             } else {
-                flixSheetService.sheetFlow(flixSheet).subscribe({ result ->
-                    activity.info "$result"
+                flixSheetService.sheetFlow(flixSheet).subscribe({
+                    result << it?.toString()
+                    activity.info "$flixSheet finished: $it"
                 }, { e ->
+                    flixSheet.errors << e.message
                     activity.error "error in $flixSheet", e
+                }, {
+                    if (flixSheet.errors) {
+                        response.status(500)
+                        render json(status: 500, flixSheet: flixSheet, errors: flixSheet.errors)
+                    } else {
+                        response.status(200)
+                        render json(status: 200, flixSheet: flixSheet, result: result)
+                    }
                 })
-                activity.info "$flixSheet started"
-                response.status(202)
-                render json(status: 202, message: "flixSheet started", flixSheet: flixSheet)
             }
 
         }

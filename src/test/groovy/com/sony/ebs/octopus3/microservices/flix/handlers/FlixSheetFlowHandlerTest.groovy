@@ -46,14 +46,13 @@ class FlixSheetFlowHandlerTest {
             pathBinding([urn: URN])
             uri "/?processId=$PROCESS_ID"
         }).with {
-            assert status.code == 202
-            def result = rendered(DefaultJsonRender).object
-            assert result.message == "flixSheet started"
-            assert result.status == 202
-            assert result.flixSheet.processId == PROCESS_ID
-            assert result.flixSheet.urnStr == URN
-            assert !result.errors
-            log.info "result assertions finished for $result.flixSheet"
+            assert status.code == 200
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 200
+            assert ren.flixSheet.processId == PROCESS_ID
+            assert ren.flixSheet.urnStr == URN
+            assert !ren.errors
+            assert ren.result == ["xxx"]
         }
     }
 
@@ -61,10 +60,11 @@ class FlixSheetFlowHandlerTest {
     void "error in params"() {
         mockRequestValidator.demand.with {
             validateFlixSheet(1) { FlixSheet flixSheet ->
+                flixSheet.errors << "error"
                 assert flixSheet.processId == PROCESS_ID
                 assert flixSheet.urnStr == URN
                 log.info "service assertions finished"
-                ["error"]
+                flixSheet.errors
             }
         }
         handle(new FlixSheetFlowHandler(validator: mockRequestValidator.proxyInstance()), {
@@ -72,12 +72,40 @@ class FlixSheetFlowHandlerTest {
             uri "/?processId=$PROCESS_ID"
         }).with {
             assert status.code == 400
-            def result = rendered(DefaultJsonRender).object
-            assert result.errors == ["error"]
-            assert result.status == 400
-            assert result.flixSheet.processId == PROCESS_ID
-            assert result.flixSheet.urnStr == URN
-            log.info "result assertions finished for $result.flixSheet"
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 400
+            assert ren.flixSheet.processId == PROCESS_ID
+            assert ren.flixSheet.urnStr == URN
+            assert ren.errors == ["error"]
         }
     }
+
+    @Test
+    void "error in sheet flow"() {
+        mockFlixSheetService.demand.with {
+            sheetFlow(1) { FlixSheet flixSheet ->
+                flixSheet.errors << "error in sheet flow"
+                rx.Observable.just(null)
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlixSheet(1) { FlixSheet flixSheet ->
+                []
+            }
+        }
+
+        handle(new FlixSheetFlowHandler(flixSheetService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([urn: URN])
+            uri "/?processId=$PROCESS_ID"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flixSheet.processId == PROCESS_ID
+            assert ren.flixSheet.urnStr == URN
+            assert ren.errors == ["error in sheet flow"]
+            assert !ren.result
+        }
+    }
+
 }

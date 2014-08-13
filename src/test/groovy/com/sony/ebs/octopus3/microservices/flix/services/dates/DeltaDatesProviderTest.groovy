@@ -43,10 +43,8 @@ class DeltaDatesProviderTest {
         mockFileAttributesProvider = new StubFor(FileAttributesProvider)
     }
 
-    def runUpdateLastModified() {
+    def runUpdateLastModified(Flix flix) {
         deltaDatesProvider.httpClient = mockNingHttpClient.proxyInstance()
-
-        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
 
         def result = new BlockingVariable<String>(5)
         boolean valueSet = false
@@ -73,7 +71,8 @@ class DeltaDatesProviderTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        assert runUpdateLastModified() == "done"
+        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
+        assert runUpdateLastModified(flix) == "done"
     }
 
     @Test
@@ -83,7 +82,9 @@ class DeltaDatesProviderTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        assert runUpdateLastModified() == "outOfFlow"
+        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
+        assert runUpdateLastModified(flix) == "outOfFlow"
+        assert flix.errors == ["HTTP 500 error updating last modified date"]
     }
 
     @Test
@@ -93,7 +94,8 @@ class DeltaDatesProviderTest {
                 throw new Exception("error updating last modified time")
             }
         }
-        assert runUpdateLastModified() == "error"
+        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
+        assert runUpdateLastModified(flix) == "error"
     }
 
     def runCreateDateParams(sdate, edate) {

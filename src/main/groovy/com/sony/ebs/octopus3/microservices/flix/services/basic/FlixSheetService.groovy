@@ -39,25 +39,25 @@ class FlixSheetService {
     FlixXmlBuilder flixXmlBuilder
 
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
-        def eanCode
+        Map product = [sku: flixSheet.urn.values.last()]
         rx.Observable.just("starting").flatMap({
-            eanCodeEnhancer.enhance([sku: flixSheet.urn.values.last()])
+            eanCodeEnhancer.enhance(product)
         }).filter({
-            if (it?.eanCode) {
-                eanCode = it?.eanCode
+            if (!product.eanCode) {
+                flixSheet.errors << "ean code does not exist"
             }
-            it?.eanCode as boolean
+            product.eanCode as boolean
         }).flatMap({
             log.info "getting global sku"
             def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "getting global sku")
+            NingHttpClient.isSuccess(response, "getting sheet from repo", flixSheet.errors)
         }).flatMap({ Response response ->
             observe(execControl.blocking {
                 log.info "parsing json"
                 def json = new JsonSlurper().parseText(response.responseBody)
-                json.eanCode = eanCode
+                json.eanCode = product.eanCode
                 json
             })
         }).flatMap({ json ->
@@ -72,10 +72,10 @@ class FlixSheetService {
             def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.sheetUrn.toString())
             httpClient.doPost(saveUrl, xml)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "saving flix xml")
+            NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
         }).map({
             log.debug "save xml result is $it"
-            "success for $flixSheet"
+            "success"
         })
     }
 

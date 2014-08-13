@@ -37,7 +37,7 @@ class DeltaDatesProvider {
             def url = repositoryFileServiceUrl.replace(":urn", flix.lastModifiedUrn.toString())
             httpClient.doPost(url, "update")
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "updating last modified date")
+            NingHttpClient.isSuccess(response, "updating last modified date", flix.errors)
         }).map({
             "done"
         })

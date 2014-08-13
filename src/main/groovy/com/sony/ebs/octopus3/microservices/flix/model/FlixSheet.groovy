@@ -14,6 +14,9 @@ class FlixSheet {
     String urnStr
 
     @JsonIgnore
+    List errors = []
+
+    @JsonIgnore
     URN getUrn() {
         new URNImpl(urnStr)
     }

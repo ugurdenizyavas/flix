@@ -44,12 +44,10 @@ class FlixSheetServiceTest {
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
     }
 
-    def runFlow() {
+    def runFlow(FlixSheet flixSheet) {
         flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
         flixSheetService.eanCodeEnhancer = mockEanCodeEnhancer.proxyInstance()
         flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
-
-        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
 
         def result = new BlockingVariable<String>(5)
         boolean valueSet = false
@@ -96,7 +94,8 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        assert runFlow() == "success for FlixSheet(processId:123, urnStr:urn:flix:score:en_gb:a)"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "success"
     }
 
     @Test
@@ -106,7 +105,9 @@ class FlixSheetServiceTest {
                 rx.Observable.just(obj)
             }
         }
-        assert runFlow() == "outOfFlow"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "outOfFlow"
+        assert flixSheet.errors == ["ean code does not exist"]
     }
 
     @Test
@@ -122,7 +123,9 @@ class FlixSheetServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
-        assert runFlow() == "outOfFlow"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "outOfFlow"
+        assert flixSheet.errors == ["HTTP 404 error getting sheet from repo"]
     }
 
     @Test
@@ -138,7 +141,8 @@ class FlixSheetServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
             }
         }
-        assert runFlow() == "error"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "error"
     }
 
     @Test
@@ -159,7 +163,8 @@ class FlixSheetServiceTest {
                 throw new Exception("error building xml")
             }
         }
-        assert runFlow() == "error"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "error"
     }
 
     @Test
@@ -175,7 +180,7 @@ class FlixSheetServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
             doPost(1) { String url, String data ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
         mockFlixXmlBuilder.demand.with {
@@ -183,6 +188,8 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        assert runFlow() == "outOfFlow"
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a")
+        assert runFlow(flixSheet) == "outOfFlow"
+        assert flixSheet.errors == ["HTTP 500 error saving flix xml to repo"]
     }
 }

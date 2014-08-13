@@ -31,20 +31,27 @@ class FlixFlowHandler extends GroovyHandler {
                     locale: pathTokens.locale, sdate: request.queryParams.sdate, edate: request.queryParams.edate)
             activity.info "starting $flix"
 
-            List errors = validator.validateFlix(flix)
-            if (errors) {
-                activity.error "error validating $flix : $errors"
+            List result = []
+            if (validator.validateFlix(flix)) {
+                activity.error "error validating $flix : $flix.errors"
                 response.status(400)
-                render json(status: 400, errors: errors, flix: flix)
+                render json(status: 400, flix: flix, errors: flix.errors)
             } else {
-                flixService.flixFlow(flix).subscribe({ result ->
-                    activity.info "$result"
+                flixService.flixFlow(flix).subscribe({
+                    result << it?.toString()
+                    activity.info "$it"
                 }, { e ->
+                    flix.errors << e.message
                     activity.error "error in $flix", e
+                }, {
+                    if (flix.errors) {
+                        response.status(500)
+                        render json(status: 500, flix: flix, errors: flix.errors)
+                    } else {
+                        response.status(200)
+                        render json(status: 200, flix: flix, result: result)
+                    }
                 })
-                activity.info "$flix started"
-                response.status(202)
-                render json(status: 202, message: "flix started", flix: flix)
             }
 
         }

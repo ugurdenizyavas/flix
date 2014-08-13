@@ -42,8 +42,7 @@ class CategoryServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runRetrieveCategoryFeed() {
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+    def runRetrieveCategoryFeed(Flix flix) {
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
@@ -75,18 +74,22 @@ class CategoryServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        assert runRetrieveCategoryFeed() == CATEGORY_FEED
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(flix) == CATEGORY_FEED
     }
 
     @Test
     void "category not found"() {
         mockNingHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        assert runRetrieveCategoryFeed() == "outOfFlow"
+
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(flix) == "outOfFlow"
+        assert flix.errors == ["HTTP 500 error getting octopus category feed"]
     }
 
     @Test
@@ -100,7 +103,10 @@ class CategoryServiceTest {
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        assert runRetrieveCategoryFeed() == "outOfFlow"
+
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(flix) == "outOfFlow"
+        assert flix.errors == ["HTTP 404 error saving octopus category feed"]
     }
 
     @Test
@@ -111,7 +117,9 @@ class CategoryServiceTest {
             }
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
-        assert runRetrieveCategoryFeed() == "error"
+
+        def flix = new Flix(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(flix) == "error"
     }
 
     def runFilterForCategory(List products, String categoryXml) {
