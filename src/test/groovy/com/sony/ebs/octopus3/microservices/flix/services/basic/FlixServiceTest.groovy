@@ -21,8 +21,7 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class FlixServiceTest {
 
-    final
-    static String DELTA_FEED = '''
+    final static String DELTA_FEED = '''
         {
             "results" : [
                 "urn:global_sku:score:en_gb:a",

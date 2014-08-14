@@ -81,7 +81,6 @@ shadowJar {
     }
 }
 
-run { systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir')) }
 run { systemProperty('environment', System.getProperty('environment')) }
 test { systemProperty('environment', System.getProperty('environment')) }
 
@@ -151,7 +150,6 @@ task cucumber(type: JavaExec) {
     main = "cucumber.api.cli.Main"
     classpath = files(configurations.cucumberRuntime, sourceSets.test.runtimeClasspath)
     args = ['-f', 'pretty', '--glue', 'src/test/groovy', 'src/test/resources/cukes']
-    systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir'))
 }
 
 task wrapper(type: Wrapper) {
