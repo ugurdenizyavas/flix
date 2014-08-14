@@ -133,7 +133,7 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
     assert json.flix.sdate == "2014-07-09T00:00:00.000Z"
     assert json.flix.edate == "2014-07-12T00:00:00.000Z"
     assert json.flix.processId
-    assert json.flix.filteredOutByCategoryUrns == ["urn:global_sku:$publicationLC:$localeLC:b",]
+    assert json.flix.categoryFilteredOutUrns == ["urn:global_sku:$publicationLC:$localeLC:b"]
     assert json.flix.deltaUrns == [
             "urn:global_sku:$publicationLC:$localeLC:a",
             "urn:global_sku:$publicationLC:$localeLC:b",
@@ -141,10 +141,15 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
             "urn:global_sku:$publicationLC:$localeLC:d"
     ]
 
-    assert json.result.size() == 3
-    assert json.result.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:a".toString()])
-    assert json.result.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:c".toString()])
-    assert json.result.contains([statusCode: 500, success: false, urn: "urn:global_sku:$publicationLC:$localeLC:d".toString(), errors: ["err1", "err2"]])
+    assert json.result.stats."number of delta products" == 4
+    assert json.result.stats."number of products filtered out by category" == 1
+    assert json.result.stats."number of success" == 2
+    assert json.result.stats."number of errors" == 1
+
+    assert json.result.list.size() == 3
+    assert json.result.list.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:a".toString()])
+    assert json.result.list.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:c".toString()])
+    assert json.result.list.contains([statusCode: 500, success: false, urn: "urn:global_sku:$publicationLC:$localeLC:d".toString(), errors: ["err1", "err2"]])
 }
 
 Given(~"Flix json for sheet (.*)") { String sheet ->

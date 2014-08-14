@@ -67,7 +67,7 @@ class CategoryService {
                 productsInCategoryTree.contains(sku)
             }
             log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${flix.deltaUrns?.size()}"
-            flix.filteredOutByCategoryUrns = flix.deltaUrns - filteredProductUrns
+            flix.categoryFilteredOutUrns = flix.deltaUrns - filteredProductUrns
             filteredProductUrns
         })
     }

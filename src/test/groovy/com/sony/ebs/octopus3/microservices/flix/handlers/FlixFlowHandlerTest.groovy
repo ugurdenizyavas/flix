@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.mock.interceptor.StubFor
@@ -22,6 +23,10 @@ class FlixFlowHandlerTest {
         mockRequestValidator = new StubFor(RequestValidator)
     }
 
+    def sheetResultA = new FlixSheetServiceResult(urn: "a", success: true)
+    def sheetResultB = new FlixSheetServiceResult(urn: "b", success: false)
+    def sheetResultE = new FlixSheetServiceResult(urn: "e", success: true)
+
     @Test
     void "main flow"() {
         mockFlixService.demand.with {
@@ -31,7 +36,10 @@ class FlixFlowHandlerTest {
                 assert flix.locale == "en_GB"
                 assert flix.sdate == "s1"
                 assert flix.edate == "s2"
-                rx.Observable.from(["a", "b", "c"])
+
+                flix.deltaUrns = ["a", "b", "c", "d", "e"]
+                flix.categoryFilteredOutUrns = ["c", "d"]
+                rx.Observable.from([sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
@@ -53,7 +61,12 @@ class FlixFlowHandlerTest {
             assert ren.flix.edate == "s2"
             assert ren.flix.processId.id != null
             assert !ren.errors
-            assert ren.result?.sort() == ["a", "b", "c"]
+
+            assert ren.result.list?.sort() == [sheetResultA, sheetResultB, sheetResultE]
+            assert ren.result.stats."number of delta products" == 5
+            assert ren.result.stats."number of products filtered out by category" == 2
+            assert ren.result.stats."number of success" == 2
+            assert ren.result.stats."number of errors" == 1
         }
     }
 

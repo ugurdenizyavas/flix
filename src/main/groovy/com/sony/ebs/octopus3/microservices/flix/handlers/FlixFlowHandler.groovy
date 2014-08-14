@@ -31,14 +31,14 @@ class FlixFlowHandler extends GroovyHandler {
                     locale: pathTokens.locale, sdate: request.queryParams.sdate, edate: request.queryParams.edate)
             activity.info "starting $flix"
 
-            List result = []
+            List flixSheetServiceResults = []
             if (validator.validateFlix(flix)) {
                 activity.error "error validating $flix : $flix.errors"
                 response.status(400)
                 render json(status: 400, flix: flix, errors: flix.errors)
             } else {
                 flixService.flixFlow(flix).subscribe({
-                    result << it
+                    flixSheetServiceResults << it
                     activity.info "sheet result: $it"
                 }, { e ->
                     flix.errors << e.message ?: e.cause?.message
@@ -49,12 +49,29 @@ class FlixFlowHandler extends GroovyHandler {
                         render json(status: 500, flix: flix, errors: flix.errors)
                     } else {
                         response.status(200)
-                        render json(status: 200, flix: flix, result: result)
+                        render json(status: 200, flix: flix, result: createFlixResult(flix, flixSheetServiceResults))
                     }
                 })
             }
 
         }
+    }
+
+
+    Map createFlixResult(Flix flix, List flixSheetServiceResults) {
+        [
+                stats: [
+                        "number of delta products"                   : flix.deltaUrns?.size(),
+                        "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
+                        "number of success"                          : flixSheetServiceResults?.findAll({
+                            it.success
+                        }).size(),
+                        "number of errors"                           : flixSheetServiceResults?.findAll({
+                            !it.success
+                        }).size()
+                ],
+                list : flixSheetServiceResults
+        ]
     }
 
 }

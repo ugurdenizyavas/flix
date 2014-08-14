@@ -69,7 +69,7 @@ class FlixService {
         })
     }
 
-    rx.Observable<String> flixFlow(Flix flix) {
+    rx.Observable flixFlow(Flix flix) {
 
         rx.Observable.just("starting").flatMap({
             deltaDatesProvider.createDateParams(flix)

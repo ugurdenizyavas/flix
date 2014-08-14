@@ -176,7 +176,7 @@ class CategoryServiceTest {
         def flix = new Flix(publication: "SCORE", locale: "en_GB", deltaUrns: ["urn:flix:a1", "urn:flix:b", "urn:flix:c2", "urn:flix:d"])
 
         assert runFilterForCategory(flix, xml).sort() == ["urn:flix:a1", "urn:flix:c2"]
-        assert flix.filteredOutByCategoryUrns.sort() == ["urn:flix:b", "urn:flix:d"]
+        assert flix.categoryFilteredOutUrns.sort() == ["urn:flix:b", "urn:flix:d"]
     }
 
 }
