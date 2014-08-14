@@ -39,7 +39,7 @@ class FlixSheetFlowHandler extends GroovyHandler {
                     result << it?.toString()
                     activity.info "$flixSheet finished: $it"
                 }, { e ->
-                    flixSheet.errors << e.message
+                    flixSheet.errors << e.message ?: e.cause?.message
                     activity.error "error in $flixSheet", e
                 }, {
                     if (flixSheet.errors) {

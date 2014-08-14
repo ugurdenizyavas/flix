@@ -41,7 +41,7 @@ class FlixFlowHandler extends GroovyHandler {
                     result << it
                     activity.info "sheet result: $it"
                 }, { e ->
-                    flix.errors << e.message
+                    flix.errors << e.message ?: e.cause?.message
                     activity.error "error in $flix", e
                 }, {
                     if (flix.errors) {
