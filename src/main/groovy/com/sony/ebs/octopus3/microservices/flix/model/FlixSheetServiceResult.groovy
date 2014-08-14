@@ -7,13 +7,13 @@ import groovy.transform.ToString
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
 @Sortable(includes = ['urn', 'success', 'statusCode'])
-@EqualsAndHashCode(includes = ['urn', 'success', 'statusCode', 'result'])
+@EqualsAndHashCode(includes = ['urn', 'success', 'statusCode', 'errors'])
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class FlixSheetServiceResult {
 
     String urn
     int statusCode
-    List result = []
     boolean success
+    List errors
 
 }

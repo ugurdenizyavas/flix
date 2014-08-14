@@ -121,10 +121,10 @@ class FlixServiceTest {
         }
         def result = runFlow(flix).sort()
         assert result.size() == 4
-        assert result[0] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:a", success: true, result: ["success"], statusCode: 200)
-        assert result[1] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:b", success: false, result: ["err1", "err2"], statusCode: 500)
-        assert result[2] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:c", success: false, result: ["error in c"])
-        assert result[3] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:d", success: true, result: ["success"], statusCode: 200)
+        assert result[0] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:a", success: true, statusCode: 200)
+        assert result[1] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:b", success: false, statusCode: 500, errors: ["err1", "err2"])
+        assert result[2] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:c", success: false, statusCode: 0, errors: ["error in c"])
+        assert result[3] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:d", success: true, statusCode: 200)
     }
 
     @Test
@@ -159,9 +159,9 @@ class FlixServiceTest {
         }
         def result = runFlow(flix).sort()
         assert result.size() == 3
-        assert result[0] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:a", success: true, result: ["success"], statusCode: 200)
-        assert result[1] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:b", success: true, result: ["success"], statusCode: 200)
-        assert result[2] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:c", success: true, result: ["success"], statusCode: 200)
+        assert result[0] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:a", success: true, statusCode: 200)
+        assert result[1] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:b", success: true, statusCode: 200)
+        assert result[2] == new FlixSheetServiceResult(urn: "urn:global_sku:score:en_gb:c", success: true, statusCode: 200)
     }
 
     @Test

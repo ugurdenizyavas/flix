@@ -55,17 +55,17 @@ class FlixService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 boolean success = NingHttpClient.isSuccess(response)
-
                 def sheetServiceResult = new FlixSheetServiceResult(urn: sheetUrn, success: success, statusCode: response.statusCode)
-
-                def json = jsonSlurper.parse(response.responseBodyAsStream)
-                sheetServiceResult.result = success ? json.result : json.errors
+                if (!success) {
+                    def json = jsonSlurper.parse(response.responseBodyAsStream)
+                    sheetServiceResult.errors = json.errors
+                }
                 sheetServiceResult
             }))
         }).onErrorReturn({
             log.error "error for $sheetUrn", it
-            def result = it.message ?: it.cause?.message
-            new FlixSheetServiceResult(urn: sheetUrn, success: false, result: [result])
+            def error = it.message ?: it.cause?.message
+            new FlixSheetServiceResult(urn: sheetUrn, success: false, errors: [error])
         })
     }
 
