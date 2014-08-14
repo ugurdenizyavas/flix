@@ -134,6 +134,12 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
     assert json.flix.edate == "2014-07-12T00:00:00.000Z"
     assert json.flix.processId
     assert json.flix.filteredOutByCategoryUrns == ["urn:global_sku:$publicationLC:$localeLC:b",]
+    assert json.flix.deltaUrns == [
+            "urn:global_sku:$publicationLC:$localeLC:a",
+            "urn:global_sku:$publicationLC:$localeLC:b",
+            "urn:global_sku:$publicationLC:$localeLC:c",
+            "urn:global_sku:$publicationLC:$localeLC:d"
+    ]
 
     assert json.result.size() == 3
     assert json.result.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:a".toString()])
