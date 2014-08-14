@@ -31,7 +31,7 @@ class FlixFlowHandlerTest {
                 assert flix.locale == "en_GB"
                 assert flix.sdate == "s1"
                 assert flix.edate == "s2"
-                rx.Observable.just("xxx")
+                rx.Observable.from(["a", "b", "c"])
             }
         }
         mockRequestValidator.demand.with {
@@ -53,7 +53,7 @@ class FlixFlowHandlerTest {
             assert ren.flix.edate == "s2"
             assert ren.flix.processId.id != null
             assert !ren.errors
-            assert ren.result == ["xxx"]
+            assert ren.result?.sort() == ["a", "b", "c"]
         }
     }
 

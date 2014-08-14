@@ -56,18 +56,18 @@ class CategoryService {
     }
 
 
-    rx.Observable<List> filterForCategory(List productUrns, String categoryFeed) {
+    rx.Observable<List> filterForCategory(Flix flix, String categoryFeed) {
         observe(execControl.blocking {
             log.info "starting category filtering"
             def categoryXml = new XmlSlurper().parseText(categoryFeed)
 
             List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product'}).collect({it.text()?.toLowerCase()})
-            def filteredProductUrns = productUrns.findAll { urnStr ->
+            def filteredProductUrns = flix.deltaUrns.findAll { urnStr ->
                 def sku = new URNImpl(urnStr).values?.last()
                 productsInCategoryTree.contains(sku)
             }
-            log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${productUrns.size()}"
-            log.debug "${productUrns - filteredProductUrns} are filtered out"
+            log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${flix.deltaUrns?.size()}"
+            flix.filteredOutByCategoryUrns = flix.deltaUrns - filteredProductUrns
             filteredProductUrns
         })
     }

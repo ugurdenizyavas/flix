@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
 import groovy.json.JsonSlurper
@@ -19,6 +20,8 @@ import static ratpack.rx.RxRatpack.observe
 @Service
 @org.springframework.context.annotation.Lazy
 class FlixService {
+
+    final JsonSlurper jsonSlurper = new JsonSlurper()
 
     @Autowired
     @org.springframework.context.annotation.Lazy
@@ -43,25 +46,31 @@ class FlixService {
     @Autowired
     DeltaDatesProvider deltaDatesProvider
 
-    private rx.Observable<String> singleSheet(Flix flix, String sheetUrn) {
+    private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String sheetUrn) {
 
         def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) + "?processId=${flix?.processId?.id}"
 
         rx.Observable.just("starting").flatMap({
             httpClient.doGet(importUrl)
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "calling flix sheet service")
-        }).map({
-            "success for $sheetUrn"
+        }).flatMap({ Response response ->
+            observe(execControl.blocking({
+                boolean success = NingHttpClient.isSuccess(response)
+
+                def sheetServiceResult = new FlixSheetServiceResult(urn: sheetUrn, success: success, statusCode: response.statusCode)
+
+                def json = jsonSlurper.parse(response.responseBodyAsStream)
+                sheetServiceResult.result = success ? json.result : json.errors
+                sheetServiceResult
+            }))
         }).onErrorReturn({
-            log.error "error for $importUrl", it
-            "error for $sheetUrn"
+            log.error "error for $sheetUrn", it
+            def result = it.message ?: it.cause?.message
+            new FlixSheetServiceResult(urn: sheetUrn, success: false, result: [result])
         })
     }
 
     rx.Observable<String> flixFlow(Flix flix) {
 
-        List deltaProductUrns
         rx.Observable.just("starting").flatMap({
             deltaDatesProvider.createDateParams(flix)
         }).flatMap({
@@ -73,11 +82,11 @@ class FlixService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                new JsonSlurper().parseText(response.responseBody)
+                jsonSlurper.parse(response.responseBodyAsStream)
             }))
         }).flatMap({
-            deltaProductUrns = it?.results
-            log.info "${deltaProductUrns?.size()} products found in delta"
+            flix.deltaUrns = it?.results
+            log.info "${flix.deltaUrns?.size()} products found in delta"
 
             log.info "deleting current flix xmls"
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", flix.baseUrn.toString())
@@ -89,7 +98,7 @@ class FlixService {
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->
-            categoryService.filterForCategory(deltaProductUrns, categoryFeed)
+            categoryService.filterForCategory(flix, categoryFeed)
         }).flatMap({ List filteredProductUrns ->
             log.info "${filteredProductUrns?.size()} calls will be made to flix sheet"
             List list = filteredProductUrns?.collect { singleSheet(flix, it) }

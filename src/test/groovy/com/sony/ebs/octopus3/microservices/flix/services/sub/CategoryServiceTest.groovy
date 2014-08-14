@@ -55,7 +55,7 @@ class CategoryServiceTest {
                 log.error "error", it
                 result.set("error")
             }, {
-                if (!valueSet)result.set("outOfFlow")
+                if (!valueSet) result.set("outOfFlow")
             })
         }
         result.get()
@@ -122,18 +122,18 @@ class CategoryServiceTest {
         assert runRetrieveCategoryFeed(flix) == "error"
     }
 
-    def runFilterForCategory(List products, String categoryXml) {
+    def runFilterForCategory(Flix flix, String categoryXml) {
         def result = new BlockingVariable<List>(5)
         boolean valueSet = false
         execController.start {
-            categoryService.filterForCategory(products, categoryXml).subscribe({
+            categoryService.filterForCategory(flix, categoryXml).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
                 log.error "error", it
                 result.set("error")
             }, {
-                if (!valueSet)result.set("outOfFlow")
+                if (!valueSet) result.set("outOfFlow")
             })
         }
         result.get()
@@ -173,7 +173,10 @@ class CategoryServiceTest {
     </node>
 </ProductHierarchy>
 """
-        assert runFilterForCategory(["urn:flix:a1", "urn:flix:b", "urn:flix:c2"], xml) == ["urn:flix:a1", "urn:flix:c2"]
+        def flix = new Flix(publication: "SCORE", locale: "en_GB", deltaUrns: ["urn:flix:a1", "urn:flix:b", "urn:flix:c2", "urn:flix:d"])
+
+        assert runFilterForCategory(flix, xml).sort() == ["urn:flix:a1", "urn:flix:c2"]
+        assert flix.filteredOutByCategoryUrns.sort() == ["urn:flix:b", "urn:flix:d"]
     }
 
 }

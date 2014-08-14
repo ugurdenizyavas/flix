@@ -38,8 +38,8 @@ class FlixFlowHandler extends GroovyHandler {
                 render json(status: 400, flix: flix, errors: flix.errors)
             } else {
                 flixService.flixFlow(flix).subscribe({
-                    result << it?.toString()
-                    activity.info "$it"
+                    result << it
+                    activity.info "sheet result: $it"
                 }, { e ->
                     flix.errors << e.message
                     activity.error "error in $flix", e
