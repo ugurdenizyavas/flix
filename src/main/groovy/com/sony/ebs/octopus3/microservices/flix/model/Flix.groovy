@@ -8,7 +8,7 @@ import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
-@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['deltaUrns','categoryFilteredOutUrns'])
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors','deltaUrns','categoryFilteredOutUrns'])
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {
