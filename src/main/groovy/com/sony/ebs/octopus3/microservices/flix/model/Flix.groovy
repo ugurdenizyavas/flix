@@ -26,7 +26,7 @@ class Flix {
 
     @JsonIgnore
     URN getCategoryUrn() {
-        new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale, FlixUrnValue.category.toString()])
+        new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale, FlixUrnValue.category.toString() + ".xml"])
     }
 
     @JsonIgnore

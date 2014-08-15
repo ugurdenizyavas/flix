@@ -36,8 +36,6 @@ class CategoryService {
     NingHttpClient httpClient
 
     rx.Observable<String> retrieveCategoryFeed(Flix flix) {
-        def categoryUrnStr = flix.categoryUrn.toString()
-
         String categoryFeed
         rx.Observable.just("starting").flatMap({
             def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
@@ -47,7 +45,7 @@ class CategoryService {
             NingHttpClient.isSuccess(response, "getting octopus category feed", flix.errors)
         }).flatMap({ Response response ->
             categoryFeed = IOUtils.toString(response.responseBodyAsStream, "UTF-8")
-            def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrnStr)
+            def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", flix.categoryUrn.toString())
             log.info "category save url for $flix is $categorySaveUrl"
 
             httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, "UTF-8"))

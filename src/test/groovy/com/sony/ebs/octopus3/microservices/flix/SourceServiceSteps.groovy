@@ -110,7 +110,7 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
     server.post(by(uri("/repository/file/urn:flixmedia:last_modified:$publicationLC:$localeLC"))).response("")
 
     server.get(by(uri("/product/publications/$publication/locales/$locale/hierarchies/category"))).response(CATEGORY_FEED)
-    server.post(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC:category"))).response("")
+    server.post(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC:category.xml"))).response("")
 
     server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:a"))).response('{}')
     server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:c"))).response('{}')

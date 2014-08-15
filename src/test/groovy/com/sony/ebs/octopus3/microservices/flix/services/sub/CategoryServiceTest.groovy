@@ -79,7 +79,7 @@ class CategoryServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: categoryFeed))
             }
             doPost(1) { String url, InputStream is ->
-                assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
+                assert url == "/repository/file/urn:flixmedia:score:en_gb:category.xml"
                 assert is.text == categoryFeed
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
