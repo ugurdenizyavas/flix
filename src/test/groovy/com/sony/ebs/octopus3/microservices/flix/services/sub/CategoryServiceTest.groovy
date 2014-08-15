@@ -78,9 +78,9 @@ class CategoryServiceTest {
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: categoryFeed))
             }
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
-                assert data == categoryFeed
+                assert is.text == categoryFeed
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
@@ -108,7 +108,7 @@ class CategoryServiceTest {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
             }
-            doPost(1) { url, data ->
+            doPost(1) { String url, InputStream is ->
                 rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }

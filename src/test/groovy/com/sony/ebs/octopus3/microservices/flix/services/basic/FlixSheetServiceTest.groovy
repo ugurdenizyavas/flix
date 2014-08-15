@@ -72,9 +72,9 @@ class FlixSheetServiceTest {
                 assert url == "/repository/file/urn:flix:score:en_gb:a"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:a.xml"
-                assert data == "some xml"
+                assert is.text == "some xml"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
@@ -179,7 +179,7 @@ class FlixSheetServiceTest {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
