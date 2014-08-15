@@ -4,6 +4,7 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -64,8 +65,8 @@ class FlixPackageService {
             observe(execControl.blocking {
                 createOpsRecipe(flixPackage)
             })
-        }).flatMap({
-            httpClient.doPost(repositoryOpsServiceUrl, it)
+        }).flatMap({ String recipe ->
+            httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "calling repo ops service to package flix")
         }).map({

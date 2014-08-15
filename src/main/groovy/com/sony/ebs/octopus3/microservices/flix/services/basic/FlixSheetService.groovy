@@ -7,6 +7,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -72,7 +73,7 @@ class FlixSheetService {
             log.debug "xml is $xml"
             log.info "saving xml"
             def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.sheetUrn.toString())
-            httpClient.doPost(saveUrl, xml)
+            httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
         }).map({
