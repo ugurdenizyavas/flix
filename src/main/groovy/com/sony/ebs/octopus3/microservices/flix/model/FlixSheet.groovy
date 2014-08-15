@@ -25,6 +25,11 @@ class FlixSheet {
 
     @JsonIgnore
     URN getSheetUrn() {
-        new URNImpl(FlixUrnValue.flixMedia.toString(), new URNImpl(urnStr).values)
+        def values = new URNImpl(urnStr).values
+        if (values && values.last()) {
+            def last = values.last()
+            values = values - last + "${last}.xml"
+        }
+        new URNImpl(FlixUrnValue.flixMedia.toString(), values)
     }
 }

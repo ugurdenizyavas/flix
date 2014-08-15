@@ -159,7 +159,7 @@ Given(~"Flix json for sheet (.*)") { String sheet ->
     server.request(by(uri("/product/eancode/${sheet.toUpperCase()}")))
             .response('<eancodes><eancode material="$sheet" code="4905524328974"/></eancodes>')
 
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:$sheet")))
+    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet}.xml")))
             .response('done')
 }
 
