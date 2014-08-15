@@ -65,9 +65,9 @@ class DeltaDatesProviderTest {
     @Test
     void "update last modified"() {
         mockNingHttpClient.demand.with {
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:last_modified:score:fr_be"
-                assert data == "update"
+                assert is.text == "update"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
@@ -78,7 +78,7 @@ class DeltaDatesProviderTest {
     @Test
     void "update last modified outOfFlow"() {
         mockNingHttpClient.demand.with {
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
@@ -90,7 +90,7 @@ class DeltaDatesProviderTest {
     @Test
     void "update last modified error"() {
         mockNingHttpClient.demand.with {
-            doPost(1) { String url, String data ->
+            doPost(1) { String url, InputStream is ->
                 throw new Exception("error updating last modified time")
             }
         }

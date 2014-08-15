@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -35,7 +36,7 @@ class DeltaDatesProvider {
     rx.Observable<String> updateLastModified(Flix flix) {
         rx.Observable.just("starting").flatMap({
             def url = repositoryFileServiceUrl.replace(":urn", flix.lastModifiedUrn.toString())
-            httpClient.doPost(url, "update")
+            httpClient.doPost(url, IOUtils.toInputStream("update", "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "updating last modified date", flix.errors)
         }).map({
