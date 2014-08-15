@@ -57,7 +57,7 @@ class FlixService {
                 boolean success = NingHttpClient.isSuccess(response)
                 def sheetServiceResult = new FlixSheetServiceResult(urn: sheetUrn, success: success, statusCode: response.statusCode)
                 if (!success) {
-                    def json = jsonSlurper.parse(response.responseBodyAsStream)
+                    def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
                     sheetServiceResult.errors = json.errors
                 }
                 sheetServiceResult
@@ -82,7 +82,7 @@ class FlixService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                jsonSlurper.parse(response.responseBodyAsStream)
+                jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
             }))
         }).flatMap({
             flix.deltaUrns = it?.results

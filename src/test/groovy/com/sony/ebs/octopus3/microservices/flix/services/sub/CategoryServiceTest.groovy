@@ -9,6 +9,7 @@ import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import org.springframework.core.io.DefaultResourceLoader
 import ratpack.exec.ExecController
 import ratpack.launch.LaunchConfigBuilder
 import spock.util.concurrent.BlockingVariable
@@ -16,12 +17,19 @@ import spock.util.concurrent.BlockingVariable
 @Slf4j
 class CategoryServiceTest {
 
+    DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader()
+    final static String BASE_PATH = "classpath:com/sony/ebs/octopus3/microservices/flix/services/sub/"
+
     final static String CATEGORY_FEED = "<categories/>"
 
     CategoryService categoryService
     StubFor mockNingHttpClient
 
     static ExecController execController
+
+    def getFileText(name) {
+        defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream.text
+    }
 
     @BeforeClass
     static void beforeClass() {
@@ -63,19 +71,21 @@ class CategoryServiceTest {
 
     @Test
     void "get category feed"() {
+        def categoryFeed = getFileText("category_ru.xml")
+
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
+                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: categoryFeed))
             }
             doPost(1) { String url, String data ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category"
-                assert data == CATEGORY_FEED
+                assert data == categoryFeed
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
         def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runRetrieveCategoryFeed(flix) == CATEGORY_FEED
+        assert runRetrieveCategoryFeed(flix) == categoryFeed
     }
 
     @Test

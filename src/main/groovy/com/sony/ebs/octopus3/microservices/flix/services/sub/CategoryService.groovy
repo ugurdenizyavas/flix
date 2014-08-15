@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -17,6 +18,8 @@ import static ratpack.rx.RxRatpack.observe
 @Service
 @org.springframework.context.annotation.Lazy
 class CategoryService {
+
+    final XmlSlurper xmlSlurper = new XmlSlurper()
 
     @Autowired
     @org.springframework.context.annotation.Lazy
@@ -43,11 +46,11 @@ class CategoryService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "getting octopus category feed", flix.errors)
         }).flatMap({ Response response ->
-            categoryFeed = response.responseBody
+            categoryFeed = IOUtils.toString(response.responseBodyAsStream, "UTF-8")
             def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrnStr)
             log.info "category save url for $flix is $categorySaveUrl"
 
-            httpClient.doPost(categorySaveUrl, categoryFeed)
+            httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving octopus category feed", flix.errors)
         }).map({
@@ -59,9 +62,11 @@ class CategoryService {
     rx.Observable<List> filterForCategory(Flix flix, String categoryFeed) {
         observe(execControl.blocking {
             log.info "starting category filtering"
-            def categoryXml = new XmlSlurper().parseText(categoryFeed)
+            def categoryXml = xmlSlurper.parseText(categoryFeed)
 
-            List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product'}).collect({it.text()?.toLowerCase()})
+            List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product' }).collect({
+                it.text()?.toLowerCase()
+            })
             def filteredProductUrns = flix.deltaUrns.findAll { urnStr ->
                 def sku = new URNImpl(urnStr).values?.last()
                 productsInCategoryTree.contains(sku)

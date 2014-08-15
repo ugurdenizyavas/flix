@@ -57,4 +57,8 @@ class FlixXmlBuilderTest {
         testBuildXml("x3")
     }
 
+    @Test
+    void "test ru_ru cadc json"() {
+        testBuildXml("ru_ru")
+    }
 }

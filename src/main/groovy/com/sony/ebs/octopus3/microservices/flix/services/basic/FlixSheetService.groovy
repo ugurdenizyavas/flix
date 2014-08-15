@@ -20,6 +20,8 @@ import static ratpack.rx.RxRatpack.observe
 @org.springframework.context.annotation.Lazy
 class FlixSheetService {
 
+    final JsonSlurper jsonSlurper = new JsonSlurper()
+
     @Value('${octopus3.flix.repositoryFileServiceUrl}')
     String repositoryFileServiceUrl
 
@@ -56,7 +58,7 @@ class FlixSheetService {
         }).flatMap({ Response response ->
             observe(execControl.blocking {
                 log.info "parsing json"
-                def json = new JsonSlurper().parseText(response.responseBody)
+                def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
                 json.eanCode = product.eanCode
                 json
             })
