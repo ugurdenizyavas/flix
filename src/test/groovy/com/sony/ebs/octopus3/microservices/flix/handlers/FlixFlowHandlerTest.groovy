@@ -24,8 +24,9 @@ class FlixFlowHandlerTest {
     }
 
     def sheetResultA = new FlixSheetServiceResult(urn: "a", success: true)
-    def sheetResultB = new FlixSheetServiceResult(urn: "b", success: false)
+    def sheetResultB = new FlixSheetServiceResult(urn: "b", success: false, errors: ["err3", "err4"])
     def sheetResultE = new FlixSheetServiceResult(urn: "e", success: true)
+    def sheetResultF = new FlixSheetServiceResult(urn: "f", success: false, errors: ["err4", "err5"])
 
     @Test
     void "main flow"() {
@@ -37,9 +38,9 @@ class FlixFlowHandlerTest {
                 assert flix.sdate == "s1"
                 assert flix.edate == "s2"
 
-                flix.deltaUrns = ["a", "b", "c", "d", "e"]
+                flix.deltaUrns = ["a", "b", "c", "d", "e", "f"]
                 flix.categoryFilteredOutUrns = ["c", "d"]
-                rx.Observable.from([sheetResultE, sheetResultA, sheetResultB])
+                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
@@ -62,11 +63,17 @@ class FlixFlowHandlerTest {
             assert ren.flix.processId.id != null
             assert !ren.errors
 
-            assert ren.result.list?.sort() == [sheetResultA, sheetResultB, sheetResultE]
-            assert ren.result.stats."number of delta products" == 5
+            assert ren.result.stats."number of delta products" == 6
             assert ren.result.stats."number of products filtered out by category" == 2
             assert ren.result.stats."number of success" == 2
-            assert ren.result.stats."number of errors" == 1
+            assert ren.result.stats."number of errors" == 2
+
+            assert ren.result.success?.sort() == ["a", "e"]
+
+            assert ren.result.errors.size() == 3
+            assert ren.result.errors.err3 == ["b"]
+            assert ren.result.errors.err4?.sort() == ["b", "f"]
+            assert ren.result.errors.err5 == ["f"]
         }
     }
 

@@ -63,7 +63,8 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
         "urn:global_sku:$publicationLC:$localeLC:a",
         "urn:global_sku:$publicationLC:$localeLC:b",
         "urn:global_sku:$publicationLC:$localeLC:c",
-        "urn:global_sku:$publicationLC:$localeLC:d"
+        "urn:global_sku:$publicationLC:$localeLC:d",
+        "urn:global_sku:$publicationLC:$localeLC:e"
     ]
 }
 """
@@ -90,6 +91,7 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
                         <products>
                             <product><![CDATA[c]]></product>
                             <product><![CDATA[d]]></product>
+                            <product><![CDATA[e]]></product>
                         </products>
                     </node>
                 </nodes>
@@ -99,12 +101,6 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
 </ProductHierarchy>
 """
 
-    String SHEET_FEED_WITH_ERRORS = '''
-{
-    "errors" : ["err1", "err2"]
-}
-'''
-
     server.get(by(uri("/repository/delta/urn:global_sku:$publicationLC:$localeLC"))).response(DELTA_FEED)
     server.delete(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC"))).response("")
     server.post(by(uri("/repository/file/urn:flixmedia:last_modified:$publicationLC:$localeLC"))).response("")
@@ -113,8 +109,9 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
     server.post(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC:category.xml"))).response("")
 
     server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:a"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:c"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:d"))).response(with(SHEET_FEED_WITH_ERRORS), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:c"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:d"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:e"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
 }
 
 When(~"I request flix media generation for publication (.*) locale (.*)") { publication, locale ->
@@ -125,6 +122,8 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
     def publicationLC = publication.toLowerCase()
     def localeLC = locale.toLowerCase()
 
+    def getUrn = { "urn:global_sku:$publicationLC:$localeLC:$it".toString() }
+
     assert response.statusCode == 200
     def json = parseJson(response)
     assert json.status == 200
@@ -133,23 +132,20 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
     assert json.flix.sdate == "2014-07-09T00:00:00.000Z"
     assert json.flix.edate == "2014-07-12T00:00:00.000Z"
     assert json.flix.processId
-    assert json.flix.categoryFilteredOutUrns == ["urn:global_sku:$publicationLC:$localeLC:b"]
-    assert json.flix.deltaUrns == [
-            "urn:global_sku:$publicationLC:$localeLC:a",
-            "urn:global_sku:$publicationLC:$localeLC:b",
-            "urn:global_sku:$publicationLC:$localeLC:c",
-            "urn:global_sku:$publicationLC:$localeLC:d"
-    ]
+    assert json.flix.categoryFilteredOutUrns == [getUrn("b")]
+    assert json.flix.deltaUrns == [getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e")]
 
-    assert json.result.stats."number of delta products" == 4
+    assert json.result.stats."number of delta products" == 5
     assert json.result.stats."number of products filtered out by category" == 1
     assert json.result.stats."number of success" == 2
-    assert json.result.stats."number of errors" == 1
+    assert json.result.stats."number of errors" == 2
 
-    assert json.result.list.size() == 3
-    assert json.result.list.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:a".toString()])
-    assert json.result.list.contains([statusCode: 200, success: true, urn: "urn:global_sku:$publicationLC:$localeLC:c".toString()])
-    assert json.result.list.contains([statusCode: 500, success: false, urn: "urn:global_sku:$publicationLC:$localeLC:d".toString(), errors: ["err1", "err2"]])
+    assert json.result.success?.sort() == [getUrn("a"), getUrn("d")]
+
+    assert json.result.errors.size() == 3
+    assert json.result.errors.err1 == [getUrn("c")]
+    assert json.result.errors.err2?.sort() == [getUrn("c"), getUrn("e")]
+    assert json.result.errors.err3 == [getUrn("e")]
 }
 
 Given(~"Flix json for sheet (.*)") { String sheet ->

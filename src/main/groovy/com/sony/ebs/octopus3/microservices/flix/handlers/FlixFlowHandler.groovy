@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.util.logging.Slf4j
@@ -31,14 +32,14 @@ class FlixFlowHandler extends GroovyHandler {
                     locale: pathTokens.locale, sdate: request.queryParams.sdate, edate: request.queryParams.edate)
             activity.info "starting $flix"
 
-            List flixSheetServiceResults = []
+            List sheetServiceResults = []
             if (validator.validateFlix(flix)) {
                 activity.error "error validating $flix : $flix.errors"
                 response.status(400)
                 render json(status: 400, flix: flix, errors: flix.errors)
             } else {
                 flixService.flixFlow(flix).subscribe({
-                    flixSheetServiceResults << it
+                    sheetServiceResults << it
                     activity.info "sheet result: $it"
                 }, { e ->
                     flix.errors << e.message ?: e.cause?.message
@@ -49,7 +50,7 @@ class FlixFlowHandler extends GroovyHandler {
                         render json(status: 500, flix: flix, errors: flix.errors)
                     } else {
                         response.status(200)
-                        render json(status: 200, flix: flix, result: createFlixResult(flix, flixSheetServiceResults))
+                        render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))
                     }
                 })
             }
@@ -57,20 +58,33 @@ class FlixFlowHandler extends GroovyHandler {
         }
     }
 
-
-    Map createFlixResult(Flix flix, List flixSheetServiceResults) {
+    Map createFlixResult(Flix flix, List sheetServiceResults) {
+        def createSuccess = {
+            sheetServiceResults.findAll({ it.success }).collect({ it.urn })
+        }
+        def createErrors = {
+            Map errorMap = [:]
+            sheetServiceResults.findAll({ !it.success }).each { FlixSheetServiceResult serviceResult ->
+                serviceResult.errors.each { error ->
+                    if (errorMap[error] == null) errorMap[error] = []
+                    errorMap[error] << serviceResult.urn
+                }
+            }
+            errorMap
+        }
         [
-                stats: [
+                stats  : [
                         "number of delta products"                   : flix.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
-                        "number of success"                          : flixSheetServiceResults?.findAll({
+                        "number of success"                          : sheetServiceResults?.findAll({
                             it.success
                         }).size(),
-                        "number of errors"                           : flixSheetServiceResults?.findAll({
+                        "number of errors"                           : sheetServiceResults?.findAll({
                             !it.success
                         }).size()
                 ],
-                list : flixSheetServiceResults
+                success: createSuccess(),
+                errors : createErrors()
         ]
     }
 
