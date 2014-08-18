@@ -49,8 +49,15 @@ After() {
     aut.stop()
 }
 
+def validateError = { Response response, message ->
+    assert response.statusCode == 400
+    def json = parseJson(response)
+    assert json?.status == 400
+    assert json?.errors == [message]
+}
+
 /*
-* ******************** FLIX MEDIA GENERATION SERVICE ***********************************************************
+* ******************** FLIX DELTA SERVICE ***********************************************************
 * */
 
 Given(~"Flix delta for publication (.*) locale (.*)") { String publication, String locale ->
@@ -114,11 +121,11 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
     server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:e"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
 }
 
-When(~"I request flix media generation for publication (.*) locale (.*)") { publication, locale ->
+When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
     get("flix/delta/publication/$publication/locale/$locale?sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
 }
 
-Then(~"Flix media generation for publication (.*) locale (.*) should be done") { publication, locale ->
+Then(~"Flix delta service for publication (.*) locale (.*) should be done") { publication, locale ->
     def publicationLC = publication.toLowerCase()
     def localeLC = locale.toLowerCase()
 
@@ -148,6 +155,25 @@ Then(~"Flix media generation for publication (.*) locale (.*) should be done") {
     assert json.result.errors.err3 == [getUrn("e")]
 }
 
+When(~"I request flix delta service with invalid (.*) parameter") { paramName ->
+    if (paramName == "publication") {
+        get("flix/delta/publication/,,/locale/en_GB")
+    } else if (paramName == "locale") {
+        get("flix/delta/publication/SCORE/locale/tr_")
+    } else if (paramName == "sdate") {
+        get("flix/delta/publication/SCORE/locale/en_GB?sdate=s1")
+    } else if (paramName == "edate") {
+        get("flix/delta/publication/SCORE/locale/en_GB?edate=s2")
+    }
+}
+
+Then(~"Flix delta service should give (.*) parameter error") { paramName ->
+    validateError(response, "$paramName parameter is invalid")
+}
+
+/*
+* ******************** FLIX SHEET SERVICE *************************************************************
+* */
 Given(~"Flix json for sheet (.*)") { String sheet ->
     server.request(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheet")))
             .response('{"a":"1"}')
@@ -159,15 +185,27 @@ Given(~"Flix json for sheet (.*)") { String sheet ->
             .response('done')
 }
 
-When(~"I request flix sheet import for process (.*) sheet (.*)") { process, sheet ->
+When(~"I request flix sheet service for process (.*) sheet (.*)") { process, sheet ->
     get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process")
 }
 
-Then(~"Flix sheet import for process (.*) sheet (.*) should be done") { process, sheet ->
+Then(~"Flix sheet service for process (.*) sheet (.*) should be done") { process, sheet ->
     assert response.statusCode == 200
     def json = parseJson(response)
     assert json.status == 200
     assert json.result == ["success"]
     assert json.flixSheet.processId == process
     assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:$sheet"
+}
+
+When(~"I request flix sheet service with invalid urn") { ->
+    get("flix/sheet/urn:xxx")
+}
+
+Then(~"Flix sheet service should give invalid urn error") { ->
+    assert response.statusCode == 400
+    def json = parseJson(response)
+    assert json.status == 400
+    assert json.errors == ["urn parameter is invalid"]
+    assert json.flixSheet.urnStr == "urn:xxx"
 }

@@ -81,8 +81,7 @@ class FlixFlowHandlerTest {
     void "error in params"() {
         mockRequestValidator.demand.with {
             validateFlix(1) { Flix flix ->
-                flix.errors << "error"
-                flix.errors
+                ["error"]
             }
         }
         handle(new FlixFlowHandler(validator: mockRequestValidator.proxyInstance()), {

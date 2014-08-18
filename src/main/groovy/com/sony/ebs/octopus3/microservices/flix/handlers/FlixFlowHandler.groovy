@@ -33,10 +33,11 @@ class FlixFlowHandler extends GroovyHandler {
             activity.info "starting $flix"
 
             List sheetServiceResults = []
-            if (validator.validateFlix(flix)) {
-                activity.error "error validating $flix : $flix.errors"
+            List errors = validator.validateFlix(flix)
+            if (errors) {
+                activity.error "error validating $flix : $errors"
                 response.status(400)
-                render json(status: 400, flix: flix, errors: flix.errors)
+                render json(status: 400, flix: flix, errors: errors)
             } else {
                 flixService.flixFlow(flix).subscribe({
                     sheetServiceResults << it

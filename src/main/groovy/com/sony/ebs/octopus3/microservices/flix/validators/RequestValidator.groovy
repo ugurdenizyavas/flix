@@ -19,7 +19,7 @@ class RequestValidator {
      * @return
      */
     List validateFlix(Flix flix) {
-        List errors = flix.errors
+        List errors = []
 
         validatePublication(errors, flix.publication)
         validateLocale(errors, flix.locale)
@@ -64,7 +64,7 @@ class RequestValidator {
      * @return
      */
     List validateFlixSheet(FlixSheet flixSheet) {
-        List errors = flixSheet.errors
+        List errors = []
 
         if (flixSheet.processId && !(flixSheet.processId ==~ /[a-zA-Z0-9\-]+/)) {
             errors << "processId parameter is invalid"
