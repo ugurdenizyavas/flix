@@ -40,13 +40,13 @@ class EanCodeServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runFilterForEanCodes(List productUrls, URN baseUrn, List errors) {
+    def runFilterForEanCodes(List productUrls, List errors) {
         eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable(5)
         boolean valueSet = false
         execController.start {
-            eanCodeService.filterForEanCodes(productUrls, baseUrn, errors).subscribe({
+            eanCodeService.filterForEanCodes(productUrls, errors).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -70,7 +70,7 @@ class EanCodeServiceTest {
         eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
 
         def errors = []
-        assert runFilterForEanCodes([], new URNImpl("urn:gs:score:en_gb"), errors) == "outOfFlow"
+        assert runFilterForEanCodes([], errors) == "outOfFlow"
         assert errors == ["HTTP 404 error getting ean code feed"]
     }
 
@@ -85,7 +85,7 @@ class EanCodeServiceTest {
         eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
 
         def errors = []
-        assert runFilterForEanCodes([], new URNImpl("urn:gs:score:en_gb"), errors) == "error"
+        assert runFilterForEanCodes([], errors) == "error"
         assert errors == []
     }
 
@@ -94,9 +94,9 @@ class EanCodeServiceTest {
     void "filter for ean codes"() {
         String feed = """
 <identifiers type="ean_code">
-    <identifier materialName="a"><![CDATA[1]]></identifier>
+    <identifier materialName="A"><![CDATA[1]]></identifier>
     <identifier materialName="b"><![CDATA[2]]></identifier>
-    <identifier materialName="e"><![CDATA[3]]></identifier>
+    <identifier materialName="E"><![CDATA[3]]></identifier>
 </identifiers>
 """
         def productUrns = [
@@ -115,7 +115,7 @@ class EanCodeServiceTest {
         }
 
         def errors = []
-        Map eanCodeMap = runFilterForEanCodes(productUrns, new URNImpl("urn:gs:score:en_gb"), errors)
+        Map eanCodeMap = runFilterForEanCodes(productUrns, errors)
 
         assert errors == []
 

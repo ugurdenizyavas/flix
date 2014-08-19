@@ -101,10 +101,11 @@ class FlixService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
+                def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
+                json?.results
             }))
         }).flatMap({
-            flix.deltaUrns = it?.results
+            flix.deltaUrns = it
             log.info "${flix.deltaUrns?.size()} products found in delta"
 
             log.info "deleting current flix xmls"
@@ -117,11 +118,11 @@ class FlixService {
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->
-            categoryService.filterForCategory(flix.deltaUrns, flix.deltaUrn, categoryFeed)
+            categoryService.filterForCategory(flix.deltaUrns, categoryFeed)
         }).flatMap({
             categoryFilteredUrns = it
             flix.categoryFilteredOutUrns = flix.deltaUrns - categoryFilteredUrns
-            eanCodeService.filterForEanCodes(categoryFilteredUrns, flix.deltaUrn, flix.errors)
+            eanCodeService.filterForEanCodes(categoryFilteredUrns, flix.errors)
         }).flatMap({ Map eanCodeMap ->
             List eanCodeFilteredUrns = eanCodeMap.keySet() as List
             flix.eanCodeFilteredOutUrns = categoryFilteredUrns - eanCodeFilteredUrns

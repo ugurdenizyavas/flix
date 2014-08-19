@@ -33,22 +33,22 @@ class EanCodeService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    rx.Observable<String> filterForEanCodes(List productUrls, URN baseUrn, List errors) {
-        def createUrn = {
-            new URNImpl(baseUrn.type, baseUrn.values + it)
-        }
+    rx.Observable<String> filterForEanCodes(List productUrls, List errors) {
         rx.Observable.just("starting").flatMap({
             httpClient.doGet(octopusEanCodeServiceUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "getting ean code feed", errors)
         }).flatMap({ Response response ->
             observe(execControl.blocking({
+                def productMap = [:]
+                productUrls.each { productMap[new URNImpl(it).values?.last()?.toUpperCase()] = it }
+
                 def xml = xmlSlurper.parse(response.responseBodyAsStream)
                 Map eanCodeMap = [:]
                 xml.identifier?.each { identifier ->
-                    def urnStr = createUrn(identifier.@materialName?.toString())?.toString()
-                    if (productUrls.contains(urnStr)) {
-                        eanCodeMap[urnStr] = identifier.text()
+                    def key = identifier.@materialName?.toString()?.toUpperCase()
+                    if (productMap[key]) {
+                        eanCodeMap[productMap[key]] = identifier.text()
                     }
                 }
                 log.info "finished eanCode filtering: ${eanCodeMap?.size()} left, from ${productUrls?.size()}"

@@ -112,14 +112,12 @@ class FlixServiceTest {
                 assert f == flix
                 rx.Observable.just(CATEGORY_FEED)
             }
-            filterForCategory(1) { List productUrls, URN baseUrn, String categoryFeed ->
-                assert baseUrn.toString() == "urn:global_sku:score:en_gb"
+            filterForCategory(1) { List productUrls, String categoryFeed ->
                 rx.Observable.just(productUrls - ["urn:global_sku:score:en_gb:a", "urn:global_sku:score:en_gb:b"])
             }
         }
         mockEanCodeService.demand.with {
-            filterForEanCodes(1) { List productUrls, URN baseUrn, List errors ->
-                assert baseUrn.toString() == "urn:global_sku:score:en_gb"
+            filterForEanCodes(1) { List productUrls, List errors ->
                 List filtered = productUrls - ["urn:global_sku:score:en_gb:c", "urn:global_sku:score:en_gb:d"]
                 rx.Observable.just(filtered.inject([:]) { map, String urn -> map << [(urn): "${urn[urn.size() - 1]}123"] })
             }

@@ -81,9 +81,9 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
 
     String EAN_CODE_FEED = """
 <identifiers type="ean_code">
-    <identifier materialName="e"><![CDATA[1]]></identifier>
+    <identifier materialName="E"><![CDATA[1]]></identifier>
     <identifier materialName="f"><![CDATA[2]]></identifier>
-    <identifier materialName="g"><![CDATA[3]]></identifier>
+    <identifier materialName="G"><![CDATA[3]]></identifier>
     <identifier materialName="h"><![CDATA[4]]></identifier>
 </identifiers>
 """
@@ -103,8 +103,8 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
                             <product><![CDATA[c]]></product>
-                            <product><![CDATA[d]]></product>
-                            <product><![CDATA[e]]></product>
+                            <product><![CDATA[D]]></product>
+                            <product><![CDATA[E]]></product>
                             <product><![CDATA[f]]></product>
                         </products>
                     </node>
@@ -112,7 +112,7 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
                         <name><![CDATA[HCS Home Cinema Projectors]]></name>
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
-                            <product><![CDATA[g]]></product>
+                            <product><![CDATA[G]]></product>
                             <product><![CDATA[h]]></product>
                         </products>
                     </node>
