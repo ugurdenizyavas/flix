@@ -20,7 +20,7 @@ buildscript {
     }
     dependencies {
         classpath "io.ratpack:ratpack-gradle:0.9.7"
-        classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7"
+        classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7.1"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.0.2"
     }
 }
@@ -54,6 +54,9 @@ configurations {
     }
     cucumberRuntime {
         extendsFrom testRuntime
+    }
+    sshAntTask {
+        logging.level = LogLevel.INFO
     }
 }
 
@@ -89,6 +92,8 @@ test { systemProperty('environment', System.getProperty('environment')) }
 //======================================================================
 
 dependencies {
+    sshAntTask 'org.apache.ant:ant-jsch:1.9.2'
+
     compile 'com.sony.ebs.octopus3:octopus3-commons:1.1-SNAPSHOT'
     compile 'com.sony.ebs.octopus3:octopus3-commons-ratpack:1.0-SNAPSHOT'
     compile 'commons-io:commons-io:2.4'
