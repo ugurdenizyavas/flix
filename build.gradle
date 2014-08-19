@@ -168,3 +168,62 @@ nexus {
     repositoryUrl = 'https://mvn.sony-europe.com/content/repositories/releases'
     snapshotRepositoryUrl = 'https://mvn.sony-europe.com/content/repositories/snapshots'
 }
+
+task devRelease() {
+    description = "Upload shadow jar to dev server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(devReleasePassword.decodeBase64())
+
+    doLast {
+        devUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app-$version-Shadow.jar"),
+                        todir: "${devReleaseUser}@${host}:${devUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        devStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: devReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: devStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+    }
+}
