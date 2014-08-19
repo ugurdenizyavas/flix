@@ -160,7 +160,7 @@ class FlixServiceTest {
         }
         def flix = new Flix(publication: "SCORE", locale: "en_GB")
         assert runFlow(flix) == []
-        assert flix.errors == ["HTTP 404 error retrieving delta from repo service"]
+        assert flix.errors == ["HTTP 404 error retrieving global sku delta"]
     }
 
     @Test

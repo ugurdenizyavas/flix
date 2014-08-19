@@ -107,7 +107,6 @@ class FlixFlowHandlerTest {
         }
     }
 
-
     @Test
     void "error in flix flow"() {
         mockFlixService.demand.with {
@@ -122,7 +121,9 @@ class FlixFlowHandlerTest {
             }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
+                flixPackageService: mockFlixPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -137,4 +138,39 @@ class FlixFlowHandlerTest {
         }
     }
 
+    @Test
+    void "error in package flow"() {
+        mockFlixPackageService.demand.with {
+            packageFlow(1) { FlixPackage flixPackage ->
+                flixPackage.errors << "error in package flow"
+                rx.Observable.just(null)
+            }
+        }
+        mockFlixService.demand.with {
+            flixFlow(1) { Flix flix ->
+                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlix(1) { Flix flix ->
+                []
+            }
+        }
+
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
+                flixPackageService: mockFlixPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([publication: "SCORE", locale: "en_GB"])
+            uri "/"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flix.publication == "SCORE"
+            assert ren.flix.locale == "en_GB"
+            assert ren.flix.processId.id != null
+            assert ren.errors == ["error in package flow"]
+            assert !ren.result
+        }
+    }
 }

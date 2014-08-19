@@ -60,21 +60,20 @@ def validateError = { Response response, message ->
 * ******************** FLIX DELTA SERVICE ***********************************************************
 * */
 
-Given(~"Flix delta for publication (.*) locale (.*)") { String publication, String locale ->
-    def publicationLC = publication.toLowerCase()
-    def localeLC = locale.toLowerCase()
+Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publication, String locale, String expected ->
+    def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
     String DELTA_FEED = """
 {
     "results" : [
-        "urn:global_sku:$publicationLC:$localeLC:a",
-        "urn:global_sku:$publicationLC:$localeLC:b",
-        "urn:global_sku:$publicationLC:$localeLC:c",
-        "urn:global_sku:$publicationLC:$localeLC:d",
-        "urn:global_sku:$publicationLC:$localeLC:e",
-        "urn:global_sku:$publicationLC:$localeLC:f",
-        "urn:global_sku:$publicationLC:$localeLC:g",
-        "urn:global_sku:$publicationLC:$localeLC:h"
+        "urn:global_sku:$pubAndLocale:a",
+        "urn:global_sku:$pubAndLocale:b",
+        "urn:global_sku:$pubAndLocale:c",
+        "urn:global_sku:$pubAndLocale:d",
+        "urn:global_sku:$pubAndLocale:e",
+        "urn:global_sku:$pubAndLocale:f",
+        "urn:global_sku:$pubAndLocale:g",
+        "urn:global_sku:$pubAndLocale:h"
     ]
 }
 """
@@ -123,18 +122,46 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
 </ProductHierarchy>
 """
 
-    server.get(by(uri("/repository/delta/urn:global_sku:$publicationLC:$localeLC"))).response(DELTA_FEED)
-    server.delete(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC"))).response("")
-    server.post(by(uri("/repository/file/urn:flixmedia:last_modified:$publicationLC:$localeLC"))).response("")
+    if (expected == "delta error") {
+        server.get(by(uri("/repository/delta/urn:global_sku:$pubAndLocale"))).response(status(500))
+    } else {
+        server.get(by(uri("/repository/delta/urn:global_sku:$pubAndLocale"))).response(with(DELTA_FEED), status(200))
+    }
+    if (expected == "delete current error") {
+        server.delete(by(uri("/repository/file/urn:flixmedia:$pubAndLocale"))).response(status(500))
+    } else {
+        server.delete(by(uri("/repository/file/urn:flixmedia:$pubAndLocale"))).response(status(200))
+    }
+    if (expected == "update last modified date error") {
+        server.post(by(uri("/repository/file/urn:flixmedia:last_modified:$pubAndLocale"))).response(status(500))
+    } else {
+        server.post(by(uri("/repository/file/urn:flixmedia:last_modified:$pubAndLocale"))).response(status(200))
+    }
+    if (expected == "get category error") {
+        server.get(by(uri("/product/publications/$publication/locales/$locale/hierarchies/category"))).response(status(500))
+    } else {
+        server.get(by(uri("/product/publications/$publication/locales/$locale/hierarchies/category"))).response(with(CATEGORY_FEED), status(200))
+    }
+    if (expected == "save category error") {
+        server.post(by(uri("/repository/file/urn:flixmedia:$pubAndLocale:category.xml"))).response(status(500))
+    } else {
+        server.post(by(uri("/repository/file/urn:flixmedia:$pubAndLocale:category.xml"))).response(status(200))
+    }
+    if (expected == "get ean code error") {
+        server.get(by(uri("/product/identifiers/ean_code"))).response(status(500))
+    } else {
+        server.get(by(uri("/product/identifiers/ean_code"))).response(with(EAN_CODE_FEED), status(200))
+    }
+    if (expected == "ops error") {
+        server.post(by(uri("/repository/ops"))).response(status(500))
+    } else {
+        server.post(by(uri("/repository/ops"))).response(status(200))
+    }
 
-    server.get(by(uri("/product/publications/$publication/locales/$locale/hierarchies/category"))).response(CATEGORY_FEED)
-    server.post(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC:category.xml"))).response("")
-    server.get(by(uri("/product/identifiers/ean_code"))).response(EAN_CODE_FEED)
-
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:e"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:f"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:g"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:h"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:e"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:f"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:g"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:h"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
@@ -142,11 +169,10 @@ When(~"I request flix delta service for publication (.*) locale (.*)") { publica
 }
 
 Then(~"Flix delta service for publication (.*) locale (.*) should be done") { publication, locale ->
-    def publicationLC = publication.toLowerCase()
-    def localeLC = locale.toLowerCase()
+    def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
-    def getUrn = { "urn:global_sku:$publicationLC:$localeLC:$it".toString() }
-    def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$publicationLC:$localeLC:${it}.xml".toString() }
+    def getUrn = { "urn:global_sku:$pubAndLocale:$it".toString() }
+    def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$pubAndLocale:${it}.xml".toString() }
 
     assert response.statusCode == 200
     def json = parseJson(response)
@@ -174,6 +200,16 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.result.errors.err3 == [getUrn("h")]
 }
 
+Then(~"Flix delta service should give (.*) error") { String error ->
+    assert response.statusCode == 500
+    def json = parseJson(response)
+    assert json?.status == 500
+    assert json.flix.publication
+    assert json.flix.locale
+    assert json?.errors == [error]
+    assert !json?.result
+}
+
 When(~"I request flix delta service with invalid (.*) parameter") { paramName ->
     if (paramName == "publication") {
         get("flix/delta/publication/,,/locale/en_GB")
@@ -186,18 +222,17 @@ When(~"I request flix delta service with invalid (.*) parameter") { paramName ->
     }
 }
 
-Then(~"Flix delta service should give (.*) parameter error") { paramName ->
+Then(~"Flix delta service should reject with (.*) parameter error") { paramName ->
     validateError(response, "$paramName parameter is invalid")
 }
 
 /*
 * ******************** FLIX SHEET SERVICE *************************************************************
 * */
+
 Given(~"Flix json for sheet (.*)") { String sheet ->
-    server.request(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheet")))
-            .response('{"a":"1"}')
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet}.xml")))
-            .response('done')
+    server.get(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheet"))).response(with('{"a":"1"}'), status(200))
+    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet}.xml"))).response(status(200))
 }
 
 When(~"I request flix sheet service for process (.*) sheet (.*)") { process, sheet ->
@@ -218,7 +253,7 @@ When(~"I request flix sheet service with invalid urn") { ->
     get("flix/sheet/urn:xxx?eanCode=123")
 }
 
-Then(~"Flix sheet service should give invalid urn error") { ->
+Then(~"Flix sheet service should reject with urn parameter error") { ->
     assert response.statusCode == 400
     def json = parseJson(response)
     assert json.status == 400
@@ -231,7 +266,7 @@ When(~"I request flix sheet service with invalid ean code") { ->
     get("flix/sheet/urn:global_sku:score:en_GB:a")
 }
 
-Then(~"Flix sheet service should give invalid ean code error") { ->
+Then(~"Flix sheet service should reject with ean code parameter error") { ->
     assert response.statusCode == 400
     def json = parseJson(response)
     assert json.status == 400
