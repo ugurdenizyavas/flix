@@ -23,10 +23,10 @@ class FlixFlowHandlerTest {
         mockRequestValidator = new StubFor(RequestValidator)
     }
 
-    def sheetResultA = new FlixSheetServiceResult(urn: "a", success: true)
-    def sheetResultB = new FlixSheetServiceResult(urn: "b", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new FlixSheetServiceResult(urn: "e", success: true)
-    def sheetResultF = new FlixSheetServiceResult(urn: "f", success: false, errors: ["err4", "err5"])
+    def sheetResultA = new FlixSheetServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
+    def sheetResultB = new FlixSheetServiceResult(jsonUrn: "b", success: false, errors: ["err3", "err4"])
+    def sheetResultE = new FlixSheetServiceResult(jsonUrn: "e", success: true, xmlFileUrl: "http:/repo/e.xml")
+    def sheetResultF = new FlixSheetServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
 
     @Test
     void "main flow"() {
@@ -68,7 +68,7 @@ class FlixFlowHandlerTest {
             assert ren.result.stats."number of success" == 2
             assert ren.result.stats."number of errors" == 2
 
-            assert ren.result.success?.sort() == ["a", "e"]
+            assert ren.result.success?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
 
             assert ren.result.errors.size() == 3
             assert ren.result.errors.err3 == ["b"]

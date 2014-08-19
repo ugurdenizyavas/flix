@@ -24,7 +24,7 @@ class FlixSheet {
     }
 
     @JsonIgnore
-    URN getSheetUrn() {
+    URN getXmlUrn() {
         def values = new URNImpl(urnStr).values
         if (values && values.last()) {
             def last = values.last()

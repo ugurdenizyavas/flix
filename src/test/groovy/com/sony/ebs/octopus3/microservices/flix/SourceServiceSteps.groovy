@@ -130,6 +130,7 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     def localeLC = locale.toLowerCase()
 
     def getUrn = { "urn:global_sku:$publicationLC:$localeLC:$it".toString() }
+    def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$publicationLC:$localeLC:${it}.xml".toString() }
 
     assert response.statusCode == 200
     def json = parseJson(response)
@@ -147,7 +148,7 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.result.stats."number of success" == 2
     assert json.result.stats."number of errors" == 2
 
-    assert json.result.success?.sort() == [getUrn("a"), getUrn("d")]
+    assert json.result.success?.sort() == [getXmlUrl("a"), getXmlUrl("d")]
 
     assert json.result.errors.size() == 3
     assert json.result.errors.err1 == [getUrn("c")]

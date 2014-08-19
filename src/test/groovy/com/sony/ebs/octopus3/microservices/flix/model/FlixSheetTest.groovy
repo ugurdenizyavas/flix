@@ -22,16 +22,16 @@ class FlixSheetTest {
 
     @Test(expected = URNCreationException)
     void "invalid sheetUrn"() {
-        new FlixSheet(urnStr: "urn:a").sheetUrn
+        new FlixSheet(urnStr: "urn:a").xmlUrn
     }
 
     @Test
     void "valid sheetUrn"() {
-        assert new FlixSheet(urnStr: "urn:a:b").sheetUrn?.toString() == "urn:flixmedia:b.xml"
+        assert new FlixSheet(urnStr: "urn:a:b").xmlUrn?.toString() == "urn:flixmedia:b.xml"
     }
 
     @Test
     void "valid longer sheetUrn"() {
-        assert new FlixSheet(urnStr: "urn:a:b:c:d").sheetUrn?.toString() == "urn:flixmedia:b:c:d.xml"
+        assert new FlixSheet(urnStr: "urn:a:b:c:d").xmlUrn?.toString() == "urn:flixmedia:b:c:d.xml"
     }
 }

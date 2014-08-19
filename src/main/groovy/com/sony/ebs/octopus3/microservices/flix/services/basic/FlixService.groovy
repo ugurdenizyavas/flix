@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
@@ -33,6 +34,9 @@ class FlixService {
     @Value('${octopus3.flix.repositoryFileServiceUrl}')
     String repositoryFileServiceUrl
 
+    @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
+    String repositoryFileAttributesServiceUrl
+
     @Value('${octopus3.flix.flixSheetServiceUrl}')
     String flixSheetServiceUrl
 
@@ -46,26 +50,32 @@ class FlixService {
     @Autowired
     DeltaDatesProvider deltaDatesProvider
 
-    private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String sheetUrn) {
+    private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String jsonUrn) {
 
-        def importUrl = flixSheetServiceUrl.replace(":urn", sheetUrn) + "?processId=${flix?.processId?.id}"
+        def importUrl = flixSheetServiceUrl.replace(":urn", jsonUrn) + "?processId=${flix?.processId?.id}"
 
         rx.Observable.just("starting").flatMap({
             httpClient.doGet(importUrl)
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 boolean success = NingHttpClient.isSuccess(response)
-                def sheetServiceResult = new FlixSheetServiceResult(urn: sheetUrn, success: success, statusCode: response.statusCode)
+                def sheetServiceResult = new FlixSheetServiceResult(jsonUrn: jsonUrn, success: success, statusCode: response.statusCode)
                 if (!success) {
                     def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
                     sheetServiceResult.errors = json.errors
+                } else {
+                    sheetServiceResult.with {
+                        def xmlUrn = new FlixSheet(urnStr: jsonUrn).xmlUrn.toString()
+                        xmlFileUrl = repositoryFileServiceUrl.replace(":urn", xmlUrn)
+                        xmlFileAttributesUrl = repositoryFileAttributesServiceUrl.replace(":urn", xmlUrn)
+                    }
                 }
                 sheetServiceResult
             }))
         }).onErrorReturn({
-            log.error "error for $sheetUrn", it
+            log.error "error for $jsonUrn", it
             def error = it.message ?: it.cause?.message
-            new FlixSheetServiceResult(urn: sheetUrn, success: false, errors: [error])
+            new FlixSheetServiceResult(jsonUrn: jsonUrn, success: false, errors: [error])
         })
     }
 

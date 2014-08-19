@@ -61,14 +61,14 @@ class FlixFlowHandler extends GroovyHandler {
 
     Map createFlixResult(Flix flix, List sheetServiceResults) {
         def createSuccess = {
-            sheetServiceResults.findAll({ it.success }).collect({ it.urn })
+            sheetServiceResults.findAll({ it.success }).collect({ it.xmlFileUrl })
         }
         def createErrors = {
             Map errorMap = [:]
             sheetServiceResults.findAll({ !it.success }).each { FlixSheetServiceResult serviceResult ->
                 serviceResult.errors.each { error ->
                     if (errorMap[error] == null) errorMap[error] = []
-                    errorMap[error] << serviceResult.urn
+                    errorMap[error] << serviceResult.jsonUrn
                 }
             }
             errorMap

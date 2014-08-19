@@ -72,7 +72,7 @@ class FlixSheetService {
         }).flatMap({ String xml ->
             log.debug "xml is $xml"
             log.info "saving xml"
-            def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.sheetUrn.toString())
+            def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.xmlUrn.toString())
             httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
