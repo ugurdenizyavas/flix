@@ -36,35 +36,34 @@ class FlixSheetService {
     @Autowired
     FlixXmlBuilder flixXmlBuilder
 
+    def createSheetJson(InputStream inputStream, String eanCode) {
+        log.info "starting parsing json"
+        def json = jsonSlurper.parse(inputStream, "UTF-8")
+        json.eanCode = eanCode
+        log.info "finished parsing json"
+        json
+    }
+
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
         rx.Observable.just("starting").flatMap({
-            log.info "getting global sku"
             def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "getting sheet from repo", flixSheet.errors)
         }).flatMap({ Response response ->
             observe(execControl.blocking {
-                log.info "parsing json"
-                def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
-                json.eanCode = flixSheet.eanCode
-                json
+                createSheetJson(response.responseBodyAsStream, flixSheet.eanCode)
             })
         }).flatMap({ json ->
             observe(execControl.blocking {
-                log.debug "json is $json"
-                log.info "building xml"
                 flixXmlBuilder.buildXml(json)
             })
         }).flatMap({ String xml ->
-            log.debug "xml is $xml"
-            log.info "saving xml"
             def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.xmlUrn.toString())
             httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, "UTF-8"))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
         }).map({
-            log.debug "save xml result is $it"
             "success"
         })
     }
