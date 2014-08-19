@@ -30,3 +30,7 @@ Feature: Flix
   Scenario: flix sheet service with invalid urn
     When I request flix sheet service with invalid urn
     Then Flix sheet service should give invalid urn error
+
+  Scenario: flix sheet service with invalid ean code
+    When I request flix sheet service with invalid ean code
+    Then Flix sheet service should give invalid ean code error

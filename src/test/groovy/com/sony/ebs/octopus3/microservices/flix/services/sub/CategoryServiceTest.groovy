@@ -2,6 +2,8 @@ package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.urn.URN
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -132,11 +134,11 @@ class CategoryServiceTest {
         assert runRetrieveCategoryFeed(flix) == "error"
     }
 
-    def runFilterForCategory(Flix flix, String categoryXml) {
+    def runFilterForCategory(List productUrls, URN baseUrn, String categoryFeed) {
         def result = new BlockingVariable<List>(5)
         boolean valueSet = false
         execController.start {
-            categoryService.filterForCategory(flix, categoryXml).subscribe({
+            categoryService.filterForCategory(productUrls, baseUrn, categoryFeed).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -183,10 +185,15 @@ class CategoryServiceTest {
     </node>
 </ProductHierarchy>
 """
-        def flix = new Flix(publication: "SCORE", locale: "en_GB", deltaUrns: ["urn:flix:a1", "urn:flix:b", "urn:flix:c2", "urn:flix:d"])
+        def productUrls = [
+                "urn:global_sku:score:en_gb:a1",
+                "urn:global_sku:score:en_gb:b",
+                "urn:global_sku:score:en_gb:c2",
+                "urn:global_sku:score:en_gb:d"
+        ]
 
-        assert runFilterForCategory(flix, xml).sort() == ["urn:flix:a1", "urn:flix:c2"]
-        assert flix.categoryFilteredOutUrns.sort() == ["urn:flix:b", "urn:flix:d"]
+        List filtered = runFilterForCategory(productUrls, new URNImpl("urn:global_sku:score:en_gb"), xml)
+        assert filtered.sort() == ["urn:global_sku:score:en_gb:a1", "urn:global_sku:score:en_gb:c2"]
     }
 
 }

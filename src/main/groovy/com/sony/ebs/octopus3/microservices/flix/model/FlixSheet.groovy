@@ -14,6 +14,7 @@ class FlixSheet {
 
     String processId
     String urnStr
+    String eanCode
 
     @JsonIgnore
     List errors = []

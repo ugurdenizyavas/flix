@@ -75,6 +75,10 @@ class RequestValidator {
             errors << "urn parameter is invalid"
         }
 
+        if (!flixSheet.eanCode) {
+            errors << "eanCode parameter is invalid"
+        }
+
         errors
     }
 

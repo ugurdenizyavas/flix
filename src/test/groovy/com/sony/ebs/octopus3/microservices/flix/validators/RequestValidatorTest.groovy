@@ -67,31 +67,37 @@ class RequestValidatorTest {
 
     @Test
     void "sheet all valid"() {
-        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb")
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb", eanCode: "123")
         assert !validator.validateFlixSheet(flixSheet)
     }
 
     @Test
     void "invalid urn"() {
-        def flixSheet = new FlixSheet(processId: "123", urnStr: "xxx")
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "xxx", eanCode: "123")
         assert validator.validateFlixSheet(flixSheet) == ["urn parameter is invalid"]
     }
 
     @Test
+    void "invalid eanCode"() {
+        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb")
+        assert validator.validateFlixSheet(flixSheet) == ["eanCode parameter is invalid"]
+    }
+
+    @Test
     void "no processId"() {
-        def flixSheet = new FlixSheet(urnStr: "urn:flix:score:en_gb")
+        def flixSheet = new FlixSheet(urnStr: "urn:flix:score:en_gb", eanCode: "123")
         assert !validator.validateFlixSheet(flixSheet)
     }
 
     @Test
     void "valid processId"() {
-        def flixSheet = new FlixSheet(processId: "a8ff962c-1410-49bc-a8fd-896309033171", urnStr: "urn:flix:a")
+        def flixSheet = new FlixSheet(processId: "a8ff962c-1410-49bc-a8fd-896309033171", urnStr: "urn:flix:a", eanCode: "123")
         assert !validator.validateFlixSheet(flixSheet)
     }
 
     @Test
     void "invalid processId"() {
-        def flixSheet = new FlixSheet(processId: "a123?", urnStr: "urn:flix:score:en_gb")
+        def flixSheet = new FlixSheet(processId: "a123?", urnStr: "urn:flix:score:en_gb", eanCode: "123")
         assert validator.validateFlixSheet(flixSheet) == ["processId parameter is invalid"]
     }
 }

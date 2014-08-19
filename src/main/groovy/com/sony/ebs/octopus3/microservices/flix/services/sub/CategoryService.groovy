@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
@@ -57,21 +58,23 @@ class CategoryService {
     }
 
 
-    rx.Observable<List> filterForCategory(Flix flix, String categoryFeed) {
+    rx.Observable<List> filterForCategory(List productUrls, URN baseUrn, String categoryFeed) {
         observe(execControl.blocking {
             log.info "starting category filtering"
             def categoryXml = xmlSlurper.parseText(categoryFeed)
 
-            List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product' }).collect({
-                it.text()?.toLowerCase()
-            })
-            def filteredProductUrns = flix.deltaUrns.findAll { urnStr ->
-                def sku = new URNImpl(urnStr).values?.last()
-                productsInCategoryTree.contains(sku)
+            def createUrn = {
+                new URNImpl(baseUrn.type, baseUrn.values + it)
             }
-            log.info "finished category filtering: ${filteredProductUrns.size()} left, from ${flix.deltaUrns?.size()}"
-            flix.categoryFilteredOutUrns = flix.deltaUrns - filteredProductUrns
-            filteredProductUrns
+            List filtered = []
+            categoryXml.depthFirst().findAll({ it.name() == 'product' }).each({
+                def urnStr = createUrn(it.text())?.toString()
+                if (productUrls.contains(urnStr)) {
+                    filtered << urnStr
+                }
+            })
+            log.info "finished category filtering: ${filtered.size()} left, from ${productUrls?.size()}"
+            filtered
         })
     }
 

@@ -44,13 +44,14 @@ class FlixSheetFlowHandlerTest {
 
         handle(new FlixSheetFlowHandler(flixSheetService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
             pathBinding([urn: URN])
-            uri "/?processId=$PROCESS_ID"
+            uri "/?processId=$PROCESS_ID&eanCode=123"
         }).with {
             assert status.code == 200
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 200
             assert ren.flixSheet.processId == PROCESS_ID
             assert ren.flixSheet.urnStr == URN
+            assert ren.flixSheet.eanCode == "123"
             assert !ren.errors
             assert ren.result == ["xxx"]
         }

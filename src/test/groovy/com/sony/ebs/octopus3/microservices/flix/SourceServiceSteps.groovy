@@ -71,10 +71,23 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
         "urn:global_sku:$publicationLC:$localeLC:b",
         "urn:global_sku:$publicationLC:$localeLC:c",
         "urn:global_sku:$publicationLC:$localeLC:d",
-        "urn:global_sku:$publicationLC:$localeLC:e"
+        "urn:global_sku:$publicationLC:$localeLC:e",
+        "urn:global_sku:$publicationLC:$localeLC:f",
+        "urn:global_sku:$publicationLC:$localeLC:g",
+        "urn:global_sku:$publicationLC:$localeLC:h"
     ]
 }
 """
+
+    String EAN_CODE_FEED = """
+<identifiers type="ean_code">
+    <identifier materialName="e"><![CDATA[1]]></identifier>
+    <identifier materialName="f"><![CDATA[2]]></identifier>
+    <identifier materialName="g"><![CDATA[3]]></identifier>
+    <identifier materialName="h"><![CDATA[4]]></identifier>
+</identifiers>
+"""
+
     String CATEGORY_FEED = """
 <ProductHierarchy name="category" publication="SCORE" locale="en_GB">
     <node>
@@ -89,16 +102,18 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
                         <name><![CDATA[HCS Home Cinema Projectors]]></name>
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
-                            <product><![CDATA[a]]></product>
+                            <product><![CDATA[c]]></product>
+                            <product><![CDATA[d]]></product>
+                            <product><![CDATA[e]]></product>
+                            <product><![CDATA[f]]></product>
                         </products>
                     </node>
                     <node>
                         <name><![CDATA[HCS Home Cinema Projectors]]></name>
                         <displayName><![CDATA[Projectors]]></displayName>
                         <products>
-                            <product><![CDATA[c]]></product>
-                            <product><![CDATA[d]]></product>
-                            <product><![CDATA[e]]></product>
+                            <product><![CDATA[g]]></product>
+                            <product><![CDATA[h]]></product>
                         </products>
                     </node>
                 </nodes>
@@ -114,11 +129,12 @@ Given(~"Flix delta for publication (.*) locale (.*)") { String publication, Stri
 
     server.get(by(uri("/product/publications/$publication/locales/$locale/hierarchies/category"))).response(CATEGORY_FEED)
     server.post(by(uri("/repository/file/urn:flixmedia:$publicationLC:$localeLC:category.xml"))).response("")
+    server.get(by(uri("/product/identifiers/ean_code"))).response(EAN_CODE_FEED)
 
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:a"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:c"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:d"))).response('{}')
-    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:e"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:e"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:f"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:g"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$publicationLC:$localeLC:h"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
@@ -140,20 +156,22 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.flix.sdate == "2014-07-09T00:00:00.000Z"
     assert json.flix.edate == "2014-07-12T00:00:00.000Z"
     assert json.flix.processId
-    assert json.flix.categoryFilteredOutUrns == [getUrn("b")]
-    assert json.flix.deltaUrns == [getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e")]
+    assert json.flix.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
+    assert json.flix.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
+    assert json.flix.deltaUrns?.sort() == [getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"), getUrn("g"), getUrn("h")]
 
-    assert json.result.stats."number of delta products" == 5
-    assert json.result.stats."number of products filtered out by category" == 1
+    assert json.result.stats."number of delta products" == 8
+    assert json.result.stats."number of products filtered out by category" == 2
+    assert json.result.stats."number of products filtered out by ean code" == 2
     assert json.result.stats."number of success" == 2
     assert json.result.stats."number of errors" == 2
 
-    assert json.result.success?.sort() == [getXmlUrl("a"), getXmlUrl("d")]
+    assert json.result.success?.sort() == [getXmlUrl("e"), getXmlUrl("g")]
 
     assert json.result.errors.size() == 3
-    assert json.result.errors.err1 == [getUrn("c")]
-    assert json.result.errors.err2?.sort() == [getUrn("c"), getUrn("e")]
-    assert json.result.errors.err3 == [getUrn("e")]
+    assert json.result.errors.err1 == [getUrn("f")]
+    assert json.result.errors.err2?.sort() == [getUrn("f"), getUrn("h")]
+    assert json.result.errors.err3 == [getUrn("h")]
 }
 
 When(~"I request flix delta service with invalid (.*) parameter") { paramName ->
@@ -178,16 +196,12 @@ Then(~"Flix delta service should give (.*) parameter error") { paramName ->
 Given(~"Flix json for sheet (.*)") { String sheet ->
     server.request(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheet")))
             .response('{"a":"1"}')
-
-    server.request(by(uri("/product/eancode/${sheet.toUpperCase()}")))
-            .response('<eancodes><eancode material="$sheet" code="4905524328974"/></eancodes>')
-
     server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet}.xml")))
             .response('done')
 }
 
 When(~"I request flix sheet service for process (.*) sheet (.*)") { process, sheet ->
-    get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process")
+    get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process&eanCode=123")
 }
 
 Then(~"Flix sheet service for process (.*) sheet (.*) should be done") { process, sheet ->
@@ -197,10 +211,11 @@ Then(~"Flix sheet service for process (.*) sheet (.*) should be done") { process
     assert json.result == ["success"]
     assert json.flixSheet.processId == process
     assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:$sheet"
+    assert json.flixSheet.eanCode == "123"
 }
 
 When(~"I request flix sheet service with invalid urn") { ->
-    get("flix/sheet/urn:xxx")
+    get("flix/sheet/urn:xxx?eanCode=123")
 }
 
 Then(~"Flix sheet service should give invalid urn error") { ->
@@ -209,4 +224,18 @@ Then(~"Flix sheet service should give invalid urn error") { ->
     assert json.status == 400
     assert json.errors == ["urn parameter is invalid"]
     assert json.flixSheet.urnStr == "urn:xxx"
+    assert json.flixSheet.eanCode == "123"
+}
+
+When(~"I request flix sheet service with invalid ean code") { ->
+    get("flix/sheet/urn:global_sku:score:en_GB:a")
+}
+
+Then(~"Flix sheet service should give invalid ean code error") { ->
+    assert response.statusCode == 400
+    def json = parseJson(response)
+    assert json.status == 400
+    assert json.errors == ["eanCode parameter is invalid"]
+    assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:a"
+    assert !json.flixSheet.eanCode
 }

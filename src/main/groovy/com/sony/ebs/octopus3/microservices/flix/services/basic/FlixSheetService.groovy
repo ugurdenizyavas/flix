@@ -2,7 +2,6 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
@@ -35,22 +34,10 @@ class FlixSheetService {
     ExecControl execControl
 
     @Autowired
-    @Qualifier("eanCodeEnhancer")
-    EanCodeEnhancer eanCodeEnhancer
-
-    @Autowired
     FlixXmlBuilder flixXmlBuilder
 
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
-        Map product = [sku: flixSheet.urn.values.last()]
         rx.Observable.just("starting").flatMap({
-            eanCodeEnhancer.enhance(product)
-        }).filter({
-            if (!product.eanCode) {
-                flixSheet.errors << "ean code does not exist"
-            }
-            product.eanCode as boolean
-        }).flatMap({
             log.info "getting global sku"
             def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
@@ -60,7 +47,7 @@ class FlixSheetService {
             observe(execControl.blocking {
                 log.info "parsing json"
                 def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
-                json.eanCode = product.eanCode
+                json.eanCode = flixSheet.eanCode
                 json
             })
         }).flatMap({ json ->

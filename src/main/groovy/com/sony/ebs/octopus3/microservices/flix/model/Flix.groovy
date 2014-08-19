@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.sony.ebs.octopus3.commons.process.ProcessId
 import com.sony.ebs.octopus3.commons.urn.URN
+import com.sony.ebs.octopus3.commons.urn.URNCreationException
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
-@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors','deltaUrns','categoryFilteredOutUrns'])
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors', 'deltaUrns', 'categoryFilteredOutUrns'])
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {
@@ -20,6 +21,10 @@ class Flix {
     String edate
     List deltaUrns
     List categoryFilteredOutUrns
+    List eanCodeFilteredOutUrns
+
+    @JsonIgnore
+    Map eanCodeMap = [:]
 
     @JsonIgnore
     List errors = []
@@ -42,6 +47,13 @@ class Flix {
     @JsonIgnore
     URN getBaseUrn() {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale])
+    }
+
+    URN getSheetUrnByMaterialName(String materialName) throws URNCreationException {
+        if (!materialName) {
+            throw new URNCreationException("Invalid materialName");
+        }
+        new URNImpl(FlixUrnValue.global_sku.toString(), [publication, locale, materialName?.toLowerCase()])
     }
 
 }

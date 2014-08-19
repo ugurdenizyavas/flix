@@ -77,6 +77,7 @@ class FlixFlowHandler extends GroovyHandler {
                 stats  : [
                         "number of delta products"                   : flix.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
+                        "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
                         "number of success"                          : sheetServiceResults?.findAll({
                             it.success
                         }).size(),

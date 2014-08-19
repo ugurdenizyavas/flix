@@ -7,6 +7,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
+import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,18 +49,25 @@ class FlixService {
     CategoryService categoryService
 
     @Autowired
+    EanCodeService eanCodeService
+
+    @Autowired
     DeltaDatesProvider deltaDatesProvider
 
-    private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String jsonUrn) {
+    private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String jsonUrn, String eanCode) {
 
-        def importUrl = flixSheetServiceUrl.replace(":urn", jsonUrn) + "?processId=${flix?.processId?.id}"
+        def importUrl = flixSheetServiceUrl.replace(":urn", jsonUrn) + "?eanCode=$eanCode"
+        if (flix?.processId?.id) {
+            importUrl += "&processId=${flix?.processId?.id}"
+        }
 
         rx.Observable.just("starting").flatMap({
             httpClient.doGet(importUrl)
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 boolean success = NingHttpClient.isSuccess(response)
-                def sheetServiceResult = new FlixSheetServiceResult(jsonUrn: jsonUrn, success: success, statusCode: response.statusCode)
+                def sheetServiceResult = new FlixSheetServiceResult(jsonUrn: jsonUrn, success: success,
+                        statusCode: response.statusCode, eanCode: eanCode)
                 if (!success) {
                     def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
                     sheetServiceResult.errors = json.errors
@@ -75,12 +83,13 @@ class FlixService {
         }).onErrorReturn({
             log.error "error for $jsonUrn", it
             def error = it.message ?: it.cause?.message
-            new FlixSheetServiceResult(jsonUrn: jsonUrn, success: false, errors: [error])
+            new FlixSheetServiceResult(jsonUrn: jsonUrn, success: false, errors: [error], eanCode: eanCode)
         })
     }
 
     rx.Observable flixFlow(Flix flix) {
 
+        List categoryFilteredUrns
         rx.Observable.just("starting").flatMap({
             deltaDatesProvider.createDateParams(flix)
         }).flatMap({
@@ -108,10 +117,15 @@ class FlixService {
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->
-            categoryService.filterForCategory(flix, categoryFeed)
-        }).flatMap({ List filteredProductUrns ->
-            log.info "${filteredProductUrns?.size()} calls will be made to flix sheet"
-            List list = filteredProductUrns?.collect { singleSheet(flix, it) }
+            categoryService.filterForCategory(flix.deltaUrns, flix.deltaUrn, categoryFeed)
+        }).flatMap({
+            categoryFilteredUrns = it
+            flix.categoryFilteredOutUrns = flix.deltaUrns - categoryFilteredUrns
+            eanCodeService.filterForEanCodes(categoryFilteredUrns, flix.deltaUrn, flix.errors)
+        }).flatMap({ Map eanCodeMap ->
+            List eanCodeFilteredUrns = eanCodeMap.keySet() as List
+            flix.eanCodeFilteredOutUrns = categoryFilteredUrns - eanCodeFilteredUrns
+            List list = eanCodeMap?.collect { singleSheet(flix, it.key, it.value) }
             rx.Observable.merge(list, 30)
         })
     }

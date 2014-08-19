@@ -26,7 +26,9 @@ class FlixSheetFlowHandler extends GroovyHandler {
     @Override
     protected void handle(GroovyContext context) {
         context.with {
-            FlixSheet flixSheet = new FlixSheet(processId: request.queryParams.processId, urnStr: pathTokens.urn)
+            FlixSheet flixSheet = new FlixSheet(urnStr: pathTokens.urn,
+                    processId: request.queryParams.processId,
+                    eanCode: request.queryParams.eanCode)
             activity.info "starting $flixSheet"
 
             List result = []

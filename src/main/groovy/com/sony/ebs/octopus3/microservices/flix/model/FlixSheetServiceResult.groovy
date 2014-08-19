@@ -7,7 +7,7 @@ import groovy.transform.ToString
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
 @Sortable(includes = ['jsonUrn', 'success', 'statusCode'])
-@EqualsAndHashCode(includes = ['jsonUrn', 'success', 'statusCode', 'errors', 'xmlFileUrl'])
+@EqualsAndHashCode(includes = ['jsonUrn', 'success', 'statusCode', 'errors'])
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class FlixSheetServiceResult {
 
@@ -17,5 +17,6 @@ class FlixSheetServiceResult {
     List errors
     String xmlFileUrl
     String xmlFileAttributesUrl
+    String eanCode
 
 }
