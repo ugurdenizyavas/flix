@@ -41,12 +41,12 @@ class FlixPackageFlowHandlerTest {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
-            assert status.code == 202
+            assert status.code == 200
             def ren = rendered(DefaultJsonRender).object
-            assert ren.message == "flixPackage started"
-            assert ren.status == 202
+            assert ren.status == 200
             assert ren.flixPackage.publication == "SCORE"
             assert ren.flixPackage.locale == "en_GB"
+            assert ren.result == ["xxx"]
             assert !ren.errors
             log.info "result assertions finished for $ren.flixPackage"
         }

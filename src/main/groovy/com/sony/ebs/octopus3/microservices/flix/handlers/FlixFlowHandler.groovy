@@ -2,7 +2,9 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
+import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.util.logging.Slf4j
@@ -20,6 +22,9 @@ class FlixFlowHandler extends GroovyHandler {
 
     @Autowired
     FlixService flixService
+
+    @Autowired
+    FlixPackageService flixPackageService
 
     @Autowired
     RequestValidator validator
@@ -50,12 +55,31 @@ class FlixFlowHandler extends GroovyHandler {
                         response.status(500)
                         render json(status: 500, flix: flix, errors: flix.errors)
                     } else {
-                        response.status(200)
-                        render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))
+                        handleFlixPackage(context, flix, sheetServiceResults)
                     }
                 })
             }
 
+        }
+    }
+
+    void handleFlixPackage(GroovyContext context, Flix flix, List sheetServiceResults) {
+        context.with {
+            FlixPackage flixPackage = new FlixPackage(publication: flix.publication, locale: flix.locale)
+            flixPackageService.packageFlow(flixPackage).subscribe({
+                activity.info "$flixPackage finished: $it"
+            }, { e ->
+                flixPackage.errors << e.message ?: e.cause?.message
+                activity.error "error in $flixPackage", e
+            }, {
+                if (flixPackage.errors) {
+                    response.status(500)
+                    render json(status: 500, flix: flix, errors: flixPackage.errors)
+                } else {
+                    response.status(200)
+                    render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))
+                }
+            })
         }
     }
 

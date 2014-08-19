@@ -68,9 +68,9 @@ class FlixPackageService {
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, "UTF-8"))
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "calling repo ops service to package flix")
+            NingHttpClient.isSuccess(response, "calling repo ops service", flixPackage.errors)
         }).map({
-            "success for $flixPackage"
+            "success"
         })
     }
 

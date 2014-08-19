@@ -1,7 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
+import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.mock.interceptor.StubFor
@@ -15,12 +17,13 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class FlixFlowHandlerTest {
 
-    StubFor mockFlixService, mockRequestValidator
+    StubFor mockFlixService, mockFlixPackageService, mockRequestValidator
 
     @Before
     void before() {
         mockFlixService = new StubFor(FlixService)
         mockRequestValidator = new StubFor(RequestValidator)
+        mockFlixPackageService = new StubFor(FlixPackageService)
     }
 
     def sheetResultA = new FlixSheetServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
@@ -29,7 +32,14 @@ class FlixFlowHandlerTest {
     def sheetResultF = new FlixSheetServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
 
     @Test
-    void "main flow"() {
+    void "success"() {
+        mockFlixPackageService.demand.with {
+            packageFlow(1) { FlixPackage flixPackage ->
+                assert flixPackage.publication == "SCORE"
+                assert flixPackage.locale == "en_GB"
+                rx.Observable.just("xxx")
+            }
+        }
         mockFlixService.demand.with {
             flixFlow(1) { Flix flix ->
                 assert flix.processId != null
@@ -49,7 +59,9 @@ class FlixFlowHandlerTest {
             }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
+                flixPackageService: mockFlixPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {

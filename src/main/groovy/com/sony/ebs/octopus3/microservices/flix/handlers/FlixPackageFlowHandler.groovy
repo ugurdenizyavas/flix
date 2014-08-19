@@ -29,19 +29,27 @@ class FlixPackageFlowHandler extends GroovyHandler {
             activity.info "starting $flixPackage"
 
             List errors = validator.validateFlixPackage(flixPackage)
+            List result = []
             if (errors) {
                 activity.error "error validating $flixPackage : $errors"
                 response.status(400)
                 render json(status: 400, errors: errors, flixPackage: flixPackage)
             } else {
-                flixPackageService.packageFlow(flixPackage).subscribe({ result ->
-                    activity.info "$result"
+                flixPackageService.packageFlow(flixPackage).subscribe({
+                    result << it?.toString()
+                    activity.info "$flixPackage finished: $it"
                 }, { e ->
+                    flixPackage.errors << e.message ?: e.cause?.message
                     activity.error "error in $flixPackage", e
+                }, {
+                    if (flixPackage.errors) {
+                        response.status(500)
+                        render json(status: 500, flixPackage: flixPackage, errors: flixPackage.errors)
+                    } else {
+                        response.status(200)
+                        render json(status: 200, flixPackage: flixPackage, result: result)
+                    }
                 })
-                activity.info "$flixPackage started"
-                response.status(202)
-                render json(status: 202, message: "flixPackage started", flixPackage: flixPackage)
             }
 
         }

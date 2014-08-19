@@ -239,3 +239,37 @@ Then(~"Flix sheet service should give invalid ean code error") { ->
     assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:a"
     assert !json.flixSheet.eanCode
 }
+
+/*
+* ******************** FLIX PACKAGE SERVICE *************************************************************
+* */
+Given(~"Repository ops service with success") { ->
+    server.post(by(uri("/repository/ops"))).response(status(200))
+}
+
+Given(~"Repository ops service with error") { ->
+    server.post(by(uri("/repository/ops"))).response(status(500))
+}
+
+When(~"I request flix package service for publication (.*) locale (.*)") { publication, locale ->
+    get("flix/package/publication/$publication/locale/$locale")
+}
+
+Then(~"Flix package service for publication (.*) locale (.*) should be successful") { publication, locale ->
+    assert response.statusCode == 200
+    def json = parseJson(response)
+    assert json.status == 200
+    assert json.result == ["success"]
+    assert json.flixPackage.publication == publication
+    assert json.flixPackage.locale == locale
+}
+
+Then(~"Flix package service for publication (.*) locale (.*) should get error") { publication, locale ->
+    assert response.statusCode == 500
+    def json = parseJson(response)
+    assert json.status == 500
+    assert !json.result
+    assert json.flixPackage.publication == publication
+    assert json.flixPackage.locale == locale
+    assert json.errors == ["HTTP 500 error calling repo ops service"]
+}

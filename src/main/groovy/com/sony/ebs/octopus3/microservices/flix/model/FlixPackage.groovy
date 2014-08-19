@@ -22,6 +22,9 @@ class FlixPackage {
     String locale
 
     @JsonIgnore
+    List errors = []
+
+    @JsonIgnore
     URN getBaseUrn() {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale])
     }

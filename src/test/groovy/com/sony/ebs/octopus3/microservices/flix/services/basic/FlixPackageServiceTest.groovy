@@ -38,8 +38,7 @@ class FlixPackageServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runFlow() {
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
+    def runFlow(FlixPackage flixPackage) {
         flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
@@ -52,31 +51,45 @@ class FlixPackageServiceTest {
                 log.error "error", it
                 result.set("error")
             }, {
-                if (!valueSet)result.set("outOfFlow")
+                if (!valueSet) result.set("outOfFlow")
             })
         }
         result.get()
     }
 
     @Test
-    void "package flow"() {
+    void "success"() {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
                 assert url == "/ops"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        assert runFlow() == "success for FlixPackage(publication:SCORE, locale:fr_FR)"
+        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flixPackage) == "success"
     }
 
     @Test
     void "error calling ops service"() {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        assert runFlow() == "outOfFlow"
+        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flixPackage) == "outOfFlow"
+        assert flixPackage.errors == ["HTTP 500 error calling repo ops service"]
+    }
+
+    @Test
+    void "exception calling ops service"() {
+        mockNingHttpClient.demand.with {
+            doPost(1) { String url, InputStream is ->
+                throw new Exception("calling ops service")
+            }
+        }
+        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flixPackage) == "error"
     }
 
     @Test
