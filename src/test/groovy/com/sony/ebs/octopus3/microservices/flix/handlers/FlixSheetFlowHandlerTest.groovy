@@ -108,4 +108,32 @@ class FlixSheetFlowHandlerTest {
         }
     }
 
+    @Test
+    void "exception in sheet flow"() {
+        mockFlixSheetService.demand.with {
+            sheetFlow(1) { FlixSheet flixSheet ->
+                rx.Observable.just("starting").map({
+                    throw new Exception("exp in sheet flow")
+                })
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlixSheet(1) { FlixSheet flixSheet ->
+                []
+            }
+        }
+
+        handle(new FlixSheetFlowHandler(flixSheetService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([urn: URN])
+            uri "/?processId=$PROCESS_ID"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flixSheet.processId == PROCESS_ID
+            assert ren.flixSheet.urnStr == URN
+            assert ren.errors == ["exp in sheet flow"]
+            assert !ren.result
+        }
+    }
 }

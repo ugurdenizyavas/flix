@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.microservices.flix.handlers.HandlerUtil
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
@@ -82,7 +83,7 @@ class FlixService {
             }))
         }).onErrorReturn({
             log.error "error for $jsonUrn", it
-            def error = it.message ?: it.cause?.message
+            def error = HandlerUtil.getErrorMessage(it)
             new FlixSheetServiceResult(jsonUrn: jsonUrn, success: false, errors: [error], eanCode: eanCode)
         })
     }

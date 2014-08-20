@@ -53,9 +53,7 @@ class FlixFlowHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { Flix flix ->
-                []
-            }
+            validateFlix(1) { [] }
         }
 
         handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
@@ -91,7 +89,7 @@ class FlixFlowHandlerTest {
     @Test
     void "error in params"() {
         mockRequestValidator.demand.with {
-            validateFlix(1) { Flix flix ->
+            validateFlix(1) {
                 ["error"]
             }
         }
@@ -110,14 +108,12 @@ class FlixFlowHandlerTest {
     void "error in flix flow"() {
         mockFlixService.demand.with {
             flixFlow(1) { Flix flix ->
-                flix.errors << "error in sheet flow"
+                flix.errors << "error in flix flow"
                 rx.Observable.just(null)
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { Flix flix ->
-                []
-            }
+            validateFlix(1) { [] }
         }
 
         handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
@@ -132,7 +128,37 @@ class FlixFlowHandlerTest {
             assert ren.flix.publication == "SCORE"
             assert ren.flix.locale == "en_GB"
             assert ren.flix.processId.id != null
-            assert ren.errors == ["error in sheet flow"]
+            assert ren.errors == ["error in flix flow"]
+            assert !ren.result
+        }
+    }
+
+    @Test
+    void "exception in flix flow"() {
+        mockFlixService.demand.with {
+            flixFlow(1) {
+                rx.Observable.just("starting").map({
+                    throw new Exception("exp in flix flow")
+                })
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlix(1) { [] }
+        }
+
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
+                flixPackageService: mockFlixPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([publication: "SCORE", locale: "en_GB"])
+            uri "/"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flix.publication == "SCORE"
+            assert ren.flix.locale == "en_GB"
+            assert ren.flix.processId.id != null
+            assert ren.errors == ["exp in flix flow"]
             assert !ren.result
         }
     }
@@ -146,14 +172,12 @@ class FlixFlowHandlerTest {
             }
         }
         mockFlixService.demand.with {
-            flixFlow(1) { Flix flix ->
+            flixFlow(1) {
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { Flix flix ->
-                []
-            }
+            validateFlix(1) { [] }
         }
 
         handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
@@ -169,6 +193,41 @@ class FlixFlowHandlerTest {
             assert ren.flix.locale == "en_GB"
             assert ren.flix.processId.id != null
             assert ren.errors == ["error in package flow"]
+            assert !ren.result
+        }
+    }
+
+    @Test
+    void "exception in package flow"() {
+        mockFlixPackageService.demand.with {
+            packageFlow(1) { Flix flix ->
+                rx.Observable.just("starting").map({
+                    throw new Exception("exp in package flow")
+                })
+            }
+        }
+        mockFlixService.demand.with {
+            flixFlow(1) {
+                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+            }
+        }
+        mockRequestValidator.demand.with {
+            validateFlix(1) { [] }
+        }
+
+        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
+                flixPackageService: mockFlixPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance()), {
+            pathBinding([publication: "SCORE", locale: "en_GB"])
+            uri "/"
+        }).with {
+            assert status.code == 500
+            def ren = rendered(DefaultJsonRender).object
+            assert ren.status == 500
+            assert ren.flix.publication == "SCORE"
+            assert ren.flix.locale == "en_GB"
+            assert ren.flix.processId.id != null
+            assert ren.errors == ["exp in package flow"]
             assert !ren.result
         }
     }

@@ -38,13 +38,7 @@ class FlixSheetFlowHandler extends GroovyHandler {
                 response.status(400)
                 render json(status: 400, flixSheet: flixSheet, errors: errors)
             } else {
-                flixSheetService.sheetFlow(flixSheet).subscribe({
-                    result << it?.toString()
-                    activity.info "$flixSheet finished: $it"
-                }, { e ->
-                    flixSheet.errors << e.message ?: e.cause?.message
-                    activity.error "error in $flixSheet", e
-                }, {
+                flixSheetService.sheetFlow(flixSheet).finallyDo({
                     if (flixSheet.errors) {
                         response.status(500)
                         render json(status: 500, flixSheet: flixSheet, errors: flixSheet.errors)
@@ -52,6 +46,12 @@ class FlixSheetFlowHandler extends GroovyHandler {
                         response.status(200)
                         render json(status: 200, flixSheet: flixSheet, result: result)
                     }
+                }).subscribe({
+                    result << it?.toString()
+                    activity.info "$flixSheet finished: $it"
+                }, { e ->
+                    flixSheet.errors << HandlerUtil.getErrorMessage(e)
+                    activity.error "error in $flixSheet", e
                 })
             }
 

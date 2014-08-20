@@ -43,19 +43,19 @@ class FlixFlowHandler extends GroovyHandler {
                 response.status(400)
                 render json(status: 400, flix: flix, errors: errors)
             } else {
-                flixService.flixFlow(flix).subscribe({
-                    sheetServiceResults << it
-                    activity.info "sheet result: $it"
-                }, { e ->
-                    flix.errors << e.message ?: e.cause?.message
-                    activity.error "error in $flix", e
-                }, {
+                flixService.flixFlow(flix).finallyDo({
                     if (flix.errors) {
                         response.status(500)
                         render json(status: 500, flix: flix, errors: flix.errors)
                     } else {
                         handleFlixPackage(context, flix, sheetServiceResults)
                     }
+                }).subscribe({
+                    sheetServiceResults << it
+                    activity.info "sheet result: $it"
+                }, { e ->
+                    flix.errors << HandlerUtil.getErrorMessage(e)
+                    activity.error "error in $flix", e
                 })
             }
 
@@ -64,12 +64,7 @@ class FlixFlowHandler extends GroovyHandler {
 
     void handleFlixPackage(GroovyContext context, Flix flix, List sheetServiceResults) {
         context.with {
-            flixPackageService.packageFlow(flix).subscribe({
-                activity.info "$flix finished: $it"
-            }, { e ->
-                flix.errors << e.message ?: e.cause?.message
-                activity.error "error in $flix", e
-            }, {
+            flixPackageService.packageFlow(flix).finallyDo({
                 if (flix.errors) {
                     response.status(500)
                     render json(status: 500, flix: flix, errors: flix.errors)
@@ -77,6 +72,11 @@ class FlixFlowHandler extends GroovyHandler {
                     response.status(200)
                     render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))
                 }
+            }).subscribe({
+                activity.info "$flix finished: $it"
+            }, { e ->
+                flix.errors << HandlerUtil.getErrorMessage(e)
+                activity.error "error in $flix", e
             })
         }
     }

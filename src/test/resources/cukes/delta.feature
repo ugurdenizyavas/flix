@@ -57,7 +57,7 @@ Feature: Flix
     When I request flix delta service with invalid edate parameter
     Then Flix delta service should reject with edate parameter error
 
-  Scenario: flix sheet service
+  Scenario: flix sheet service with success
     Given Flix json for sheet x1.ceh
     When I request flix sheet service for process 123 sheet x1.ceh
     Then Flix sheet service for process 123 sheet x1.ceh should be done
