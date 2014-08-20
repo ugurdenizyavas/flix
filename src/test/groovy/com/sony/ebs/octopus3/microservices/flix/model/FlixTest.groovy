@@ -35,8 +35,8 @@ class FlixTest {
     }
 
     @Test
-    void "test destinationUrn"() {
-        assert new Flix(publication: "GLOBAL", locale: "fr_BE").destinationUrn.toString() ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
+    void "test getThirdPartyUrn"() {
+        assert new Flix(publication: "GLOBAL", locale: "fr_BE").getThirdPartyUrn("aaa")?.toString() == "urn:thirdparty:flixmedia:aaa"
     }
 
 }

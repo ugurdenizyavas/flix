@@ -34,7 +34,10 @@ class FlixPackageServiceTest {
 
     @Before
     void before() {
-        flixPackageService = new FlixPackageService(repositoryOpsServiceUrl: "/ops", execControl: execController.control)
+        flixPackageService = new FlixPackageService(
+                repositoryOpsServiceUrl: "/repo/ops",
+                repositoryFileServiceUrl: "/repo/file/:urn"
+                , execControl: execController.control)
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
@@ -61,12 +64,13 @@ class FlixPackageServiceTest {
     void "success"() {
         mockNingHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
-                assert url == "/ops"
+                assert url == "/repo/ops"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
         Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
         assert runFlow(flix) == "success"
+        assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
     }
 
     @Test
@@ -94,14 +98,16 @@ class FlixPackageServiceTest {
 
     @Test
     void "test ops recipe"() {
-        def recipe = flixPackageService.createOpsRecipe(new Flix(publication: "SCORE", locale: "fr_BE"))
+        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
+        def thirdParty = "urn:thirdparty:flixmedia:flix_fr_be.zip"
+        def recipe = flixPackageService.createOpsRecipe(flix, thirdParty)
 
         def actual = new JsonSlurper().parseText(recipe)
 
         assert actual.ops[0].zip.source == "urn:flixmedia:score:fr_be"
 
         assert actual.ops[1].copy.source == "urn:flixmedia:score:fr_be.zip"
-        assert actual.ops[1].copy.destination ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
+        assert actual.ops[1].copy.destination == thirdParty
 
         assert actual.ops[2].delete.source == "urn:flixmedia:score:fr_be.zip"
     }

@@ -5,6 +5,9 @@ import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -18,6 +21,8 @@ import static ratpack.rx.RxRatpack.observe
 @org.springframework.context.annotation.Lazy
 class FlixPackageService {
 
+    final static DateTimeFormatter FMT = DateTimeFormat.forPattern("yyyyMMdd_HHmmss")
+
     @Autowired
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
@@ -25,11 +30,14 @@ class FlixPackageService {
     @Value('${octopus3.flix.repositoryOpsServiceUrl}')
     String repositoryOpsServiceUrl
 
+    @Value('${octopus3.flix.repositoryFileServiceUrl}')
+    String repositoryFileServiceUrl
+
     @Autowired
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    String createOpsRecipe(Flix flix) {
+    String createOpsRecipe(Flix flix, String outputPackageUrnStr) {
         def packageUrnStr = flix.baseUrn.toString()
 
         def getZip = {
@@ -40,7 +48,7 @@ class FlixPackageService {
         def getCopy = {
             it.copy {
                 source "${packageUrnStr}.zip"
-                destination flix.destinationUrn.toString()
+                destination outputPackageUrnStr
             }
         }
         def getDelete = {
@@ -63,7 +71,11 @@ class FlixPackageService {
         log.info "creating package"
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking {
-                createOpsRecipe(flix)
+                def packageName = "Flix_${flix.locale}_${new DateTime().toString(FMT)}.zip"
+                def outputPackageUrnStr = flix.getThirdPartyUrn(packageName)?.toString()
+                flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", outputPackageUrnStr)
+
+                createOpsRecipe(flix, outputPackageUrnStr)
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, "UTF-8"))

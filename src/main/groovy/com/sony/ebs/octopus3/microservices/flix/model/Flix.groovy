@@ -17,9 +17,7 @@ import org.joda.time.format.DateTimeFormatter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {
 
-    @JsonIgnore
-    final static DateTimeFormatter FMT = DateTimeFormat.forPattern("yyyyMMdd_HHmmss")
-
+    String outputPackageUrl
     ProcessId processId
     String publication
     String locale
@@ -55,17 +53,7 @@ class Flix {
         new URNImpl(FlixUrnValue.flixMedia.toString(), [publication, locale])
     }
 
-    URN getSheetUrnByMaterialName(String materialName) throws URNCreationException {
-        if (!materialName) {
-            throw new URNCreationException("Invalid materialName");
-        }
-        new URNImpl(FlixUrnValue.global_sku.toString(), [publication, locale, materialName?.toLowerCase()])
+    URN getThirdPartyUrn(String packageName) {
+        new URNImpl(FlixUrnValue.thirdparty.toString(), [FlixUrnValue.flixMedia.toString(), packageName])
     }
-
-    @JsonIgnore
-    URN getDestinationUrn() {
-        def name = "Flix_${locale}_${new DateTime().toString(FMT)}.zip"
-        new URNImpl(FlixUrnValue.thirdparty.toString(), [FlixUrnValue.flixMedia.toString(), name])
-    }
-
 }
