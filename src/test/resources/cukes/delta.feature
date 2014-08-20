@@ -70,12 +70,3 @@ Feature: Flix
     When I request flix sheet service with invalid ean code
     Then Flix sheet service should reject with ean code parameter error
 
-  Scenario: flix package service with error
-    Given Repository ops service with error
-    When I request flix package service for publication SCORE locale en_GB
-    Then Flix package service for publication SCORE locale en_GB should get error
-
-  Scenario: flix package service with success
-    Given Repository ops service with success
-    When I request flix package service for publication SCORE locale en_GB
-    Then Flix package service for publication SCORE locale en_GB should be successful

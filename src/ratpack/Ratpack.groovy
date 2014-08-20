@@ -3,7 +3,6 @@ import com.sony.ebs.octopus3.commons.ratpack.handlers.HealthCheckHandler
 import com.sony.ebs.octopus3.commons.ratpack.monitoring.MonitoringService
 import com.sony.ebs.octopus3.microservices.flix.SpringConfig
 import com.sony.ebs.octopus3.microservices.flix.handlers.FlixFlowHandler
-import com.sony.ebs.octopus3.microservices.flix.handlers.FlixPackageFlowHandler
 import com.sony.ebs.octopus3.microservices.flix.handlers.FlixSheetFlowHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -21,7 +20,6 @@ ratpack {
 
     FlixFlowHandler flixFlowHandler
     FlixSheetFlowHandler flixSheetFlowHandler
-    FlixPackageFlowHandler flixPackageFlowHandler
     HealthCheckHandler healthCheckHandler
 
     bindings {
@@ -37,7 +35,6 @@ ratpack {
 
             flixFlowHandler = ctx.getBean(FlixFlowHandler.class)
             flixSheetFlowHandler = ctx.getBean(FlixSheetFlowHandler.class)
-            flixPackageFlowHandler = ctx.getBean(FlixPackageFlowHandler.class)
             healthCheckHandler = new HealthCheckHandler(monitoringService: new MonitoringService())
         }
     }
@@ -46,6 +43,5 @@ ratpack {
         get("healthcheck", healthCheckHandler)
         get("flix/delta/publication/:publication/locale/:locale", flixFlowHandler)
         get("flix/sheet/:urn", flixSheetFlowHandler)
-        get("flix/package/publication/:publication/locale/:locale", flixPackageFlowHandler)
     }
 }
