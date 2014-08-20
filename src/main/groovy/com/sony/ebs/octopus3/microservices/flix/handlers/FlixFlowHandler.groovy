@@ -96,7 +96,8 @@ class FlixFlowHandler extends GroovyHandler {
             errorMap
         }
         [
-                stats  : [
+                "package created": flix.outputPackageUrl,
+                stats            : [
                         "number of delta products"                   : flix.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
                         "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
@@ -107,8 +108,8 @@ class FlixFlowHandler extends GroovyHandler {
                             !it.success
                         }).size()
                 ],
-                success: createSuccess(),
-                errors : createErrors()
+                success          : createSuccess(),
+                errors           : createErrors()
         ]
     }
 

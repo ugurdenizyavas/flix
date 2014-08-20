@@ -185,8 +185,8 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.flix.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
     assert json.flix.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
     assert json.flix.deltaUrns?.sort() == [getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"), getUrn("g"), getUrn("h")]
-    assert json.flix.outputPackageUrl ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
 
+    assert json.result."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
     assert json.result.stats."number of delta products" == 8
     assert json.result.stats."number of products filtered out by category" == 2
     assert json.result.stats."number of products filtered out by ean code" == 2

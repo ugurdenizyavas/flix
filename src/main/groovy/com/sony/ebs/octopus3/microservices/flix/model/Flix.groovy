@@ -17,7 +17,6 @@ import org.joda.time.format.DateTimeFormatter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {
 
-    String outputPackageUrl
     ProcessId processId
     String publication
     String locale
@@ -26,6 +25,9 @@ class Flix {
     List deltaUrns
     List categoryFilteredOutUrns
     List eanCodeFilteredOutUrns
+
+    @JsonIgnore
+    String outputPackageUrl
 
     @JsonIgnore
     Map eanCodeMap = [:]
