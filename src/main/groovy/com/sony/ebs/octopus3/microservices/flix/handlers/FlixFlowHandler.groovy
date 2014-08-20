@@ -70,7 +70,7 @@ class FlixFlowHandler extends GroovyHandler {
                     render json(status: 500, flix: flix, errors: flix.errors)
                 } else {
                     response.status(200)
-                    render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))
+                    render json(status: 200, result: createFlixResult(flix, sheetServiceResults), flix: flix)
                 }
             }).subscribe({
                 activity.info "$flix finished: $it"
