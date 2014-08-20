@@ -2,7 +2,6 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
@@ -65,16 +64,15 @@ class FlixFlowHandler extends GroovyHandler {
 
     void handleFlixPackage(GroovyContext context, Flix flix, List sheetServiceResults) {
         context.with {
-            FlixPackage flixPackage = new FlixPackage(publication: flix.publication, locale: flix.locale)
-            flixPackageService.packageFlow(flixPackage).subscribe({
-                activity.info "$flixPackage finished: $it"
+            flixPackageService.packageFlow(flix).subscribe({
+                activity.info "$flix finished: $it"
             }, { e ->
-                flixPackage.errors << e.message ?: e.cause?.message
-                activity.error "error in $flixPackage", e
+                flix.errors << e.message ?: e.cause?.message
+                activity.error "error in $flix", e
             }, {
-                if (flixPackage.errors) {
+                if (flix.errors) {
                     response.status(500)
-                    render json(status: 500, flix: flix, errors: flixPackage.errors)
+                    render json(status: 500, flix: flix, errors: flix.errors)
                 } else {
                     response.status(200)
                     render json(status: 200, flix: flix, result: createFlixResult(flix, sheetServiceResults))

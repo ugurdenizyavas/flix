@@ -34,4 +34,9 @@ class FlixTest {
         new Flix(publication: "SCORE", locale: "fr_FR").categoryUrn?.toString() == "urn:flixmedia:score:fr_fr:category.xml"
     }
 
+    @Test
+    void "test destinationUrn"() {
+        assert new Flix(publication: "GLOBAL", locale: "fr_BE").destinationUrn.toString() ==~ /urn:thirdparty:flixmedia:flix_fr_be_[0-9]{8}_[0-9]{6}\.zip/
+    }
+
 }

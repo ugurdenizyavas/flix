@@ -3,10 +3,9 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
+import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.mock.interceptor.MockFor

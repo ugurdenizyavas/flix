@@ -3,7 +3,6 @@ package com.sony.ebs.octopus3.microservices.flix.validators
 import com.sony.ebs.octopus3.commons.date.ISODateUtils
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.LocaleUtils
@@ -49,13 +48,6 @@ class RequestValidator {
         if (!(publication ==~ /[a-zA-Z0-9\-]+/)) {
             errors << "publication parameter is invalid"
         }
-    }
-
-    List validateFlixPackage(FlixPackage flixPackage) {
-        def errors = []
-        validatePublication(errors, flixPackage.publication)
-        validateLocale(errors, flixPackage.locale)
-        errors
     }
 
     /**

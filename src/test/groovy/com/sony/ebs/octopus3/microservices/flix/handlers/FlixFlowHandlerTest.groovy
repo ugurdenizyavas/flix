@@ -1,7 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
@@ -34,9 +33,9 @@ class FlixFlowHandlerTest {
     @Test
     void "success"() {
         mockFlixPackageService.demand.with {
-            packageFlow(1) { FlixPackage flixPackage ->
-                assert flixPackage.publication == "SCORE"
-                assert flixPackage.locale == "en_GB"
+            packageFlow(1) { Flix flix ->
+                assert flix.publication == "SCORE"
+                assert flix.locale == "en_GB"
                 rx.Observable.just("xxx")
             }
         }
@@ -141,8 +140,8 @@ class FlixFlowHandlerTest {
     @Test
     void "error in package flow"() {
         mockFlixPackageService.demand.with {
-            packageFlow(1) { FlixPackage flixPackage ->
-                flixPackage.errors << "error in package flow"
+            packageFlow(1) { Flix flix ->
+                flix.errors << "error in package flow"
                 rx.Observable.just(null)
             }
         }

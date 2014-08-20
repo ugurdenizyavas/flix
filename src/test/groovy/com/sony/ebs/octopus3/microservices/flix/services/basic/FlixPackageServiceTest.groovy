@@ -2,7 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.microservices.flix.model.FlixPackage
+import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -38,13 +38,13 @@ class FlixPackageServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runFlow(FlixPackage flixPackage) {
+    def runFlow(Flix flix) {
         flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
         boolean valueSet = false
         execController.start {
-            flixPackageService.packageFlow(flixPackage).subscribe({
+            flixPackageService.packageFlow(flix).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -65,8 +65,8 @@ class FlixPackageServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flixPackage) == "success"
+        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flix) == "success"
     }
 
     @Test
@@ -76,9 +76,9 @@ class FlixPackageServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flixPackage) == "outOfFlow"
-        assert flixPackage.errors == ["HTTP 500 error calling repo ops service"]
+        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flix) == "outOfFlow"
+        assert flix.errors == ["HTTP 500 error calling repo ops service"]
     }
 
     @Test
@@ -88,13 +88,13 @@ class FlixPackageServiceTest {
                 throw new Exception("calling ops service")
             }
         }
-        FlixPackage flixPackage = new FlixPackage(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flixPackage) == "error"
+        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
+        assert runFlow(flix) == "error"
     }
 
     @Test
     void "test ops recipe"() {
-        def recipe = flixPackageService.createOpsRecipe(new FlixPackage(publication: "SCORE", locale: "fr_BE"))
+        def recipe = flixPackageService.createOpsRecipe(new Flix(publication: "SCORE", locale: "fr_BE"))
 
         def actual = new JsonSlurper().parseText(recipe)
 

@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services.dates
+package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttribute
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider

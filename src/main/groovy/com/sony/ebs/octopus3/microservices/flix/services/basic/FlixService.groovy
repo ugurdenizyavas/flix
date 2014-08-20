@@ -6,7 +6,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.dates.DeltaDatesProvider
+import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j

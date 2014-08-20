@@ -8,11 +8,17 @@ import com.sony.ebs.octopus3.commons.urn.URNCreationException
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors', 'deltaUrns', 'categoryFilteredOutUrns'])
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {
+
+    @JsonIgnore
+    final static DateTimeFormatter FMT = DateTimeFormat.forPattern("yyyyMMdd_HHmmss")
 
     ProcessId processId
     String publication
@@ -54,6 +60,12 @@ class Flix {
             throw new URNCreationException("Invalid materialName");
         }
         new URNImpl(FlixUrnValue.global_sku.toString(), [publication, locale, materialName?.toLowerCase()])
+    }
+
+    @JsonIgnore
+    URN getDestinationUrn() {
+        def name = "Flix_${locale}_${new DateTime().toString(FMT)}.zip"
+        new URNImpl(FlixUrnValue.thirdparty.toString(), [FlixUrnValue.flixMedia.toString(), name])
     }
 
 }
