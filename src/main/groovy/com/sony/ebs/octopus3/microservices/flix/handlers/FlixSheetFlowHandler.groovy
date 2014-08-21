@@ -36,12 +36,12 @@ class FlixSheetFlowHandler extends GroovyHandler {
             if (errors) {
                 activity.error "error validating $flixSheet : $errors"
                 response.status(400)
-                render json(status: 400, flixSheet: flixSheet, errors: errors)
+                render json(status: 400, errors: errors, flixSheet: flixSheet)
             } else {
                 flixSheetService.sheetFlow(flixSheet).finallyDo({
                     if (flixSheet.errors) {
                         response.status(500)
-                        render json(status: 500, flixSheet: flixSheet, errors: flixSheet.errors)
+                        render json(status: 500, errors: flixSheet.errors, flixSheet: flixSheet)
                     } else {
                         response.status(200)
                         render json(status: 200, flixSheet: flixSheet, result: result)

@@ -41,12 +41,12 @@ class FlixFlowHandler extends GroovyHandler {
             if (errors) {
                 activity.error "error validating $flix : $errors"
                 response.status(400)
-                render json(status: 400, flix: flix, errors: errors)
+                render json(status: 400, errors: errors, flix: flix)
             } else {
                 flixService.flixFlow(flix).finallyDo({
                     if (flix.errors) {
                         response.status(500)
-                        render json(status: 500, flix: flix, errors: flix.errors)
+                        render json(status: 500, errors: flix.errors, flix: flix)
                     } else {
                         handleFlixPackage(context, flix, sheetServiceResults)
                     }
@@ -67,7 +67,7 @@ class FlixFlowHandler extends GroovyHandler {
             flixPackageService.packageFlow(flix).finallyDo({
                 if (flix.errors) {
                     response.status(500)
-                    render json(status: 500, flix: flix, errors: flix.errors)
+                    render json(status: 500, errors: flix.errors, flix: flix)
                 } else {
                     response.status(200)
                     render json(status: 200, result: createFlixResult(flix, sheetServiceResults), flix: flix)
