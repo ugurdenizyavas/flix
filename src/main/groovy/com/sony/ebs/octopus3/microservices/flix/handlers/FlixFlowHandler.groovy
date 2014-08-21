@@ -1,12 +1,14 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
 import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
 import groovy.util.logging.Slf4j
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import ratpack.groovy.handling.GroovyContext
@@ -43,12 +45,15 @@ class FlixFlowHandler extends GroovyHandler {
                 response.status(400)
                 render json(status: 400, errors: errors, flix: flix)
             } else {
+                def startTime = new DateTime()
                 flixService.flixFlow(flix).finallyDo({
                     if (flix.errors) {
+                        def endTime = new DateTime()
+                        def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                         response.status(500)
-                        render json(status: 500, errors: flix.errors, flix: flix)
+                        render json(status: 500, timeStats: timeStats, errors: flix.errors, flix: flix)
                     } else {
-                        handleFlixPackage(context, flix, sheetServiceResults)
+                        handleFlixPackage(context, flix, sheetServiceResults, startTime)
                     }
                 }).subscribe({
                     sheetServiceResults << it
@@ -62,15 +67,17 @@ class FlixFlowHandler extends GroovyHandler {
         }
     }
 
-    void handleFlixPackage(GroovyContext context, Flix flix, List sheetServiceResults) {
+    void handleFlixPackage(GroovyContext context, Flix flix, List sheetServiceResults, DateTime startTime) {
         context.with {
             flixPackageService.packageFlow(flix).finallyDo({
+                def endTime = new DateTime()
+                def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                 if (flix.errors) {
                     response.status(500)
-                    render json(status: 500, errors: flix.errors, flix: flix)
+                    render json(status: 500, timeStats: timeStats, errors: flix.errors, flix: flix)
                 } else {
                     response.status(200)
-                    render json(status: 200, result: createFlixResult(flix, sheetServiceResults), flix: flix)
+                    render json(status: 200, timeStats: timeStats, result: createFlixResult(flix, sheetServiceResults), flix: flix)
                 }
             }).subscribe({
                 activity.info "$flix finished: $it"

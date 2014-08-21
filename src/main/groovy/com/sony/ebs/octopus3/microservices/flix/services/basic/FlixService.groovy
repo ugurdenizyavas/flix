@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.microservices.flix.handlers.HandlerUtil
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
