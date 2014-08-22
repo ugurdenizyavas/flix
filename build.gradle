@@ -232,3 +232,62 @@ task devRelease() {
         }
     }
 }
+
+task prdRelease() {
+    description = "Upload shadow jar to prd server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(prdReleasePassword.decodeBase64())
+
+    doLast {
+        prdUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app-$version-Shadow.jar"),
+                        todir: "${prdReleaseUser}@${host}:${prdUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        prdStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: prdReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: prdStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+    }
+}
