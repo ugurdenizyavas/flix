@@ -34,4 +34,10 @@ class FlixSheetTest {
     void "valid longer sheetUrn"() {
         assert new FlixSheet(urnStr: "urn:a:b:c:d").xmlUrn?.toString() == "urn:flixmedia:b:c:d.xml"
     }
+
+    @Test
+    void "get material name"() {
+        assert new FlixSheet(urnStr: "urn:global_sku:score:fr_be:x1.ceh").materialName == "x1.ceh"
+    }
+
 }

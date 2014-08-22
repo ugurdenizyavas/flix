@@ -33,4 +33,9 @@ class FlixSheet {
         }
         new URNImpl(FlixUrnValue.flixMedia.toString(), values)
     }
+
+    @JsonIgnore
+    String getMaterialName() {
+        getUrn()?.values?.last()?.toLowerCase()
+    }
 }
