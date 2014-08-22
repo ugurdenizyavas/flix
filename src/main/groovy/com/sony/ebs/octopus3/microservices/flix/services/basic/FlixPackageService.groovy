@@ -69,12 +69,12 @@ class FlixPackageService {
         }
 
         def result = builder.toString()
-        log.info "recipe for $flix is $result "
+        log.info "recipe for {} is {}", flix, result
         result
     }
 
     rx.Observable<String> packageFlow(Flix flix) {
-        log.info "creating package"
+        log.info "creating package for {}", flix
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking {
                 def packageName = "Flix_${flix.locale}_${new DateTime().toString(FMT)}.zip"

@@ -17,7 +17,7 @@ class FlixXmlBuilder {
     }
 
     String buildXml(Object json) {
-        log.debug "starting building xml"
+        log.trace "starting building xml"
         def generate
         generate = { builder, Map map ->
             map.each { k, v ->
@@ -49,7 +49,7 @@ class FlixXmlBuilder {
         }
 
         String result = xml.toString()
-        log.debug "finished building xml: {}", result
+        log.trace "finished building xml: {}", result
         result
     }
 

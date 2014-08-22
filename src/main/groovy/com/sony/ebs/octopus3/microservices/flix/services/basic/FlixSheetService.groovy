@@ -37,10 +37,10 @@ class FlixSheetService {
     FlixXmlBuilder flixXmlBuilder
 
     def createSheetJson(InputStream inputStream, String eanCode) {
-        log.info "starting parsing json"
+        log.debug "starting parsing json"
         def json = jsonSlurper.parse(inputStream, "UTF-8")
         json.eanCode = eanCode
-        log.info "finished parsing json"
+        log.debug "finished parsing json"
         json
     }
 

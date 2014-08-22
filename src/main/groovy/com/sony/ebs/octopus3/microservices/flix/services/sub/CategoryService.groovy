@@ -40,14 +40,14 @@ class CategoryService {
         String categoryFeed
         rx.Observable.just("starting").flatMap({
             def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
-            log.info "category service url for $flix is $categoryReadUrl"
+            log.info "category service url for {} is {}", flix, categoryReadUrl
             httpClient.doGet(categoryReadUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "getting octopus category feed", flix.errors)
         }).flatMap({ Response response ->
             categoryFeed = IOUtils.toString(response.responseBodyAsStream, "UTF-8")
             def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", flix.categoryUrn.toString())
-            log.info "category save url for $flix is $categorySaveUrl"
+            log.info "category save url for {} is {}", flix, categorySaveUrl
 
             httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, "UTF-8"))
         }).filter({ Response response ->
@@ -71,7 +71,7 @@ class CategoryService {
                 productsInCategoryTree.contains(sku)
             }
 
-            log.info "finished category filtering: ${filtered.size()} left, from ${productUrls?.size()}"
+            log.info "finished category filtering: {} left, from {}", filtered.size(), productUrls?.size()
             filtered
         })
     }

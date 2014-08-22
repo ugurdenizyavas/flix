@@ -95,7 +95,7 @@ class FlixService {
             deltaDatesProvider.createDateParams(flix)
         }).flatMap({
             def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it
-            log.info "deltaUrl for $flix is $deltaUrl"
+            log.info "deltaUrl for {} is {}", flix, deltaUrl
             httpClient.doGet(deltaUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "retrieving global sku delta", flix.errors)
@@ -107,7 +107,7 @@ class FlixService {
             }))
         }).flatMap({
             flix.deltaUrns = it
-            log.info "${flix.deltaUrns?.size()} products found in delta"
+            log.info "{} products found in delta", flix.deltaUrns?.size()
 
             log.info "deleting current flix xmls"
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", flix.baseUrn.toString())

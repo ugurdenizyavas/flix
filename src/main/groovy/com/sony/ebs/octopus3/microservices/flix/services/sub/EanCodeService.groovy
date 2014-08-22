@@ -51,7 +51,7 @@ class EanCodeService {
                         eanCodeMap[productMap[key]] = identifier.text()
                     }
                 }
-                log.info "finished eanCode filtering: ${eanCodeMap?.size()} left, from ${productUrls?.size()}"
+                log.info "finished eanCode filtering: {} left, from {}", eanCodeMap?.size(), productUrls?.size()
                 "done"
                 eanCodeMap
             }))
