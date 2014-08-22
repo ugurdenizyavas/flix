@@ -37,7 +37,7 @@ class FlixPackageService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    String createOpsRecipe(Flix flix, String outputPackageUrnStr) {
+    String createOpsRecipe(Flix flix, String outputPackageUrnStr, String archivePackageUrnStr) {
         def packageUrnStr = flix.baseUrn.toString()
 
         def getZip = {
@@ -45,10 +45,16 @@ class FlixPackageService {
                 source packageUrnStr
             }
         }
-        def getCopy = {
+        def getCopyThirdParty = {
             it.copy {
                 source "${packageUrnStr}.zip"
                 destination outputPackageUrnStr
+            }
+        }
+        def getCopyArchive = {
+            it.copy {
+                source "${packageUrnStr}.zip"
+                destination archivePackageUrnStr
             }
         }
         def getDelete = {
@@ -59,7 +65,7 @@ class FlixPackageService {
 
         def builder = new groovy.json.JsonBuilder()
         builder {
-            ops getZip(builder), getCopy(builder), getDelete(builder)
+            ops getZip(builder), getCopyThirdParty(builder), getCopyArchive(builder), getDelete(builder)
         }
 
         def result = builder.toString()
@@ -72,10 +78,14 @@ class FlixPackageService {
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking {
                 def packageName = "Flix_${flix.locale}_${new DateTime().toString(FMT)}.zip"
+
                 def outputPackageUrnStr = flix.getThirdPartyUrn(packageName)?.toString()
                 flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", outputPackageUrnStr)
 
-                createOpsRecipe(flix, outputPackageUrnStr)
+                def archivePackageUrnStr = flix.getArchiveUrn(packageName)?.toString()
+                flix.archivePackageUrl = repositoryFileServiceUrl.replace(":urn", archivePackageUrnStr)
+
+                createOpsRecipe(flix, outputPackageUrnStr, archivePackageUrnStr)
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, "UTF-8"))

@@ -39,4 +39,8 @@ class FlixTest {
         assert new Flix(publication: "GLOBAL", locale: "fr_BE").getThirdPartyUrn("aaa")?.toString() == "urn:thirdparty:flixmedia:aaa"
     }
 
+    @Test
+    void "test getArchiveUrn"() {
+        assert new Flix(publication: "GLOBAL", locale: "fr_BE").getArchiveUrn("aaa")?.toString() == "urn:archive:flix_sku:aaa"
+    }
 }

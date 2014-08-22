@@ -71,6 +71,7 @@ class FlixPackageServiceTest {
         Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
         assert runFlow(flix) == "success"
         assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
+        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
     }
 
     @Test
@@ -100,7 +101,8 @@ class FlixPackageServiceTest {
     void "test ops recipe"() {
         def flix = new Flix(publication: "SCORE", locale: "fr_BE")
         def thirdParty = "urn:thirdparty:flixmedia:flix_fr_be.zip"
-        def recipe = flixPackageService.createOpsRecipe(flix, thirdParty)
+        def archive = "urn:archive:flix_sku:flix_fr_be.zip"
+        def recipe = flixPackageService.createOpsRecipe(flix, thirdParty, archive)
 
         def actual = new JsonSlurper().parseText(recipe)
 
@@ -109,7 +111,10 @@ class FlixPackageServiceTest {
         assert actual.ops[1].copy.source == "urn:flixmedia:score:fr_be.zip"
         assert actual.ops[1].copy.destination == thirdParty
 
-        assert actual.ops[2].delete.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[2].copy.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[2].copy.destination == archive
+
+        assert actual.ops[3].delete.source == "urn:flixmedia:score:fr_be.zip"
     }
 
 }

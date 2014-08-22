@@ -30,6 +30,9 @@ class Flix {
     String outputPackageUrl
 
     @JsonIgnore
+    String archivePackageUrl
+
+    @JsonIgnore
     Map eanCodeMap = [:]
 
     @JsonIgnore
@@ -58,4 +61,9 @@ class Flix {
     URN getThirdPartyUrn(String packageName) {
         new URNImpl(FlixUrnValue.thirdparty.toString(), [FlixUrnValue.flixMedia.toString(), packageName])
     }
+
+    URN getArchiveUrn(String packageName) {
+        new URNImpl(FlixUrnValue.archive.toString(), [FlixUrnValue.flix_sku.toString(), packageName])
+    }
+
 }

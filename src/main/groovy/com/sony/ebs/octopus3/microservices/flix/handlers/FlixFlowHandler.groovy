@@ -107,6 +107,7 @@ class FlixFlowHandler extends GroovyHandler {
         }
         [
                 "package created": flix.outputPackageUrl,
+                "package archived": flix.archivePackageUrl,
                 stats            : [
                         "number of delta products"                   : flix.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),

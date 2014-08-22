@@ -37,6 +37,7 @@ class FlixFlowHandlerTest {
                 assert flix.publication == "SCORE"
                 assert flix.locale == "en_GB"
                 flix.outputPackageUrl = "/3rdparty/flix.zip"
+                flix.archivePackageUrl = "/archive/flix.zip"
                 rx.Observable.just("xxx")
             }
         }
@@ -74,6 +75,7 @@ class FlixFlowHandlerTest {
             assert !ren.errors
 
             assert ren.result."package created" == "/3rdparty/flix.zip"
+            assert ren.result."package archived" == "/archive/flix.zip"
             assert ren.result.stats."number of delta products" == 6
             assert ren.result.stats."number of products filtered out by category" == 2
             assert ren.result.stats."number of success" == 2
