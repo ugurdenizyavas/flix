@@ -48,7 +48,7 @@ class FlixFlowHandler extends GroovyHandler {
                 def startTime = new DateTime()
                 flixService.flixFlow(flix).finallyDo({
                     if (flix.errors) {
-                        activity.info "finished $flix with errors: $flix.errors"
+                        activity.error "finished $flix with errors: $flix.errors"
                         def endTime = new DateTime()
                         def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                         response.status(500)
@@ -58,7 +58,7 @@ class FlixFlowHandler extends GroovyHandler {
                     }
                 }).subscribe({
                     sheetServiceResults << it
-                    activity.debug "sheet result: $it"
+                    activity.debug "flix flow emitted: $it"
                 }, { e ->
                     flix.errors << HandlerUtil.getErrorMessage(e)
                     activity.error "error in $flix", e
@@ -74,7 +74,7 @@ class FlixFlowHandler extends GroovyHandler {
                 def endTime = new DateTime()
                 def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                 if (flix.errors) {
-                    activity.info "finished $flix with errors: $flix.errors"
+                    activity.error "finished $flix with errors: $flix.errors"
                     response.status(500)
                     render json(status: 500, timeStats: timeStats, errors: flix.errors, flix: flix)
                 } else {
