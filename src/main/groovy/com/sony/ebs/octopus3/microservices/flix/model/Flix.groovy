@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
-@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors', 'deltaUrns', 'categoryFilteredOutUrns'])
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true, includes = ['processId', 'publication', 'locale', 'sdate', 'edate'])
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class Flix {

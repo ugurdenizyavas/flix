@@ -16,7 +16,7 @@ import ratpack.groovy.handling.GroovyHandler
 
 import static ratpack.jackson.Jackson.json
 
-@Slf4j(value = "activity")
+@Slf4j(value = "activity", category = "activity")
 @Component
 @org.springframework.context.annotation.Lazy
 class FlixFlowHandler extends GroovyHandler {
@@ -48,6 +48,7 @@ class FlixFlowHandler extends GroovyHandler {
                 def startTime = new DateTime()
                 flixService.flixFlow(flix).finallyDo({
                     if (flix.errors) {
+                        activity.info "finished $flix with errors: $flix.errors"
                         def endTime = new DateTime()
                         def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                         response.status(500)
@@ -57,7 +58,7 @@ class FlixFlowHandler extends GroovyHandler {
                     }
                 }).subscribe({
                     sheetServiceResults << it
-                    activity.info "sheet result: $it"
+                    activity.debug "sheet result: $it"
                 }, { e ->
                     flix.errors << HandlerUtil.getErrorMessage(e)
                     activity.error "error in $flix", e
@@ -73,14 +74,16 @@ class FlixFlowHandler extends GroovyHandler {
                 def endTime = new DateTime()
                 def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                 if (flix.errors) {
+                    activity.info "finished $flix with errors: $flix.errors"
                     response.status(500)
                     render json(status: 500, timeStats: timeStats, errors: flix.errors, flix: flix)
                 } else {
+                    activity.info "finished $flix with success"
                     response.status(200)
                     render json(status: 200, timeStats: timeStats, result: createFlixResult(flix, sheetServiceResults), flix: flix)
                 }
             }).subscribe({
-                activity.info "$flix finished: $it"
+                activity.debug "$flix emited: $it"
             }, { e ->
                 flix.errors << HandlerUtil.getErrorMessage(e)
                 activity.error "error in $flix", e

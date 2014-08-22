@@ -12,7 +12,7 @@ import ratpack.groovy.handling.GroovyHandler
 
 import static ratpack.jackson.Jackson.json
 
-@Slf4j(value = "activity")
+@Slf4j(value = "activity", category = "activity")
 @Component
 @org.springframework.context.annotation.Lazy
 class FlixSheetFlowHandler extends GroovyHandler {
@@ -30,7 +30,7 @@ class FlixSheetFlowHandler extends GroovyHandler {
             FlixSheet flixSheet = new FlixSheet(urnStr: pathTokens.urn,
                     processId: request.queryParams.processId,
                     eanCode: request.queryParams.eanCode)
-            activity.info "starting $flixSheet"
+            activity.debug "starting $flixSheet"
 
             List result = []
             List errors = validator.validateFlixSheet(flixSheet)
@@ -41,15 +41,18 @@ class FlixSheetFlowHandler extends GroovyHandler {
             } else {
                 flixSheetService.sheetFlow(flixSheet).finallyDo({
                     if (flixSheet.errors) {
+                        activity.debug "finished $flixSheet with errors: $flixSheet.errors"
                         response.status(500)
                         render json(status: 500, errors: flixSheet.errors, flixSheet: flixSheet)
                     } else {
+                        activity.debug "finished $flixSheet with success"
                         response.status(200)
                         render json(status: 200, flixSheet: flixSheet, result: result)
                     }
                 }).subscribe({
-                    result << it?.toString()
-                    activity.info "$flixSheet finished: $it"
+                    def flowResult = it?.toString()
+                    result << flowResult
+                    activity.debug "$flixSheet emited: $flowResult"
                 }, { e ->
                     flixSheet.errors << HandlerUtil.getErrorMessage(e)
                     activity.error "error in $flixSheet", e

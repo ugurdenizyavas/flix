@@ -23,7 +23,7 @@ println "[LOGBACK] Environment is ${environment}"
 logDirectory = System.getProperty("logDirectory") ?: System.getProperty("java.io.tmpdir")
 println "[LOGBACK] Logging directory is ${logDirectory}"
 
-defaultLevel = INFO
+defaultLevel = DEBUG
 println "[LOGBACK] Default logging level is ${defaultLevel}"
 
 //***********************************
@@ -36,13 +36,23 @@ createStandardAppender("defaultAppender", "output")
 createStandardAppender("activityAppender", "activity")
 
 // Create the loggers
-root(defaultLevel, ["consoleAppender", "defaultAppender"])
-logger("activity", DEBUG, ["activityAppender"])
-logger("com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer", DEBUG)
-
-if (environment == "production") {
-    root(INFO, ["consoleAppender", "defaultAppender"])
+switch (environment) {
+    case "production":
+        root(INFO, ["consoleAppender", "defaultAppender"])
+        break
+    case "dev":
+        root(DEBUG, ["consoleAppender", "defaultAppender"])
+        break
+    case "local":
+        root(DEBUG, ["consoleAppender", "defaultAppender"])
+        break
+    default:
+        root(defaultLevel, ["consoleAppender", "defaultAppender"])
+        break
 }
+logger("activity", INFO, ["activityAppender"])
+logger("org.springframework", ERROR)
+logger("com.ning", ERROR)
 
 //***********************************
 // Console appender

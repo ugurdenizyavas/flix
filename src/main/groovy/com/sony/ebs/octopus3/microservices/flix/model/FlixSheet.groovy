@@ -7,7 +7,7 @@ import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
-@ToString(includeNames = true, includePackage = false, ignoreNulls = true, excludes = ['errors'])
+@ToString(includeNames = true, includePackage = false, ignoreNulls = true, includes = ['processId', 'urnStr', 'eanCode'])
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class FlixSheet {
