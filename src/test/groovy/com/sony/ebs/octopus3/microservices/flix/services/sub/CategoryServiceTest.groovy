@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -28,7 +29,7 @@ class CategoryServiceTest {
     static ExecController execController
 
     def getFileText(name) {
-        defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream.text
+        IOUtils.toString(defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream, "UTF-8")
     }
 
     @BeforeClass
@@ -80,7 +81,7 @@ class CategoryServiceTest {
             }
             doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category.xml"
-                assert is.text == categoryFeed
+                assert IOUtils.toString(is, "UTF-8") == categoryFeed
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
