@@ -19,7 +19,7 @@ buildscript {
         maven { url "http://oss.jfrog.org/repo" }
     }
     dependencies {
-        classpath "io.ratpack:ratpack-gradle:0.9.7"
+        classpath "io.ratpack:ratpack-gradle:$ratpackVersion"
         classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7.1"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.0.2"
     }
@@ -105,17 +105,17 @@ dependencies {
     testCompile 'info.cukes:cucumber-groovy:1.1.7'
 
     // spring
-    compile "org.springframework:spring-core:4.0.5.RELEASE"
-    compile "org.springframework:spring-context:4.0.5.RELEASE"
-    compile "org.springframework:spring-beans:4.0.5.RELEASE"
+    compile "org.springframework:spring-core:$springVersion"
+    compile "org.springframework:spring-context:$springVersion"
+    compile "org.springframework:spring-beans:$springVersion"
 
     // ratpack
     springloaded "org.springsource.springloaded:springloaded-core:1.1.4"
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0", {
         exclude module: "groovy-all"
     }
-    compile 'io.ratpack:ratpack-rx:0.9.7'
-    compile 'io.ratpack:ratpack-jackson:0.9.7'
+    compile ratpack.dependency("jackson")
+    compile ratpack.dependency("rx")
 
     // logging
     compile group:"org.slf4j", name:"slf4j-api", version:"1.7.5"
