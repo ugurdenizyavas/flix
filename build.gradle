@@ -84,7 +84,10 @@ shadowJar {
     }
 }
 
-run { systemProperty('environment', System.getProperty('environment')) }
+run {
+    systemProperty('environment', System.getProperty('environment'))
+    systemProperty('logback.configurationFile', System.getProperty('logback.configurationFile'))
+}
 test { systemProperty('environment', System.getProperty('environment')) }
 
 //======================================================================
