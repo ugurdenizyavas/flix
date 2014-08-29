@@ -236,6 +236,65 @@ task devRelease() {
     }
 }
 
+task tqaRelease() {
+    description = "Upload shadow jar to tqa server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(tqaReleasePassword.decodeBase64())
+
+    doLast {
+        tqaUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app-$version-Shadow.jar"),
+                        todir: "${tqaReleaseUser}@${host}:${tqaUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        tqaStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: tqaReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: tqaStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+    }
+}
+
 task prdRelease() {
     description = "Upload shadow jar to prd server and restart application"
     dependsOn shadowJar
