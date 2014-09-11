@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
@@ -88,7 +89,7 @@ class FlixPackageService {
                 createOpsRecipe(flix, outputPackageUrnStr, archivePackageUrnStr)
             })
         }).flatMap({ String recipe ->
-            httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, "UTF-8"))
+            httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, EncodingUtil.CHARSET))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "calling repo ops service", flix.errors)
         }).map({

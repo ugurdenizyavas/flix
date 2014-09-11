@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
@@ -29,7 +30,7 @@ class CategoryServiceTest {
     static ExecController execController
 
     def getFileText(name) {
-        IOUtils.toString(defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream, "UTF-8")
+        IOUtils.toString(defaultResourceLoader.getResource(BASE_PATH + name)?.inputStream, EncodingUtil.CHARSET)
     }
 
     @BeforeClass
@@ -81,7 +82,7 @@ class CategoryServiceTest {
             }
             doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category.xml"
-                assert IOUtils.toString(is, "UTF-8") == categoryFeed
+                assert IOUtils.toString(is, EncodingUtil.CHARSET) == categoryFeed
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
