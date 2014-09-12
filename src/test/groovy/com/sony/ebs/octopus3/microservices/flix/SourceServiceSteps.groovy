@@ -14,6 +14,9 @@ import ratpack.groovy.test.TestHttpClients
 import static com.github.dreamhead.moco.Moco.by
 import static com.github.dreamhead.moco.Moco.uri
 import static com.github.dreamhead.moco.Moco.with
+import static com.github.dreamhead.moco.Moco.with
+import static com.github.dreamhead.moco.Moco.with
+import static com.github.dreamhead.moco.Moco.with
 import static com.github.dreamhead.moco.Moco.status
 
 this.metaClass.mixin(Hooks)
@@ -73,7 +76,9 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
         "urn:global_sku:$pubAndLocale:e",
         "urn:global_sku:$pubAndLocale:f",
         "urn:global_sku:$pubAndLocale:g",
-        "urn:global_sku:$pubAndLocale:h"
+        "urn:global_sku:$pubAndLocale:h",
+        "urn:global_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7",
+        "urn:global_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
     ]
 }
 """
@@ -84,6 +89,8 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
     <identifier materialName="f"><![CDATA[2]]></identifier>
     <identifier materialName="G"><![CDATA[3]]></identifier>
     <identifier materialName="h"><![CDATA[4]]></identifier>
+    <identifier materialName="SS-AC3+/C CE7"><![CDATA[5]]></identifier>
+    <identifier materialName="SS-AC3//C CE7"><![CDATA[6]]></identifier>
 </identifiers>
 """
 
@@ -105,6 +112,7 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
                             <product><![CDATA[D]]></product>
                             <product><![CDATA[E]]></product>
                             <product><![CDATA[f]]></product>
+                            <product><![CDATA[SS-AC3//C CE7]]></product>
                         </products>
                     </node>
                     <node>
@@ -113,6 +121,7 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
                         <products>
                             <product><![CDATA[G]]></product>
                             <product><![CDATA[h]]></product>
+                            <product><![CDATA[SS-AC3+/C CE7]]></product>
                         </products>
                     </node>
                 </nodes>
@@ -158,10 +167,12 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
         server.post(by(uri("/repository/ops"))).response(status(200))
     }
 
-    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:e"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:e"))).response(with('{}'), status(200))
     server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:f"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
-    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:g"))).response('{}')
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:g"))).response(with('{}'), status(200))
     server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:h"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7"))).response(with('{}'), status(200))
+    server.get(by(uri("/flix/sheet/urn:global_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"))).response(with('{}'), status(200))
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
@@ -184,17 +195,25 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.flix.processId
     assert json.flix.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
     assert json.flix.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
-    assert json.flix.deltaUrns?.sort() == [getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"), getUrn("g"), getUrn("h")]
+    assert json.flix.deltaUrns?.sort() == [
+            getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"),
+            getUrn("g"), getUrn("h"), getUrn("ss-ac3_2b_2fc+ce7"), getUrn("ss-ac3_2f_2fc+ce7")
+    ]
 
     assert json.result."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
     assert json.result."package archived" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:archive:flix_sku:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
-    assert json.result.stats."number of delta products" == 8
+    assert json.result.stats."number of delta products" == 10
     assert json.result.stats."number of products filtered out by category" == 2
     assert json.result.stats."number of products filtered out by ean code" == 2
-    assert json.result.stats."number of success" == 2
+    assert json.result.stats."number of success" == 4
     assert json.result.stats."number of errors" == 2
 
-    assert json.result.success?.sort() == [getXmlUrl("e"), getXmlUrl("g")]
+    assert json.result.success?.sort() == [
+            getXmlUrl("e"),
+            getXmlUrl("g"),
+            getXmlUrl("ss-ac3_2b_2fc+ce7"),
+            getXmlUrl("ss-ac3_2f_2fc+ce7")
+    ]
 
     assert json.result.errors.size() == 3
     assert json.result.errors.err1 == [getUrn("f")]
