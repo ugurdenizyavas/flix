@@ -169,6 +169,7 @@ class CategoryServiceTest {
                         <products>
                             <product><![CDATA[A1]]></product>
                             <product><![CDATA[A2]]></product>
+                            <product><![CDATA[SS-AC3+/C CE7]]></product>
                         </products>
                     </node>
                     <node>
@@ -177,6 +178,7 @@ class CategoryServiceTest {
                         <products>
                             <product><![CDATA[C1]]></product>
                             <product><![CDATA[C2]]></product>
+                            <product><![CDATA[SS-AC3//C CE7]]></product>
                         </products>
                     </node>
                 </nodes>
@@ -189,11 +191,18 @@ class CategoryServiceTest {
                 "urn:global_sku:score:en_gb:a1",
                 "urn:global_sku:score:en_gb:b",
                 "urn:global_sku:score:en_gb:c2",
-                "urn:global_sku:score:en_gb:d"
+                "urn:global_sku:score:en_gb:d",
+                "urn:global_sku:score:en_gb:ss-ac3_2f_2fc+ce7",
+                "urn:global_sku:score:en_gb:ss-ac3_2b_2fc+ce7"
         ]
 
         List filtered = runFilterForCategory(productUrls, xml)
-        assert filtered.sort() == ["urn:global_sku:score:en_gb:a1", "urn:global_sku:score:en_gb:c2"]
+        assert filtered.sort() == [
+                "urn:global_sku:score:en_gb:a1",
+                "urn:global_sku:score:en_gb:c2",
+                "urn:global_sku:score:en_gb:ss-ac3_2b_2fc+ce7",
+                "urn:global_sku:score:en_gb:ss-ac3_2f_2fc+ce7"
+        ]
     }
 
 }

@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
+import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -65,10 +66,11 @@ class CategoryService {
             def categoryXml = xmlSlurper.parseText(categoryFeed)
 
             List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product' }).collect({
-                it.text()?.toLowerCase()
+                it.text()?.toUpperCase(MaterialNameEncoder.LOCALE)
             })
             def filtered = productUrls.findAll { urnStr ->
                 def sku = new URNImpl(urnStr).values?.last()
+                sku = MaterialNameEncoder.decode(sku)
                 productsInCategoryTree.contains(sku)
             }
 
