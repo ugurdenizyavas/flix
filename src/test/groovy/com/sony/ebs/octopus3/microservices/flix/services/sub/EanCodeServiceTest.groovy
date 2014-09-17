@@ -94,9 +94,11 @@ class EanCodeServiceTest {
     void "filter for ean codes"() {
         String feed = """
 <identifiers type="ean_code">
-    <identifier materialName="A"><![CDATA[1]]></identifier>
-    <identifier materialName="b"><![CDATA[2]]></identifier>
-    <identifier materialName="E"><![CDATA[3]]></identifier>
+    <identifier materialName="SS-AC3//C CE7"><![CDATA[1]]></identifier>
+    <identifier materialName="A"><![CDATA[2]]></identifier>
+    <identifier materialName="b"><![CDATA[3]]></identifier>
+    <identifier materialName="E"><![CDATA[4]]></identifier>
+    <identifier materialName="SS-AC3+/C CE7"><![CDATA[5]]></identifier>
 </identifiers>
 """
         def productUrns = [
@@ -104,7 +106,9 @@ class EanCodeServiceTest {
                 "urn:gs:score:en_gb:b",
                 "urn:gs:score:en_gb:c",
                 "urn:gs:score:en_gb:d",
-                "urn:gs:score:en_gb:e"
+                "urn:gs:score:en_gb:e",
+                "urn:gs:score:en_gb:ss-ac3_2f_2fc+ce7",
+                "urn:gs:score:en_gb:ss-ac3_2b_2fc+ce7"
         ]
 
         mockNingHttpClient.demand.with {
@@ -119,10 +123,12 @@ class EanCodeServiceTest {
 
         assert errors == []
 
-        assert eanCodeMap.size() == 3
-        assert eanCodeMap."urn:gs:score:en_gb:a" == "1"
-        assert eanCodeMap."urn:gs:score:en_gb:b" == "2"
-        assert eanCodeMap."urn:gs:score:en_gb:e" == "3"
+        assert eanCodeMap.size() == 5
+        assert eanCodeMap."urn:gs:score:en_gb:ss-ac3_2f_2fc+ce7" == "1"
+        assert eanCodeMap."urn:gs:score:en_gb:ss-ac3_2b_2fc+ce7" == "5"
+        assert eanCodeMap."urn:gs:score:en_gb:a" == "2"
+        assert eanCodeMap."urn:gs:score:en_gb:b" == "3"
+        assert eanCodeMap."urn:gs:score:en_gb:e" == "4"
     }
 
 }

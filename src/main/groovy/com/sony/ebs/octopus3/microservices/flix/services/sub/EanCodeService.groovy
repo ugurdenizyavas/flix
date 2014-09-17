@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -41,12 +42,16 @@ class EanCodeService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 def productMap = [:]
-                productUrls.each { productMap[new URNImpl(it).values?.last()?.toUpperCase()] = it }
+                productUrls.each {
+                    def sku = new URNImpl(it).values?.last()
+                    sku = MaterialNameEncoder.decode(sku)
+                    productMap[sku] = it
+                }
 
                 def xml = xmlSlurper.parse(response.responseBodyAsStream)
                 Map eanCodeMap = [:]
                 xml.identifier?.each { identifier ->
-                    def key = identifier.@materialName?.toString()?.toUpperCase()
+                    def key = identifier.@materialName?.toString()?.toUpperCase(MaterialNameEncoder.LOCALE)
                     if (productMap[key]) {
                         eanCodeMap[productMap[key]] = identifier.text()
                     }

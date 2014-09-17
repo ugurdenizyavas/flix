@@ -1,6 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
+import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -45,11 +47,11 @@ class CategoryService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "getting octopus category feed", flix.errors)
         }).flatMap({ Response response ->
-            categoryFeed = IOUtils.toString(response.responseBodyAsStream, "UTF-8")
+            categoryFeed = IOUtils.toString(response.responseBodyAsStream, EncodingUtil.CHARSET)
             def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", flix.categoryUrn.toString())
             log.info "category save url for {} is {}", flix, categorySaveUrl
 
-            httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, "UTF-8"))
+            httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, EncodingUtil.CHARSET))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving octopus category feed", flix.errors)
         }).map({
@@ -64,10 +66,11 @@ class CategoryService {
             def categoryXml = xmlSlurper.parseText(categoryFeed)
 
             List productsInCategoryTree = categoryXml.depthFirst().findAll({ it.name() == 'product' }).collect({
-                it.text()?.toLowerCase()
+                it.text()?.toUpperCase(MaterialNameEncoder.LOCALE)
             })
             def filtered = productUrls.findAll { urnStr ->
                 def sku = new URNImpl(urnStr).values?.last()
+                sku = MaterialNameEncoder.decode(sku)
                 productsInCategoryTree.contains(sku)
             }
 

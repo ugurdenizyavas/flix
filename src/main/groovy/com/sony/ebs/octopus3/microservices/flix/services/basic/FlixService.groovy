@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
@@ -70,7 +71,7 @@ class FlixService {
                 def sheetServiceResult = new FlixSheetServiceResult(jsonUrn: jsonUrn, success: success,
                         statusCode: response.statusCode, eanCode: eanCode)
                 if (!success) {
-                    def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
+                    def json = jsonSlurper.parse(response.responseBodyAsStream, EncodingUtil.CHARSET_STR)
                     sheetServiceResult.errors = json.errors
                 } else {
                     sheetServiceResult.with {
@@ -102,7 +103,7 @@ class FlixService {
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                def json = jsonSlurper.parse(response.responseBodyAsStream, "UTF-8")
+                def json = jsonSlurper.parse(response.responseBodyAsStream, EncodingUtil.CHARSET_STR)
                 json?.results
             }))
         }).flatMap({

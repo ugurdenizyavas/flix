@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import groovy.util.logging.Slf4j
 import groovy.xml.StreamingMarkupBuilder
 import org.springframework.stereotype.Service
@@ -39,7 +40,7 @@ class FlixXmlBuilder {
             }
         }
 
-        def builder = new StreamingMarkupBuilder(encoding: "UTF-8")
+        def builder = new StreamingMarkupBuilder(encoding: EncodingUtil.CHARSET_STR)
         def xml = builder.bind() {
             mkp.xmlDeclaration()
             //mkp.yieldUnescaped('<!DOCTYPE gsafeed PUBLIC "-//Google//DTD GSA Feeds//EN" "gsafeed.dtd">')

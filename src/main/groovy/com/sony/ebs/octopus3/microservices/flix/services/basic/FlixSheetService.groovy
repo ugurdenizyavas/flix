@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
+import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
@@ -38,7 +39,7 @@ class FlixSheetService {
 
     def createSheetJson(InputStream inputStream, String eanCode) {
         log.debug "starting parsing json"
-        def json = jsonSlurper.parse(inputStream, "UTF-8")
+        def json = jsonSlurper.parse(inputStream, EncodingUtil.CHARSET_STR)
         json.eanCode = eanCode
         log.debug "finished parsing json"
         json
@@ -60,7 +61,7 @@ class FlixSheetService {
             })
         }).flatMap({ String xml ->
             def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.xmlUrn.toString())
-            httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, "UTF-8"))
+            httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, EncodingUtil.CHARSET))
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
         }).map({
