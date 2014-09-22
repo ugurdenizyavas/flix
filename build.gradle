@@ -4,7 +4,6 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransfor
 // PROJECT
 //======================================================================
 
-version = '1.0-SNAPSHOT'
 group = 'com.sony.ebs.octopus3'
 
 //======================================================================
@@ -15,13 +14,15 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://mvn.sony-europe.com/content/groups/global' }
-        mavenCentral()
         maven { url "http://oss.jfrog.org/repo" }
+        maven { url "https://oss.sonatype.org/content/groups/public" }
+        mavenCentral()
     }
     dependencies {
         classpath "io.ratpack:ratpack-gradle:$ratpackVersion"
         classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7.1"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.0.2"
+        classpath 'com.github.townsfolk:gradle-release:1.2'
     }
 }
 
@@ -43,6 +44,7 @@ apply plugin: "groovy"
 apply plugin: 'idea'
 apply plugin: 'nexus'
 apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: 'release'
 
 //======================================================================
 // CONFIGURATIONS
