@@ -78,12 +78,6 @@ class RequestValidatorTest {
     }
 
     @Test
-    void "invalid eanCode"() {
-        def flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb")
-        assert validator.validateFlixSheet(flixSheet) == ["eanCode parameter is invalid"]
-    }
-
-    @Test
     void "no processId"() {
         def flixSheet = new FlixSheet(urnStr: "urn:flix:score:en_gb", eanCode: "123")
         assert !validator.validateFlixSheet(flixSheet)

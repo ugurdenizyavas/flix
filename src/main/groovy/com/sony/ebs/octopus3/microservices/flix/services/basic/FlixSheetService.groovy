@@ -2,7 +2,9 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
+import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
@@ -31,6 +33,9 @@ class FlixSheetService {
     NingHttpClient httpClient
 
     @Autowired
+    EanCodeEnhancer eanCodeEnhancer
+
+    @Autowired
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
@@ -46,7 +51,20 @@ class FlixSheetService {
     }
 
     rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
+        flixSheet.assignMaterialName()
         rx.Observable.just("starting").flatMap({
+            if (!flixSheet.eanCode) {
+                eanCodeEnhancer.enhance(flixSheet)
+            } else {
+                rx.Observable.just("skipping")
+            }
+        }).filter({
+            boolean valid = flixSheet.eanCode as boolean
+            if (!valid) {
+                flixSheet.errors << "ean code not found"
+            }
+            valid
+        }).flatMap({
             def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
             httpClient.doGet(readUrl)
         }).filter({ Response response ->

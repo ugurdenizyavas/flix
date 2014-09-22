@@ -1,7 +1,7 @@
 import com.sony.ebs.octopus3.commons.ratpack.handlers.ErrorHandler
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HealthCheckHandler
 import com.sony.ebs.octopus3.commons.ratpack.monitoring.MonitoringService
-import com.sony.ebs.octopus3.microservices.flix.SpringConfig
+import com.sony.ebs.octopus3.microservices.flix.spring.config.SpringConfig
 import com.sony.ebs.octopus3.microservices.flix.handlers.FlixFlowHandler
 import com.sony.ebs.octopus3.microservices.flix.handlers.FlixSheetFlowHandler
 import org.slf4j.Logger

@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix
+package com.sony.ebs.octopus3.microservices.flix.spring.config
 
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 import ratpack.exec.ExecControl
-import ratpack.launch.LaunchConfig
 
 @Configuration
 @ComponentScan(value = "com.sony.ebs.octopus3.microservices.flix")
@@ -28,40 +27,23 @@ class SpringConfig {
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
-    @Autowired
-    @org.springframework.context.annotation.Lazy
-    LaunchConfig launchConfig
-
-    @Bean
-    @Qualifier("localHttpClient")
-    @org.springframework.context.annotation.Lazy
-    public NingHttpClient localHttpClient() {
-        new NingHttpClient(launchConfig, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, localNonProxyHosts, "", "", 5000, 20000)
-    }
-
-    @Value('${octopus3.flix.local.proxy.host}')
-    String localProxyHost
-
-    @Value('${octopus3.flix.local.proxy.port}')
-    int localProxyPort
-
-    @Value('${octopus3.flix.local.proxy.user}')
-    String localProxyUser
-
-    @Value('${octopus3.flix.local.proxy.password}')
-    String localProxyPassword
-
-    @Value('${octopus3.flix.local.proxy.nonProxyHosts}')
-    String localNonProxyHosts
-
     @Value('${octopus3.flix.octopusEanCodeServiceUrl}')
     String octopusEanCodeServiceUrl
 
+    @Autowired
+    @Qualifier("localHttpClient")
+    @org.springframework.context.annotation.Lazy
+    NingHttpClient localHttpClient
+
+    @Value('${octopus3.flix.octopusIdentifiersServiceUrl}')
+    String octopusIdentifiersServiceUrl
+
     @Bean
-    @Qualifier("eanCodeEnhancer")
     @org.springframework.context.annotation.Lazy
     public EanCodeEnhancer eanCodeEnhancer() {
-        new EanCodeEnhancer(execControl: execControl, serviceUrl: octopusEanCodeServiceUrl, httpClient: localHttpClient())
+        new EanCodeEnhancer(execControl: execControl,
+                serviceUrl: octopusIdentifiersServiceUrl,
+                httpClient: localHttpClient)
     }
 
     @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
@@ -72,7 +54,7 @@ class SpringConfig {
     public FileAttributesProvider attributesProvider() {
         new FileAttributesProvider(execControl: execControl,
                 repositoryFileAttributesServiceUrl: repositoryFileAttributesServiceUrl,
-                httpClient: localHttpClient())
+                httpClient: localHttpClient)
     }
 
 }

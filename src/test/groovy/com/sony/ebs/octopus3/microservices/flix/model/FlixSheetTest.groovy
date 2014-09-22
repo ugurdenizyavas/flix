@@ -36,8 +36,10 @@ class FlixSheetTest {
     }
 
     @Test
-    void "get material name"() {
-        assert new FlixSheet(urnStr: "urn:global_sku:score:fr_be:x1.ceh").materialName == "x1.ceh"
+    void "assign material name"() {
+        def flixSheet = new FlixSheet(urnStr: "urn:global_sku:score:fr_be:x1.ceh")
+        flixSheet.assignMaterialName()
+        assert flixSheet.materialName == "X1.CEH"
     }
 
 }

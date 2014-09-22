@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.transform.EqualsAndHashCode
@@ -15,6 +16,7 @@ class FlixSheet {
     String processId
     String urnStr
     String eanCode
+    String materialName
 
     @JsonIgnore
     List errors = []
@@ -34,8 +36,7 @@ class FlixSheet {
         new URNImpl(FlixUrnValue.flixMedia.toString(), values)
     }
 
-    @JsonIgnore
-    String getMaterialName() {
-        getUrn()?.values?.last()?.toLowerCase()
+    void assignMaterialName() {
+        materialName = MaterialNameEncoder.decode(getUrn()?.values?.last())
     }
 }

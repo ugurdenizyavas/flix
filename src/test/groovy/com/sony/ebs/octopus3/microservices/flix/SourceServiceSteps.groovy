@@ -63,6 +63,23 @@ def validateError = { Response response, message ->
 * ******************** FLIX DELTA SERVICE ***********************************************************
 * */
 
+def createIdentifiersFeed = { materialName ->
+    """
+            <products>
+                <product>
+                    <identifier type='display_name'><![CDATA[DSC-RX10]]></identifier>
+                    <identifier type='catalogue_name'><![CDATA[DSC-RX10]]></identifier>
+                    <identifier type='business_group'><![CDATA[DIM]]></identifier>
+                    <identifier type='spider_business_group'><![CDATA[DIME]]></identifier>
+                    <identifier type='sap_hierarchy'><![CDATA[SCPCDIMDSCCYBRCYBS]]></identifier>
+                    <identifier type='eight_digit'><![CDATA[80814350]]></identifier>
+                    <identifier type='material_name'><![CDATA[DSCRX10.CE3]]></identifier>
+                    <identifier type='ean_code'><![CDATA[$materialName]]></identifier>
+                </product>
+            </products>
+    """
+}
+
 Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publication, String locale, String expected ->
     def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
@@ -252,22 +269,32 @@ Then(~"Flix delta service should reject with (.*) parameter error") { paramName 
 * */
 
 Given(~"Flix json for sheet (.*)") { String sheet ->
-    server.get(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheet"))).response(with('{"a":"1"}'), status(200))
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet}.xml"))).response(status(200))
+    def sheetLC = sheet.toLowerCase()
+    server.get(by(uri("/repository/file/urn:global_sku:score:en_GB:$sheetLC"))).response(with('{"a":"1"}'), status(200))
+    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheetLC}.xml"))).response(status(200))
 }
 
-When(~"I request flix sheet service for process (.*) sheet (.*)") { process, sheet ->
-    get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process&eanCode=123")
+Given(~"Octopus ean code (.*) for sheet (.*)") { String eanCode, String sheet ->
+    def sheetUC = sheet.toUpperCase()
+    server.get(by(uri("/product/identifiers/material_name/$sheetUC"))).response(with(createIdentifiersFeed(eanCode)), status(200))
 }
 
-Then(~"Flix sheet service for process (.*) sheet (.*) should be done") { process, sheet ->
+When(~"I request flix sheet service for process (.*) sheet (.*) no ean code") { process, sheet ->
+    get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process")
+}
+
+When(~"I request flix sheet service for process (.*) sheet (.*) ean code (.*)") { process, sheet, eanCode ->
+    get("flix/sheet/urn:global_sku:score:en_GB:$sheet?processId=$process&eanCode=$eanCode")
+}
+
+Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be done") { process, sheet, eanCode ->
     assert response.statusCode == 200
     def json = parseJson(response)
     assert json.status == 200
     assert json.result == ["success"]
     assert json.flixSheet.processId == process
     assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:$sheet"
-    assert json.flixSheet.eanCode == "123"
+    assert json.flixSheet.eanCode == eanCode
 }
 
 When(~"I request flix sheet service with invalid urn") { ->
@@ -281,18 +308,5 @@ Then(~"Flix sheet service should reject with urn parameter error") { ->
     assert json.errors == ["urn parameter is invalid"]
     assert json.flixSheet.urnStr == "urn:xxx"
     assert json.flixSheet.eanCode == "123"
-}
-
-When(~"I request flix sheet service with invalid ean code") { ->
-    get("flix/sheet/urn:global_sku:score:en_GB:a")
-}
-
-Then(~"Flix sheet service should reject with ean code parameter error") { ->
-    assert response.statusCode == 400
-    def json = parseJson(response)
-    assert json.status == 400
-    assert json.errors == ["eanCode parameter is invalid"]
-    assert json.flixSheet.urnStr == "urn:global_sku:score:en_GB:a"
-    assert !json.flixSheet.eanCode
 }
 
