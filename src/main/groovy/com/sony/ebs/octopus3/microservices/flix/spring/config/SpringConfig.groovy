@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.spring.config
 
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -55,6 +56,19 @@ class SpringConfig {
         new FileAttributesProvider(execControl: execControl,
                 repositoryFileAttributesServiceUrl: repositoryFileAttributesServiceUrl,
                 httpClient: localHttpClient)
+    }
+
+    @Value('${octopus3.flix.repositoryFileServiceUrl}')
+    String repositoryFileServiceUrl
+
+    @Bean
+    @org.springframework.context.annotation.Lazy
+    public DeltaUrlHelper deltaUrlHelper() {
+        new DeltaUrlHelper(execControl: execControl,
+                repositoryFileServiceUrl: repositoryFileServiceUrl,
+                httpClient: localHttpClient,
+                fileAttributesProvider: attributesProvider()
+        )
     }
 
 }

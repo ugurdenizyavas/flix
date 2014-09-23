@@ -4,11 +4,11 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -54,7 +54,7 @@ class FlixService {
     EanCodeService eanCodeService
 
     @Autowired
-    DeltaDatesProvider deltaDatesProvider
+    DeltaUrlHelper deltaUrlHelper
 
     private rx.Observable<FlixSheetServiceResult> singleSheet(Flix flix, String jsonUrn, String eanCode) {
 
@@ -93,11 +93,11 @@ class FlixService {
 
         List categoryFilteredUrns
         rx.Observable.just("starting").flatMap({
-            deltaDatesProvider.createDateParams(flix)
+            def initialUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString())
+            deltaUrlHelper.createRepoDeltaUrl(initialUrl, flix.sdate, flix.edate, flix.lastModifiedUrn)
         }).flatMap({
-            def deltaUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString()) + it
-            log.info "deltaUrl for {} is {}", flix, deltaUrl
-            httpClient.doGet(deltaUrl)
+            log.info "deltaUrl for {} is {}", flix, it
+            httpClient.doGet(it)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "retrieving global sku delta", flix.errors)
         }).flatMap({ Response response ->
@@ -116,7 +116,7 @@ class FlixService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "deleting current flix xmls", flix.errors)
         }).flatMap({
-            deltaDatesProvider.updateLastModified(flix)
+            deltaUrlHelper.updateLastModified(flix.lastModifiedUrn, flix.errors)
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->

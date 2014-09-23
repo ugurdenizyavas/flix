@@ -3,9 +3,9 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.sub.DeltaDatesProvider
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.mock.interceptor.MockFor
@@ -39,7 +39,7 @@ class FlixServiceTest {
     final static String CATEGORY_FEED = "<categories/>"
 
     FlixService flixService
-    StubFor mockCategoryService, mockDeltaDatesProvider, mockEanCodeService
+    StubFor mockCategoryService, mockDeltaUrlHelper, mockEanCodeService
     MockFor mockNingHttpClient
 
     static ExecController execController
@@ -60,14 +60,14 @@ class FlixServiceTest {
                 repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn", repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
-        mockDeltaDatesProvider = new StubFor(DeltaDatesProvider)
+        mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
         mockEanCodeService = new StubFor(EanCodeService)
     }
 
     def runFlow(Flix flix) {
         flixService.httpClient = mockNingHttpClient.proxyInstance()
         flixService.categoryService = mockCategoryService.proxyInstance()
-        flixService.deltaDatesProvider = mockDeltaDatesProvider.proxyInstance()
+        flixService.deltaUrlHelper = mockDeltaUrlHelper.proxyInstance()
         flixService.eanCodeService = mockEanCodeService.proxyInstance()
 
         def result = new BlockingVariable<List<String>>(5)
@@ -121,13 +121,16 @@ class FlixServiceTest {
                 rx.Observable.just(filtered.inject([:]) { map, String urn -> map << [(urn): "${urn[urn.size() - 1]}123"] })
             }
         }
-        mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { f ->
-                assert f == flix
-                rx.Observable.just("?dates")
+        mockDeltaUrlHelper.demand.with {
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+                assert initialUrl == "/delta/urn:global_sku:score:en_gb"
+                assert sdate == flix.sdate
+                assert edate == flix.edate
+                assert lastModifiedUrn == flix.lastModifiedUrn
+                rx.Observable.just("/delta/urn:global_sku:score:en_gb?dates")
             }
-            updateLastModified(1) { f ->
-                assert f == flix
+            updateLastModified(1) { urn, errors ->
+                assert urn == flix.lastModifiedUrn
                 rx.Observable.just("done")
             }
         }
@@ -149,8 +152,10 @@ class FlixServiceTest {
 
     @Test
     void "error getting delta"() {
-        mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { rx.Observable.just("?dates") }
+        mockDeltaUrlHelper.demand.with {
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+                rx.Observable.just("//delta?dates")
+            }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
@@ -164,8 +169,10 @@ class FlixServiceTest {
 
     @Test
     void "error deleting existing feeds"() {
-        mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { rx.Observable.just("?dates") }
+        mockDeltaUrlHelper.demand.with {
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+                rx.Observable.just("//delta?dates")
+            }
         }
         mockNingHttpClient.demand.with {
             doGet(1) {
@@ -183,9 +190,11 @@ class FlixServiceTest {
 
     @Test
     void "error updating last modified time"() {
-        mockDeltaDatesProvider.demand.with {
-            createDateParams(1) { rx.Observable.just("?dates") }
-            updateLastModified(1) {
+        mockDeltaUrlHelper.demand.with {
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+                rx.Observable.just("//delta?dates")
+            }
+            updateLastModified(1) { urn, errors ->
                 throw new Exception("error updating last modified time")
             }
         }
