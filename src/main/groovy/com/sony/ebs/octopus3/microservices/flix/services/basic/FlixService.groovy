@@ -92,12 +92,17 @@ class FlixService {
     rx.Observable flixFlow(Flix flix) {
 
         List categoryFilteredUrns
+        def lastModifiedUrn = flix.lastModifiedUrn
         rx.Observable.just("starting").flatMap({
-            def initialUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString())
-            deltaUrlHelper.createRepoDeltaUrl(initialUrl, flix.sdate, flix.edate, flix.lastModifiedUrn)
+            deltaUrlHelper.createStartDate(flix.sdate, lastModifiedUrn)
         }).flatMap({
-            log.info "deltaUrl for {} is {}", flix, it
-            httpClient.doGet(it)
+            flix.finalStartDate = it
+            def initialUrl = repositoryDeltaServiceUrl.replace(":urn", flix.deltaUrn.toString())
+            deltaUrlHelper.createRepoDeltaUrl(initialUrl, flix.finalStartDate, flix.edate)
+        }).flatMap({
+            flix.finalDeltaUrl = it
+            log.debug "delta url is {} for {}", flix.finalDeltaUrl, flix
+            httpClient.doGet(flix.finalDeltaUrl)
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "retrieving global sku delta", flix.errors)
         }).flatMap({ Response response ->
@@ -116,7 +121,7 @@ class FlixService {
         }).filter({ Response response ->
             NingHttpClient.isSuccess(response, "deleting current flix xmls", flix.errors)
         }).flatMap({
-            deltaUrlHelper.updateLastModified(flix.lastModifiedUrn, flix.errors)
+            deltaUrlHelper.updateLastModified(lastModifiedUrn, flix.errors)
         }).flatMap({
             categoryService.retrieveCategoryFeed(flix)
         }).flatMap({ String categoryFeed ->

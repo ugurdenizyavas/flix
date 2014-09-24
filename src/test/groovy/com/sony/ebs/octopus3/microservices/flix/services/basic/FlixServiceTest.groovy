@@ -122,11 +122,15 @@ class FlixServiceTest {
             }
         }
         mockDeltaUrlHelper.demand.with {
-            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
-                assert initialUrl == "/delta/urn:global_sku:score:en_gb"
+            createStartDate(1) { sdate, lastModifiedUrn ->
                 assert sdate == flix.sdate
-                assert edate == flix.edate
                 assert lastModifiedUrn == flix.lastModifiedUrn
+                rx.Observable.just("updated date")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
+                assert initialUrl == "/delta/urn:global_sku:score:en_gb"
+                assert sdate == "updated date"
+                assert edate == flix.edate
                 rx.Observable.just("/delta/urn:global_sku:score:en_gb?dates")
             }
             updateLastModified(1) { urn, errors ->
@@ -153,7 +157,10 @@ class FlixServiceTest {
     @Test
     void "error getting delta"() {
         mockDeltaUrlHelper.demand.with {
-            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+            createStartDate(1) { sdate, lastModifiedUrn ->
+                rx.Observable.just("updated date")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
             }
         }
@@ -170,7 +177,10 @@ class FlixServiceTest {
     @Test
     void "error deleting existing feeds"() {
         mockDeltaUrlHelper.demand.with {
-            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+            createStartDate(1) { sdate, lastModifiedUrn ->
+                rx.Observable.just("updated date")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
             }
         }
@@ -191,7 +201,10 @@ class FlixServiceTest {
     @Test
     void "error updating last modified time"() {
         mockDeltaUrlHelper.demand.with {
-            createRepoDeltaUrl(1) { initialUrl, sdate, edate, lastModifiedUrn ->
+            createStartDate(1) { sdate, lastModifiedUrn ->
+                rx.Observable.just("updated date")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
             }
             updateLastModified(1) { urn, errors ->

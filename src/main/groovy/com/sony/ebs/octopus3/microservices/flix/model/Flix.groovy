@@ -22,6 +22,10 @@ class Flix {
     String locale
     String sdate
     String edate
+
+    String finalStartDate
+    String finalDeltaUrl
+
     List deltaUrns
     List categoryFilteredOutUrns
     List eanCodeFilteredOutUrns
