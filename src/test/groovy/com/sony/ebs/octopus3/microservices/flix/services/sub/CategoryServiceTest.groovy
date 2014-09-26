@@ -3,7 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.services.sub
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
@@ -52,13 +52,13 @@ class CategoryServiceTest {
         mockNingHttpClient = new StubFor(NingHttpClient)
     }
 
-    def runRetrieveCategoryFeed(Flix flix) {
+    def runRetrieveCategoryFeed(RepoDelta delta) {
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
         boolean valueSet = false
         execController.start {
-            categoryService.retrieveCategoryFeed(flix).subscribe({
+            categoryService.retrieveCategoryFeed(delta).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -86,8 +86,8 @@ class CategoryServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runRetrieveCategoryFeed(flix) == categoryFeed
+        def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(delta) == categoryFeed
     }
 
     @Test
@@ -99,9 +99,9 @@ class CategoryServiceTest {
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runRetrieveCategoryFeed(flix) == "outOfFlow"
-        assert flix.errors == ["HTTP 500 error getting octopus category feed"]
+        def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(delta) == "outOfFlow"
+        assert delta.errors == ["HTTP 500 error getting octopus category feed"]
     }
 
     @Test
@@ -116,9 +116,9 @@ class CategoryServiceTest {
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runRetrieveCategoryFeed(flix) == "outOfFlow"
-        assert flix.errors == ["HTTP 404 error saving octopus category feed"]
+        def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(delta) == "outOfFlow"
+        assert delta.errors == ["HTTP 404 error saving octopus category feed"]
     }
 
     @Test
@@ -130,8 +130,8 @@ class CategoryServiceTest {
         }
         categoryService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runRetrieveCategoryFeed(flix) == "error"
+        def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        assert runRetrieveCategoryFeed(delta) == "error"
     }
 
     def runFilterForCategory(List productUrls, String categoryFeed) {

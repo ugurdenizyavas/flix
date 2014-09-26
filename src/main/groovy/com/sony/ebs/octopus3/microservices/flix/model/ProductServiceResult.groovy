@@ -9,7 +9,7 @@ import groovy.transform.ToString
 @Sortable(includes = ['jsonUrn', 'success', 'statusCode'])
 @EqualsAndHashCode(includes = ['jsonUrn', 'success', 'statusCode', 'errors'])
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class FlixSheetServiceResult {
+class ProductServiceResult {
 
     String jsonUrn
     int statusCode

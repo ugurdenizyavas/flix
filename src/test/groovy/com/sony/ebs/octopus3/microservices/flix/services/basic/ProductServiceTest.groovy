@@ -2,9 +2,11 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
-import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
+import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.AfterClass
@@ -16,11 +18,12 @@ import ratpack.launch.LaunchConfigBuilder
 import spock.util.concurrent.BlockingVariable
 
 @Slf4j
-class FlixSheetServiceTest {
+class ProductServiceTest {
 
-    FlixSheetService flixSheetService
-    FlixSheet flixSheet
-    StubFor mockNingHttpClient, mockFlixXmlBuilder, mockEanCodeEnhancer
+    ProductService productService
+    RepoProduct product
+    StubFor mockFlixXmlBuilder, mockEanCodeEnhancer
+    MockFor mockHttpClient
 
     static ExecController execController
 
@@ -38,23 +41,23 @@ class FlixSheetServiceTest {
 
     @Before
     void before() {
-        flixSheetService = new FlixSheetService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
+        productService = new ProductService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
 
-        flixSheet = new FlixSheet(processId: "123", urnStr: "urn:flix:score:en_gb:a", eanCode: "ea1")
-        mockNingHttpClient = new StubFor(NingHttpClient)
+        product = new RepoProduct(type: DeltaType.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123", eanCode: "ea1")
+        mockHttpClient = new MockFor(NingHttpClient)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)
     }
 
-    def runFlow(FlixSheet flixSheet) {
-        flixSheetService.httpClient = mockNingHttpClient.proxyInstance()
-        flixSheetService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
-        flixSheetService.eanCodeEnhancer = mockEanCodeEnhancer.proxyInstance()
+    def runFlow() {
+        productService.httpClient = mockHttpClient.proxyInstance()
+        productService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
+        productService.eanCodeEnhancer = mockEanCodeEnhancer.proxyInstance()
 
-        def result = new BlockingVariable<String>(5)
+        def result = new BlockingVariable(5)
         boolean valueSet = false
         execController.start {
-            flixSheetService.sheetFlow(flixSheet).subscribe({
+            productService.processProduct(product).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -69,13 +72,13 @@ class FlixSheetServiceTest {
 
     @Test
     void "success"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) { String url ->
-                assert url == "/repository/file/urn:flix:score:en_gb:a"
+                assert url == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc?processId=123"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
             doPost(1) { String url, InputStream is ->
-                assert url == "/repository/file/urn:flixmedia:score:en_gb:a.xml"
+                assert url == "/repository/file/urn:flixmedia:global:fr_be:a_2fb_2bc.xml?processId=123"
                 assert is.text == "some xml"
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
@@ -89,33 +92,33 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        assert runFlow(flixSheet) == "success"
+        assert runFlow() == "success"
     }
 
     @Test
     void "sheet not found"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
-        assert runFlow(flixSheet) == "outOfFlow"
-        assert flixSheet.errors == ["HTTP 404 error getting sheet from repo"]
+        assert runFlow() == "outOfFlow"
+        assert product.errors == ["HTTP 404 error getting sheet from repo"]
     }
 
     @Test
     void "invalid sheet"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
             }
         }
-        assert runFlow(flixSheet) == "error"
+        assert runFlow() == "error"
     }
 
     @Test
     void "error building xml"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
@@ -125,12 +128,12 @@ class FlixSheetServiceTest {
                 throw new Exception("error building xml")
             }
         }
-        assert runFlow(flixSheet) == "error"
+        assert runFlow() == "error"
     }
 
     @Test
     void "error saving xml"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
@@ -143,14 +146,14 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        assert runFlow(flixSheet) == "outOfFlow"
-        assert flixSheet.errors == ["HTTP 500 error saving flix xml to repo"]
+        assert runFlow() == "outOfFlow"
+        assert product.errors == ["HTTP 500 error saving flix xml to repo"]
     }
 
     @Test
     void "success get ean code from octopus"() {
-        flixSheet.eanCode = null
-        mockNingHttpClient.demand.with {
+        product.eanCode = null
+        mockHttpClient.demand.with {
             doGet(1) {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
             }
@@ -160,7 +163,7 @@ class FlixSheetServiceTest {
         }
         mockEanCodeEnhancer.demand.with {
             enhance(1) {
-                assert it.materialName == "A"
+                assert it.materialName == "A/B+C"
                 it.eanCode = "ea2"
                 rx.Observable.just(it)
             }
@@ -173,34 +176,18 @@ class FlixSheetServiceTest {
                 "some xml"
             }
         }
-        assert runFlow(flixSheet) == "success"
+        assert runFlow() == "success"
     }
 
     @Test
     void "error no ean code"() {
-        flixSheet.eanCode = null
-        mockNingHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
-            }
-            doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
-            }
-        }
+        product.eanCode = null
         mockEanCodeEnhancer.demand.with {
             enhance(1) {
                 rx.Observable.just(it)
             }
         }
-        mockFlixXmlBuilder.demand.with {
-            buildXml(1) { json ->
-                assert json.eanCode == "ea2"
-                assert json.a == "1"
-                assert json.b.c == ["2", "3"]
-                "some xml"
-            }
-        }
-        assert runFlow(flixSheet) == "outOfFlow"
-        assert flixSheet.errors == ["ean code not found"]
+        assert runFlow() == "outOfFlow"
+        assert product.errors == ["ean code not found"]
     }
 }

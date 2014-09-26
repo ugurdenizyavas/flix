@@ -4,9 +4,9 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.commons.urn.URN
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
+import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixUtils
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,22 +38,23 @@ class CategoryService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    rx.Observable<String> retrieveCategoryFeed(Flix flix) {
+    rx.Observable<String> retrieveCategoryFeed(RepoDelta delta) {
         String categoryFeed
         rx.Observable.just("starting").flatMap({
-            def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", flix.publication).replace(":locale", flix.locale)
-            log.info "category service url for {} is {}", flix, categoryReadUrl
+            def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale)
+            log.info "category service url for {} is {}", delta, categoryReadUrl
             httpClient.doGet(categoryReadUrl)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "getting octopus category feed", flix.errors)
+            NingHttpClient.isSuccess(response, "getting octopus category feed", delta.errors)
         }).flatMap({ Response response ->
             categoryFeed = IOUtils.toString(response.responseBodyAsStream, EncodingUtil.CHARSET)
-            def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", flix.categoryUrn.toString())
-            log.info "category save url for {} is {}", flix, categorySaveUrl
+            def categoryUrn = FlixUtils.getCategoryUrn(delta.publication, delta.locale)
+            def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrn.toString())
+            log.info "category save url for {} is {}", delta, categorySaveUrl
 
             httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, EncodingUtil.CHARSET))
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "saving octopus category feed", flix.errors)
+            NingHttpClient.isSuccess(response, "saving octopus category feed", delta.errors)
         }).map({
             categoryFeed
         })

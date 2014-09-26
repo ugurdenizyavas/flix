@@ -1,10 +1,11 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixPackageService
-import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixService
-import com.sony.ebs.octopus3.microservices.flix.validators.RequestValidator
+import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
+import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
+import com.sony.ebs.octopus3.microservices.flix.services.basic.DeltaService
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before
@@ -14,52 +15,57 @@ import ratpack.jackson.internal.DefaultJsonRender
 import static ratpack.groovy.test.GroovyUnitTest.handle
 
 @Slf4j
-class FlixFlowHandlerTest {
+class DeltaHandlerTest {
 
     StubFor mockFlixService, mockFlixPackageService, mockRequestValidator
+    RepoDelta delta
+    Flix flix
 
     @Before
     void before() {
-        mockFlixService = new StubFor(FlixService)
+        mockFlixService = new StubFor(DeltaService)
         mockRequestValidator = new StubFor(RequestValidator)
-        mockFlixPackageService = new StubFor(FlixPackageService)
+        mockFlixPackageService = new StubFor(PackageService)
+
+        delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        flix = new Flix()
     }
 
-    def sheetResultA = new FlixSheetServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
-    def sheetResultB = new FlixSheetServiceResult(jsonUrn: "b", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new FlixSheetServiceResult(jsonUrn: "e", success: true, xmlFileUrl: "http:/repo/e.xml")
-    def sheetResultF = new FlixSheetServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
+    def sheetResultA = new ProductServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
+    def sheetResultB = new ProductServiceResult(jsonUrn: "b", success: false, errors: ["err3", "err4"])
+    def sheetResultE = new ProductServiceResult(jsonUrn: "e", success: true, xmlFileUrl: "http:/repo/e.xml")
+    def sheetResultF = new ProductServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
 
     @Test
     void "success"() {
         mockFlixPackageService.demand.with {
-            packageFlow(1) { Flix flix ->
-                assert flix.publication == "SCORE"
-                assert flix.locale == "en_GB"
-                flix.outputPackageUrl = "/3rdparty/flix.zip"
-                flix.archivePackageUrl = "/archive/flix.zip"
+            packageFlow(1) { RepoDelta d, Flix f ->
+                assert d.publication == "SCORE"
+                assert d.locale == "en_GB"
+                f.outputPackageUrl = "/3rdparty/flix.zip"
+                f.archivePackageUrl = "/archive/flix.zip"
                 rx.Observable.just("xxx")
             }
         }
         mockFlixService.demand.with {
-            flixFlow(1) { Flix flix ->
-                assert flix.processId != null
-                assert flix.publication == "SCORE"
-                assert flix.locale == "en_GB"
-                assert flix.sdate == "s1"
-                assert flix.edate == "s2"
+            processDelta(1) { RepoDelta d, Flix f ->
+                assert d.processId != null
+                assert d.publication == "SCORE"
+                assert d.locale == "en_GB"
+                assert d.sdate == "s1"
+                assert d.edate == "s2"
 
-                flix.deltaUrns = ["a", "b", "c", "d", "e", "f"]
-                flix.categoryFilteredOutUrns = ["c", "d"]
+                d.deltaUrns = ["a", "b", "c", "d", "e", "f"]
+                f.categoryFilteredOutUrns = ["c", "d"]
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { [] }
+            validateRepoDelta(1) { [] }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
-                flixPackageService: mockFlixPackageService.proxyInstance(),
+        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+                packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
@@ -67,11 +73,11 @@ class FlixFlowHandlerTest {
             assert status.code == 200
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 200
-            assert ren.flix.publication == "SCORE"
-            assert ren.flix.locale == "en_GB"
-            assert ren.flix.sdate == "s1"
-            assert ren.flix.edate == "s2"
-            assert ren.flix.processId.id != null
+            assert ren.delta.publication == "SCORE"
+            assert ren.delta.locale == "en_GB"
+            assert ren.delta.sdate == "s1"
+            assert ren.delta.edate == "s2"
+            assert ren.delta.processId.id != null
             assert !ren.errors
 
             assert ren.result."package created" == "/3rdparty/flix.zip"
@@ -93,35 +99,35 @@ class FlixFlowHandlerTest {
     @Test
     void "error in params"() {
         mockRequestValidator.demand.with {
-            validateFlix(1) {
+            validateRepoDelta(1) {
                 ["error"]
             }
         }
-        handle(new FlixFlowHandler(validator: mockRequestValidator.proxyInstance()), {
+        handle(new DeltaHandler(validator: mockRequestValidator.proxyInstance()), {
             uri "/"
         }).with {
             assert status.code == 400
             def ren = rendered(DefaultJsonRender).object
             assert ren.errors == ["error"]
             assert ren.status == 400
-            assert ren.flix.processId != null
+            assert ren.delta.processId != null
         }
     }
 
     @Test
     void "error in flix flow"() {
         mockFlixService.demand.with {
-            flixFlow(1) { Flix flix ->
-                flix.errors << "error in flix flow"
+            processDelta(1) { RepoDelta d, Flix f ->
+                d.errors << "error in flix flow"
                 rx.Observable.just(null)
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { [] }
+            validateRepoDelta(1) { [] }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
-                flixPackageService: mockFlixPackageService.proxyInstance(),
+        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+                packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
@@ -129,9 +135,9 @@ class FlixFlowHandlerTest {
             assert status.code == 500
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 500
-            assert ren.flix.publication == "SCORE"
-            assert ren.flix.locale == "en_GB"
-            assert ren.flix.processId.id != null
+            assert ren.delta.publication == "SCORE"
+            assert ren.delta.locale == "en_GB"
+            assert ren.delta.processId.id != null
             assert ren.errors == ["error in flix flow"]
             assert !ren.result
         }
@@ -140,18 +146,18 @@ class FlixFlowHandlerTest {
     @Test
     void "exception in flix flow"() {
         mockFlixService.demand.with {
-            flixFlow(1) {
+            processDelta(1) { RepoDelta d, Flix f ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in flix flow")
                 })
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { [] }
+            validateRepoDelta(1) { [] }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
-                flixPackageService: mockFlixPackageService.proxyInstance(),
+        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+                packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
@@ -159,9 +165,9 @@ class FlixFlowHandlerTest {
             assert status.code == 500
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 500
-            assert ren.flix.publication == "SCORE"
-            assert ren.flix.locale == "en_GB"
-            assert ren.flix.processId.id != null
+            assert ren.delta.publication == "SCORE"
+            assert ren.delta.locale == "en_GB"
+            assert ren.delta.processId.id != null
             assert ren.errors == ["exp in flix flow"]
             assert !ren.result
         }
@@ -170,22 +176,22 @@ class FlixFlowHandlerTest {
     @Test
     void "error in package flow"() {
         mockFlixPackageService.demand.with {
-            packageFlow(1) { Flix flix ->
-                flix.errors << "error in package flow"
+            packageFlow(1) { RepoDelta d, Flix f ->
+                d.errors << "error in package flow"
                 rx.Observable.just(null)
             }
         }
         mockFlixService.demand.with {
-            flixFlow(1) {
+            processDelta(1) {RepoDelta d, Flix f ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { [] }
+            validateRepoDelta(1) { [] }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
-                flixPackageService: mockFlixPackageService.proxyInstance(),
+        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+                packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
@@ -193,9 +199,9 @@ class FlixFlowHandlerTest {
             assert status.code == 500
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 500
-            assert ren.flix.publication == "SCORE"
-            assert ren.flix.locale == "en_GB"
-            assert ren.flix.processId.id != null
+            assert ren.delta.publication == "SCORE"
+            assert ren.delta.locale == "en_GB"
+            assert ren.delta.processId.id != null
             assert ren.errors == ["error in package flow"]
             assert !ren.result
         }
@@ -204,23 +210,23 @@ class FlixFlowHandlerTest {
     @Test
     void "exception in package flow"() {
         mockFlixPackageService.demand.with {
-            packageFlow(1) { Flix flix ->
+            packageFlow(1) { RepoDelta d, Flix f ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in package flow")
                 })
             }
         }
         mockFlixService.demand.with {
-            flixFlow(1) {
+            processDelta(1) {RepoDelta d, Flix f ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateFlix(1) { [] }
+            validateRepoDelta(1) { [] }
         }
 
-        handle(new FlixFlowHandler(flixService: mockFlixService.proxyInstance(),
-                flixPackageService: mockFlixPackageService.proxyInstance(),
+        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+                packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
@@ -228,9 +234,9 @@ class FlixFlowHandlerTest {
             assert status.code == 500
             def ren = rendered(DefaultJsonRender).object
             assert ren.status == 500
-            assert ren.flix.publication == "SCORE"
-            assert ren.flix.locale == "en_GB"
-            assert ren.flix.processId.id != null
+            assert ren.delta.publication == "SCORE"
+            assert ren.delta.locale == "en_GB"
+            assert ren.delta.processId.id != null
             assert ren.errors == ["exp in package flow"]
             assert !ren.result
         }

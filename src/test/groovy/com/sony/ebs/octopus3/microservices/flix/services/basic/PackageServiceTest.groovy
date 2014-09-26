@@ -2,6 +2,8 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
@@ -15,10 +17,12 @@ import ratpack.launch.LaunchConfigBuilder
 import spock.util.concurrent.BlockingVariable
 
 @Slf4j
-class FlixPackageServiceTest {
+class PackageServiceTest {
 
-    FlixPackageService flixPackageService
+    PackageService packageService
     StubFor mockNingHttpClient
+    Flix flix
+    RepoDelta delta
 
     static ExecController execController
 
@@ -34,20 +38,23 @@ class FlixPackageServiceTest {
 
     @Before
     void before() {
-        flixPackageService = new FlixPackageService(
+        packageService = new PackageService(
                 repositoryOpsServiceUrl: "/repo/ops",
                 repositoryFileServiceUrl: "/repo/file/:urn"
                 , execControl: execController.control)
         mockNingHttpClient = new StubFor(NingHttpClient)
+
+        delta = new RepoDelta(publication: "SCORE", locale: "fr_FR")
+        flix = new Flix()
     }
 
-    def runFlow(Flix flix) {
-        flixPackageService.httpClient = mockNingHttpClient.proxyInstance()
+    def runFlow() {
+        packageService.httpClient = mockNingHttpClient.proxyInstance()
 
-        def result = new BlockingVariable<String>(5)
+        def result = new BlockingVariable(5)
         boolean valueSet = false
         execController.start {
-            flixPackageService.packageFlow(flix).subscribe({
+            packageService.packageFlow(delta, flix).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -68,8 +75,7 @@ class FlixPackageServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flix) == "success"
+        assert runFlow() == "success"
         assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
         assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
     }
@@ -81,9 +87,8 @@ class FlixPackageServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flix) == "outOfFlow"
-        assert flix.errors == ["HTTP 500 error calling repo ops service"]
+        assert runFlow() == "outOfFlow"
+        assert delta.errors == ["HTTP 500 error calling repo ops service"]
     }
 
     @Test
@@ -93,16 +98,14 @@ class FlixPackageServiceTest {
                 throw new Exception("calling ops service")
             }
         }
-        Flix flix = new Flix(publication: "SCORE", locale: "fr_FR")
-        assert runFlow(flix) == "error"
+        assert runFlow() == "error"
     }
 
     @Test
     void "test ops recipe"() {
-        def flix = new Flix(publication: "SCORE", locale: "fr_BE")
         def thirdParty = "urn:thirdparty:flixmedia:flix_fr_be.zip"
         def archive = "urn:archive:flix_sku:flix_fr_be.zip"
-        def recipe = flixPackageService.createOpsRecipe(flix, thirdParty, archive)
+        def recipe = packageService.createOpsRecipe(new URNImpl("urn:flixmedia:score:fr_be"), thirdParty, archive)
 
         def actual = new JsonSlurper().parseText(recipe)
 

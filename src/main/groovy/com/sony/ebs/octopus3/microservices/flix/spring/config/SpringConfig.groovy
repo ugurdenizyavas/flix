@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.spring.config
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -69,6 +70,11 @@ class SpringConfig {
                 httpClient: localHttpClient,
                 fileAttributesProvider: attributesProvider()
         )
+    }
+
+    @Bean
+    public RequestValidator requestValidator() {
+        new RequestValidator()
     }
 
 }

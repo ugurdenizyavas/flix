@@ -4,12 +4,13 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
-import com.sony.ebs.octopus3.microservices.flix.model.FlixSheet
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
+import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +22,7 @@ import static ratpack.rx.RxRatpack.observe
 @Slf4j
 @Service
 @org.springframework.context.annotation.Lazy
-class FlixSheetService {
+class ProductService {
 
     final JsonSlurper jsonSlurper = new JsonSlurper()
 
@@ -50,38 +51,60 @@ class FlixSheetService {
         json
     }
 
-    rx.Observable<String> sheetFlow(FlixSheet flixSheet) {
-        flixSheet.assignMaterialName()
+    def createRepoUrl(RepoProduct product, boolean xml) {
+        observe(execControl.blocking({
+            def urn = xml ? FlixUtils.getXmlUrn(product.urn) : FlixUtils.getGlobalSkuUrn(product.publication, product.locale, product.sku)
+
+            def initialUrl = repositoryFileServiceUrl.replace(":urn", urn.toString())
+
+            def uriBuilder = new URIBuilder(initialUrl)
+            if (product.processId) {
+                uriBuilder.addParameter("processId", product.processId)
+            }
+            uriBuilder.toString()
+        }))
+    }
+
+    rx.Observable<String> processProduct(RepoProduct product) {
+        String xmlString
         rx.Observable.just("starting").flatMap({
-            if (!flixSheet.eanCode) {
-                eanCodeEnhancer.enhance(flixSheet)
+            if (!product.eanCode) {
+                eanCodeEnhancer.enhance([materialName: MaterialNameEncoder.decode(product.sku)])
             } else {
-                rx.Observable.just("skipping")
+                rx.Observable.just([:])
             }
-        }).filter({
-            boolean valid = flixSheet.eanCode as boolean
-            if (!valid) {
-                flixSheet.errors << "ean code not found"
+        }).filter({ Map map ->
+            if (!product.eanCode) {
+                if (map.eanCode) {
+                    product.eanCode = map.eanCode
+                } else {
+                    product.errors << "ean code not found"
+                }
             }
-            valid
+            product.eanCode as boolean
         }).flatMap({
-            def readUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.urnStr)
-            httpClient.doGet(readUrl)
+            log.info "getting json from repo for {}", product.sku
+            createRepoUrl(product, false)
+        }).flatMap({
+            httpClient.doGet(it)
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "getting sheet from repo", flixSheet.errors)
+            NingHttpClient.isSuccess(response, "getting sheet from repo", product.errors)
         }).flatMap({ Response response ->
             observe(execControl.blocking {
-                createSheetJson(response.responseBodyAsStream, flixSheet.eanCode)
+                createSheetJson(response.responseBodyAsStream, product.eanCode)
             })
         }).flatMap({ json ->
             observe(execControl.blocking {
                 flixXmlBuilder.buildXml(json)
             })
-        }).flatMap({ String xml ->
-            def saveUrl = repositoryFileServiceUrl.replace(":urn", flixSheet.xmlUrn.toString())
-            httpClient.doPost(saveUrl, IOUtils.toInputStream(xml, EncodingUtil.CHARSET))
+        }).flatMap({
+            xmlString = it
+            log.info "saving xml to repo for {}", product.sku
+            createRepoUrl(product, true)
+        }).flatMap({
+            httpClient.doPost(it, IOUtils.toInputStream(xmlString, EncodingUtil.CHARSET))
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "saving flix xml to repo", flixSheet.errors)
+            NingHttpClient.isSuccess(response, "saving flix xml to repo", product.errors)
         }).map({
             "success"
         })

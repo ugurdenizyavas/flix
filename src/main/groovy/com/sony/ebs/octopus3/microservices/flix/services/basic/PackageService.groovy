@@ -3,6 +3,8 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
@@ -20,7 +22,7 @@ import static ratpack.rx.RxRatpack.observe
 @Slf4j
 @Service
 @org.springframework.context.annotation.Lazy
-class FlixPackageService {
+class PackageService {
 
     final static DateTimeFormatter FMT = DateTimeFormat.forPattern("yyyyMMdd_HHmmss")
 
@@ -38,8 +40,8 @@ class FlixPackageService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    String createOpsRecipe(Flix flix, String outputPackageUrnStr, String archivePackageUrnStr) {
-        def packageUrnStr = flix.baseUrn.toString()
+    String createOpsRecipe(URN baseUrn, String outputPackageUrnStr, String archivePackageUrnStr) {
+        def packageUrnStr = baseUrn.toString()
 
         def getZip = {
             it.zip {
@@ -70,28 +72,28 @@ class FlixPackageService {
         }
 
         def result = builder.toString()
-        log.info "recipe for {} is {}", flix, result
+        log.info "recipe for {} is {}", baseUrn, result
         result
     }
 
-    rx.Observable<String> packageFlow(Flix flix) {
-        log.info "creating package for {}", flix
+    rx.Observable<String> packageFlow(RepoDelta delta, Flix flix) {
+        log.info "creating package for {}", delta
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking {
-                def packageName = "Flix_${flix.locale}_${new DateTime().toString(FMT)}.zip"
+                def packageName = "Flix_${delta.locale}_${new DateTime().toString(FMT)}.zip"
 
-                def outputPackageUrnStr = flix.getThirdPartyUrn(packageName)?.toString()
+                def outputPackageUrnStr = FlixUtils.getThirdPartyUrn(packageName)?.toString()
                 flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", outputPackageUrnStr)
 
-                def archivePackageUrnStr = flix.getArchiveUrn(packageName)?.toString()
+                def archivePackageUrnStr = FlixUtils.getArchiveUrn(packageName)?.toString()
                 flix.archivePackageUrl = repositoryFileServiceUrl.replace(":urn", archivePackageUrnStr)
 
-                createOpsRecipe(flix, outputPackageUrnStr, archivePackageUrnStr)
+                createOpsRecipe(delta.baseUrn, outputPackageUrnStr, archivePackageUrnStr)
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, EncodingUtil.CHARSET))
         }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "calling repo ops service", flix.errors)
+            NingHttpClient.isSuccess(response, "calling repo ops service", delta.errors)
         }).map({
             "success"
         })

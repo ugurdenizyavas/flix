@@ -3,9 +3,11 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.FlixSheetServiceResult
+import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.mock.interceptor.MockFor
@@ -20,7 +22,7 @@ import ratpack.launch.LaunchConfigBuilder
 import spock.util.concurrent.BlockingVariable
 
 @Slf4j
-class FlixServiceTest {
+class DeltaServiceTest {
 
     final static String DELTA_FEED = '''
         {
@@ -38,9 +40,12 @@ class FlixServiceTest {
 '''
     final static String CATEGORY_FEED = "<categories/>"
 
-    FlixService flixService
+    DeltaService deltaService
     StubFor mockCategoryService, mockDeltaUrlHelper, mockEanCodeService
     MockFor mockNingHttpClient
+
+    Flix flix
+    RepoDelta delta
 
     static ExecController execController
 
@@ -56,23 +61,27 @@ class FlixServiceTest {
 
     @Before
     void before() {
-        flixService = new FlixService(execControl: execController.control, flixSheetServiceUrl: "/flix/sheet/:urn",
+        deltaService = new DeltaService(execControl: execController.control, productServiceUrl: "/flix/product/:urn",
                 repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn", repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
         mockEanCodeService = new StubFor(EanCodeService)
+
+        delta = new RepoDelta(type: DeltaType.flixMedia, processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
+        flix = new Flix()
+
     }
 
-    def runFlow(Flix flix) {
-        flixService.httpClient = mockNingHttpClient.proxyInstance()
-        flixService.categoryService = mockCategoryService.proxyInstance()
-        flixService.deltaUrlHelper = mockDeltaUrlHelper.proxyInstance()
-        flixService.eanCodeService = mockEanCodeService.proxyInstance()
+    def runFlow() {
+        deltaService.httpClient = mockNingHttpClient.proxyInstance()
+        deltaService.categoryService = mockCategoryService.proxyInstance()
+        deltaService.deltaUrlHelper = mockDeltaUrlHelper.proxyInstance()
+        deltaService.eanCodeService = mockEanCodeService.proxyInstance()
 
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
-            flixService.flixFlow(flix).toList().subscribe({
+            deltaService.processDelta(delta, flix).toList().subscribe({
                 result.set(it)
             }, {
                 log.error "error", it
@@ -84,7 +93,6 @@ class FlixServiceTest {
 
     @Test
     void "success"() {
-        def flix = new Flix(processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
         mockNingHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/delta/urn:global_sku:score:en_gb?dates"
@@ -95,8 +103,8 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
             doGet(4) { String url ->
-                assert url.startsWith("/flix/sheet/urn:global_sku:score:en_gb")
-                def key = url[39]
+                assert url.startsWith("/flix/product/urn:global_sku:score:en_gb")
+                def key = url[41]
                 if (key == 'f') {
                     rx.Observable.just(new MockNingResponse(_statusCode: 500, _responseBody: '{ "errors" : ["err1", "err2"]}'))
                 } else if (key == 'g') {
@@ -107,8 +115,8 @@ class FlixServiceTest {
             }
         }
         mockCategoryService.demand.with {
-            retrieveCategoryFeed(1) { f ->
-                assert f == flix
+            retrieveCategoryFeed(1) { d ->
+                assert d == delta
                 rx.Observable.just(CATEGORY_FEED)
             }
             filterForCategory(1) { List productUrls, String categoryFeed ->
@@ -123,27 +131,27 @@ class FlixServiceTest {
         }
         mockDeltaUrlHelper.demand.with {
             createStartDate(1) { sdate, lastModifiedUrn ->
-                assert sdate == flix.sdate
-                assert lastModifiedUrn == flix.lastModifiedUrn
+                assert sdate == delta.sdate
+                assert lastModifiedUrn == delta.lastModifiedUrn
                 rx.Observable.just("updated date")
             }
             createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 assert initialUrl == "/delta/urn:global_sku:score:en_gb"
                 assert sdate == "updated date"
-                assert edate == flix.edate
+                assert edate == delta.edate
                 rx.Observable.just("/delta/urn:global_sku:score:en_gb?dates")
             }
             updateLastModified(1) { urn, errors ->
-                assert urn == flix.lastModifiedUrn
+                assert urn == delta.lastModifiedUrn
                 rx.Observable.just("done")
             }
         }
-        List<FlixSheetServiceResult> result = runFlow(flix).sort()
+        List<ProductServiceResult> result = runFlow().sort()
         assert result.size() == 4
-        assert result[0] == new FlixSheetServiceResult(jsonUrn: "urn:global_sku:score:en_gb:e", success: true, statusCode: 200)
-        assert result[1] == new FlixSheetServiceResult(jsonUrn: "urn:global_sku:score:en_gb:f", success: false, statusCode: 500, errors: ["err1", "err2"])
-        assert result[2] == new FlixSheetServiceResult(jsonUrn: "urn:global_sku:score:en_gb:g", success: false, statusCode: 0, errors: ["error in c"])
-        assert result[3] == new FlixSheetServiceResult(jsonUrn: "urn:global_sku:score:en_gb:h", success: true, statusCode: 200)
+        assert result[0] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:e", success: true, statusCode: 200)
+        assert result[1] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:f", success: false, statusCode: 500, errors: ["err1", "err2"])
+        assert result[2] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:g", success: false, statusCode: 0, errors: ["error in c"])
+        assert result[3] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:h", success: true, statusCode: 200)
 
         assert result[0].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:e.xml"
         assert result[3].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:h.xml"
@@ -169,9 +177,8 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 404))
             }
         }
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runFlow(flix) == []
-        assert flix.errors == ["HTTP 404 error retrieving global sku delta"]
+        assert runFlow() == []
+        assert delta.errors == ["HTTP 404 error retrieving global sku delta"]
     }
 
     @Test
@@ -192,9 +199,8 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 500))
             }
         }
-        def flix = new Flix(publication: "SCORE", locale: "en_GB")
-        assert runFlow(flix) == []
-        assert flix.errors == ["HTTP 500 error deleting current flix xmls"]
+        assert runFlow() == []
+        assert delta.errors == ["HTTP 500 error deleting current flix xmls"]
     }
 
 
@@ -219,7 +225,7 @@ class FlixServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
         }
-        assert runFlow(new Flix(publication: "SCORE", locale: "en_GB")) == ["error"]
+        assert runFlow() == ["error"]
     }
 
 }
