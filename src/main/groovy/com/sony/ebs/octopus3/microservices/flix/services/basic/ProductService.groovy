@@ -53,7 +53,6 @@ class ProductService {
         json
     }
 
-
     def createRepoUrl(RepoProduct product, boolean xml) {
         observe(execControl.blocking({
             def urn
