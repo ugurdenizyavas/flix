@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
@@ -9,6 +10,7 @@ import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
 import com.sony.ebs.octopus3.microservices.flix.services.basic.DeltaService
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +34,9 @@ class DeltaHandler extends GroovyHandler {
     @Autowired
     RequestValidator validator
 
+    @Autowired
+    ResponseStorage responseStorage
+
     @Override
     protected void handle(GroovyContext context) {
         context.with {
@@ -44,7 +49,12 @@ class DeltaHandler extends GroovyHandler {
             if (errors) {
                 activity.error "error validating {} : {}", delta, errors
                 response.status(400)
-                render json(status: 400, errors: errors, delta: delta)
+
+                def jsonResponse = json(status: 400, errors: errors, delta: delta)
+
+                responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+
+                render jsonResponse
             } else {
                 def startTime = new DateTime()
                 def flix = new Flix()
@@ -54,7 +64,12 @@ class DeltaHandler extends GroovyHandler {
                         def endTime = new DateTime()
                         def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                         response.status(500)
-                        render json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+
+                        def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+
+                        responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+
+                        render jsonResponse
                     } else {
                         handleFlixPackage(context, delta, flix, productServiceResults, startTime)
                     }
@@ -78,11 +93,21 @@ class DeltaHandler extends GroovyHandler {
                 if (delta.errors) {
                     activity.error "finished {} with errors: {}", delta, delta.errors
                     response.status(500)
-                    render json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+
+                    def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+
+                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+
+                    render jsonResponse
                 } else {
                     activity.info "finished {} with success", delta
                     response.status(200)
-                    render json(status: 200, timeStats: timeStats, result: createDeltaResult(delta, flix, productServiceResults), delta: delta)
+
+                    def jsonResponse = json(status: 200, timeStats: timeStats, result: createDeltaResult(delta, flix, productServiceResults), delta: delta)
+
+                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+
+                    render jsonResponse
                 }
             }).subscribe({
                 activity.debug "{} emitted: {}", delta, it
@@ -108,9 +133,9 @@ class DeltaHandler extends GroovyHandler {
             errorMap
         }
         [
-                "package created": flix.outputPackageUrl,
+                "package created" : flix.outputPackageUrl,
                 "package archived": flix.archivePackageUrl,
-                stats            : [
+                stats             : [
                         "number of delta products"                   : delta.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
                         "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
@@ -121,8 +146,8 @@ class DeltaHandler extends GroovyHandler {
                             !it.success
                         }).size()
                 ],
-                success          : createSuccess(),
-                errors           : createErrors()
+                success           : createSuccess(),
+                errors            : createErrors()
         ]
     }
 

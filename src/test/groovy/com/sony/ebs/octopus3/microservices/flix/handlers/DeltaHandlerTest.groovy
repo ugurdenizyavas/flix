@@ -1,5 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
+import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
@@ -17,7 +18,7 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class DeltaHandlerTest {
 
-    StubFor mockFlixService, mockFlixPackageService, mockRequestValidator
+    StubFor mockFlixService, mockFlixPackageService, mockRequestValidator, mockResponseStorage
     RepoDelta delta
     Flix flix
 
@@ -26,6 +27,7 @@ class DeltaHandlerTest {
         mockFlixService = new StubFor(DeltaService)
         mockRequestValidator = new StubFor(RequestValidator)
         mockFlixPackageService = new StubFor(PackageService)
+        mockResponseStorage = new StubFor(ResponseStorage)
 
         delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
         flix = new Flix()
@@ -64,9 +66,15 @@ class DeltaHandlerTest {
             validateRepoDelta(1) { [] }
         }
 
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+
         handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {
@@ -103,7 +111,13 @@ class DeltaHandlerTest {
                 ["error"]
             }
         }
-        handle(new DeltaHandler(validator: mockRequestValidator.proxyInstance()), {
+
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+        handle(new DeltaHandler(validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             uri "/"
         }).with {
             assert status.code == 400
@@ -126,9 +140,15 @@ class DeltaHandlerTest {
             validateRepoDelta(1) { [] }
         }
 
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+
         handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -156,9 +176,15 @@ class DeltaHandlerTest {
             validateRepoDelta(1) { [] }
         }
 
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+
         handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -182,7 +208,7 @@ class DeltaHandlerTest {
             }
         }
         mockFlixService.demand.with {
-            processDelta(1) {RepoDelta d, Flix f ->
+            processDelta(1) { RepoDelta d, Flix f ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
@@ -190,9 +216,15 @@ class DeltaHandlerTest {
             validateRepoDelta(1) { [] }
         }
 
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+
         handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -217,7 +249,7 @@ class DeltaHandlerTest {
             }
         }
         mockFlixService.demand.with {
-            processDelta(1) {RepoDelta d, Flix f ->
+            processDelta(1) { RepoDelta d, Flix f ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
@@ -225,9 +257,15 @@ class DeltaHandlerTest {
             validateRepoDelta(1) { [] }
         }
 
+        mockResponseStorage.demand.with {
+            store(1) { String st1, List list1, String st2 ->
+                true
+            }
+        }
+
         handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
