@@ -6,19 +6,15 @@ import com.sony.ebs.octopus3.commons.urn.URNImpl
 
 class FlixUtils {
 
-    static URN getXmlUrn(URN productUrn) {
-        def values = productUrn.values
+    static URN getXmlUrn(String urnStr) {
+        def urn = new URNImpl(urnStr)
+        def values = urn.values
         if (values && values.last()) {
             def last = values.last()
             values = values - last + "${last}.xml"
         }
         new URNImpl(DeltaType.flixMedia.toString(), values)
     }
-
-    static URN getXmlUrn(String productUrnStr) {
-        getXmlUrn(new URNImpl(productUrnStr))
-    }
-
 
     static URN getCategoryUrn(String publication, String locale) {
         new URNImpl(DeltaType.flixMedia.toString(), [publication, locale, DeltaType.category.toString() + ".xml"])
@@ -30,10 +26,6 @@ class FlixUtils {
 
     static URN getArchiveUrn(String packageName) {
         new URNImpl(DeltaType.archive.toString(), [DeltaType.flix_sku.toString(), packageName])
-    }
-
-    static URN getGlobalSkuUrn(String publication, String locale, String sku) {
-        new URNImpl(DeltaType.global_sku.toString(), [publication, locale, sku])
     }
 
 }

@@ -188,20 +188,20 @@ class CategoryServiceTest {
 </ProductHierarchy>
 """
         def productUrls = [
-                "urn:global_sku:score:en_gb:a1",
-                "urn:global_sku:score:en_gb:b",
-                "urn:global_sku:score:en_gb:c2",
-                "urn:global_sku:score:en_gb:d",
-                "urn:global_sku:score:en_gb:ss-ac3_2f_2fc+ce7",
-                "urn:global_sku:score:en_gb:ss-ac3_2b_2fc+ce7"
+                "urn:test_sku:score:en_gb:a1",
+                "urn:test_sku:score:en_gb:b",
+                "urn:test_sku:score:en_gb:c2",
+                "urn:test_sku:score:en_gb:d",
+                "urn:test_sku:score:en_gb:ss-ac3_2f_2fc+ce7",
+                "urn:test_sku:score:en_gb:ss-ac3_2b_2fc+ce7"
         ]
 
         List filtered = runFilterForCategory(productUrls, xml)
         assert filtered.sort() == [
-                "urn:global_sku:score:en_gb:a1",
-                "urn:global_sku:score:en_gb:c2",
-                "urn:global_sku:score:en_gb:ss-ac3_2b_2fc+ce7",
-                "urn:global_sku:score:en_gb:ss-ac3_2f_2fc+ce7"
+                "urn:test_sku:score:en_gb:a1",
+                "urn:test_sku:score:en_gb:c2",
+                "urn:test_sku:score:en_gb:ss-ac3_2b_2fc+ce7",
+                "urn:test_sku:score:en_gb:ss-ac3_2f_2fc+ce7"
         ]
     }
 

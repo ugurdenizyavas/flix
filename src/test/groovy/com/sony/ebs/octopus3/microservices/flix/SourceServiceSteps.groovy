@@ -86,16 +86,16 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
     String DELTA_FEED = """
 {
     "results" : [
-        "urn:global_sku:$pubAndLocale:a",
-        "urn:global_sku:$pubAndLocale:b",
-        "urn:global_sku:$pubAndLocale:c",
-        "urn:global_sku:$pubAndLocale:d",
-        "urn:global_sku:$pubAndLocale:e",
-        "urn:global_sku:$pubAndLocale:f",
-        "urn:global_sku:$pubAndLocale:g",
-        "urn:global_sku:$pubAndLocale:h",
-        "urn:global_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7",
-        "urn:global_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
+        "urn:test_sku:$pubAndLocale:a",
+        "urn:test_sku:$pubAndLocale:b",
+        "urn:test_sku:$pubAndLocale:c",
+        "urn:test_sku:$pubAndLocale:d",
+        "urn:test_sku:$pubAndLocale:e",
+        "urn:test_sku:$pubAndLocale:f",
+        "urn:test_sku:$pubAndLocale:g",
+        "urn:test_sku:$pubAndLocale:h",
+        "urn:test_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7",
+        "urn:test_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
     ]
 }
 """
@@ -200,7 +200,7 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
 
-    def getUrn = { "urn:global_sku:$pubAndLocale:$it".toString() }
+    def getUrn = { "urn:test_sku:$pubAndLocale:$it".toString() }
     def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$pubAndLocale:${it}.xml".toString() }
 
     assert response.statusCode == 200
