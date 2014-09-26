@@ -61,8 +61,11 @@ class DeltaServiceTest {
 
     @Before
     void before() {
-        deltaService = new DeltaService(execControl: execController.control, productServiceUrl: "/flix/product/:urn",
-                repositoryDeltaServiceUrl: "/delta/:urn", repositoryFileServiceUrl: "/file/:urn", repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
+        deltaService = new DeltaService(execControl: execController.control,
+                productServiceUrl: "/flix/product/publication/:publication/locale/:locale/sku/:sku",
+                repositoryDeltaServiceUrl: "/delta/:urn",
+                repositoryFileServiceUrl: "/file/:urn",
+                repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
         mockNingHttpClient = new MockFor(NingHttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
@@ -103,8 +106,8 @@ class DeltaServiceTest {
                 rx.Observable.just(new MockNingResponse(_statusCode: 200))
             }
             doGet(4) { String url ->
-                assert url.startsWith("/flix/product/urn:global_sku:score:en_gb")
-                def key = url[41]
+                assert url.startsWith("/flix/product/publication/SCORE/locale/en_GB/sku/")
+                def key = url[49]
                 if (key == 'f') {
                     rx.Observable.just(new MockNingResponse(_statusCode: 500, _responseBody: '{ "errors" : ["err1", "err2"]}'))
                 } else if (key == 'g') {

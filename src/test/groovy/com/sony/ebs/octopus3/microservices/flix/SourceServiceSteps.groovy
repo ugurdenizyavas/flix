@@ -270,8 +270,8 @@ Then(~"Flix delta service should reject with (.*) parameter error") { paramName 
 
 Given(~"Flix json for sheet (.*)") { String sheet ->
     def sheetLC = sheet.toLowerCase()
-    server.get(by(uri("/repository/file/urn:global_sku:score:en_GB:${sheetLC}?processId=123"))).response(with('{"a":"1"}'), status(200))
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheetLC}.xml?processId=123"))).response(status(200))
+    server.get(by(uri("/repository/file/urn:global_sku:score:en_gb:${sheetLC}"))).response(with('{"a":"1"}'), status(200))
+    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheetLC}.xml"))).response(status(200))
 }
 
 Given(~"Octopus ean code (.*) for sheet (.*)") { String eanCode, String sheet ->
@@ -285,7 +285,7 @@ When(~"I request flix sheet service for process (.*) sheet (.*) no ean code") { 
 }
 
 When(~"I request flix sheet service for process (.*) sheet (.*) ean code (.*)") { process, sheet, eanCode ->
-    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?processId=$process&eanCode=$eanCode")
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?eanCode=$eanCode")
 }
 
 Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be done") { process, sheet, eanCode ->
@@ -293,7 +293,6 @@ Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be do
     def json = parseJson(response)
     assert json.status == 200
     assert json.result == ["success"]
-    assert json.product.processId == process
     assert json.product.eanCode == eanCode
 }
 

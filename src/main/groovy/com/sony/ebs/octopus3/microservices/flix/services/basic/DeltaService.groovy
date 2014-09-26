@@ -7,12 +7,14 @@ import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
 import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -57,15 +59,21 @@ class DeltaService {
     @Autowired
     DeltaUrlHelper deltaUrlHelper
 
-    private rx.Observable<ProductServiceResult> doProduct(ProcessId processId, String jsonUrn, String eanCode) {
+    private rx.Observable<ProductServiceResult> doProduct(RepoDelta delta, String jsonUrn, String eanCode) {
 
-        def importUrl = productServiceUrl.replace(":urn", jsonUrn) + "?eanCode=$eanCode"
-        if (processId?.id) {
-            importUrl += "&processId=${processId?.id}"
+        def sku = new URNImpl(jsonUrn).values.last()
+
+        def initialUrl = productServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale).replace(":sku", sku)
+        def urlBuilder = new URIBuilder(initialUrl)
+        if (delta.processId?.id) {
+            urlBuilder.addParameter("processId", delta.processId?.id)
+        }
+        if (eanCode) {
+            urlBuilder.addParameter("eanCode", eanCode)
         }
 
         rx.Observable.just("starting").flatMap({
-            httpClient.doGet(importUrl)
+            httpClient.doGet(urlBuilder.toString())
         }).flatMap({ Response response ->
             observe(execControl.blocking({
                 boolean success = NingHttpClient.isSuccess(response)
@@ -134,7 +142,7 @@ class DeltaService {
         }).flatMap({ Map eanCodeMap ->
             List eanCodeFilteredUrns = eanCodeMap.keySet() as List
             flix.eanCodeFilteredOutUrns = categoryFilteredUrns - eanCodeFilteredUrns
-            List list = eanCodeMap?.collect { doProduct(delta.processId, it.key, it.value) }
+            List list = eanCodeMap?.collect { doProduct(delta, it.key, it.value) }
             rx.Observable.merge(list, 30)
         })
     }
