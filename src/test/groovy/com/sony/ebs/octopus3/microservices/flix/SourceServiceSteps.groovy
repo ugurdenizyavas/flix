@@ -13,9 +13,9 @@ import ratpack.groovy.test.TestHttpClients
 
 import static com.github.dreamhead.moco.Moco.by
 import static com.github.dreamhead.moco.Moco.uri
-import static com.github.dreamhead.moco.Moco.with
-import static com.github.dreamhead.moco.Moco.with
-import static com.github.dreamhead.moco.Moco.with
+import static com.github.dreamhead.moco.Moco.and
+import static com.github.dreamhead.moco.Moco.eq
+import static com.github.dreamhead.moco.Moco.query
 import static com.github.dreamhead.moco.Moco.with
 import static com.github.dreamhead.moco.Moco.status
 
@@ -86,16 +86,16 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
     String DELTA_FEED = """
 {
     "results" : [
-        "urn:global_sku:$pubAndLocale:a",
-        "urn:global_sku:$pubAndLocale:b",
-        "urn:global_sku:$pubAndLocale:c",
-        "urn:global_sku:$pubAndLocale:d",
-        "urn:global_sku:$pubAndLocale:e",
-        "urn:global_sku:$pubAndLocale:f",
-        "urn:global_sku:$pubAndLocale:g",
-        "urn:global_sku:$pubAndLocale:h",
-        "urn:global_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7",
-        "urn:global_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
+        "urn:test_sku:$pubAndLocale:a",
+        "urn:test_sku:$pubAndLocale:b",
+        "urn:test_sku:$pubAndLocale:c",
+        "urn:test_sku:$pubAndLocale:d",
+        "urn:test_sku:$pubAndLocale:e",
+        "urn:test_sku:$pubAndLocale:f",
+        "urn:test_sku:$pubAndLocale:g",
+        "urn:test_sku:$pubAndLocale:h",
+        "urn:test_sku:$pubAndLocale:ss-ac3_2f_2fc+ce7",
+        "urn:test_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
     ]
 }
 """
@@ -199,20 +199,19 @@ When(~"I request flix delta service for publication (.*) locale (.*)") { publica
 Then(~"Flix delta service for publication (.*) locale (.*) should be done") { publication, locale ->
     def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
-    def getUrn = { "publication/$publication/locale/$locale/sku/$it".toString() }
+
+    def getUrn = { "urn:test_sku:$pubAndLocale:$it".toString() }
     def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$pubAndLocale:${it}.xml".toString() }
 
     assert response.statusCode == 200
     def json = parseJson(response)
     assert json.status == 200
-    assert json.flix.publication == publication
-    assert json.flix.locale == locale
-    assert json.flix.sdate == "2014-07-09T00:00:00.000Z"
-    assert json.flix.edate == "2014-07-12T00:00:00.000Z"
-    assert json.flix.processId
-    assert json.flix.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
-    assert json.flix.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
-    assert json.flix.deltaUrns?.sort() == [
+    assert json.delta.publication == publication
+    assert json.delta.locale == locale
+    assert json.delta.sdate == "2014-07-09T00:00:00.000Z"
+    assert json.delta.edate == "2014-07-12T00:00:00.000Z"
+    assert json.delta.processId
+    assert json.delta.deltaUrns?.sort() == [
             getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"),
             getUrn("g"), getUrn("h"), getUrn("ss-ac3_2b_2fc+ce7"), getUrn("ss-ac3_2f_2fc+ce7")
     ]
@@ -224,6 +223,8 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.result.stats."number of products filtered out by ean code" == 2
     assert json.result.stats."number of success" == 4
     assert json.result.stats."number of errors" == 2
+    assert json.result.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
+    assert json.result.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
 
     assert json.result.success?.sort() == [
             getXmlUrl("e"),
@@ -242,8 +243,8 @@ Then(~"Flix delta service should give (.*) error") { String error ->
     assert response.statusCode == 500
     def json = parseJson(response)
     assert json?.status == 500
-    assert json.flix.publication
-    assert json.flix.locale
+    assert json.delta.publication
+    assert json.delta.locale
     assert json?.errors == [error]
     assert !json?.result
 }
@@ -268,10 +269,17 @@ Then(~"Flix delta service should reject with (.*) parameter error") { paramName 
 * ******************** FLIX SHEET SERVICE *************************************************************
 * */
 
-Given(~"Flix json for sheet (.*)") { String sheet ->
-    def sheetLC = sheet.toLowerCase()
-    server.get(by(uri("/repository/file/urn:global_sku:score:en_gb:${sheetLC}"))).response(with('{"a":"1"}'), status(200))
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheetLC}.xml"))).response(status(200))
+Given(~"Flix json for sheet (.*) with no process id") { String sheet ->
+    server.get(by(uri("/repository/file/urn:global_sku:score:en_gb:${sheet.toLowerCase()}"))).response(with('{"a":"1"}'), status(200))
+    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet.toLowerCase()}.xml"))).response(status(200))
+}
+
+Given(~"Flix json for sheet (.*) with process id (.*)") { String sheet, String processId ->
+    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sheet.toLowerCase()}"
+    server.get(and(by(uri(jsonUri)), eq(query("processId"), processId))).response(with('{"a":"1"}'), status(200))
+
+    def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sheet.toLowerCase()}.xml"
+    server.post(and(by(uri(xmlUri)), eq(query("processId"), processId))).response(status(200))
 }
 
 Given(~"Octopus ean code (.*) for sheet (.*)") { String eanCode, String sheet ->
@@ -279,20 +287,26 @@ Given(~"Octopus ean code (.*) for sheet (.*)") { String eanCode, String sheet ->
     server.get(by(uri("/product/identifiers/material_name/$sheetUC"))).response(with(createIdentifiersFeed(eanCode)), status(200))
 }
 
-When(~"I request flix sheet service for process (.*) sheet (.*) no ean code") { process, sheet ->
+When(~"I request flix sheet service for process (.*) sheet (.*) no ean code") { processId, sheet ->
 
-    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?processId=$process")
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?processId=$processId")
 }
 
-When(~"I request flix sheet service for process (.*) sheet (.*) ean code (.*)") { process, sheet, eanCode ->
-    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?eanCode=$eanCode")
+When(~"I request flix sheet service for process (.*) sheet (.*) ean code (.*)") { processId, sheet, eanCode ->
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?eanCode=$eanCode&processId=$processId")
 }
 
-Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be done") { process, sheet, eanCode ->
+Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be done") { processId, sku, eanCode ->
     assert response.statusCode == 200
     def json = parseJson(response)
     assert json.status == 200
     assert json.result == ["success"]
+
+    assert json.product.publication == "SCORE"
+    assert json.product.locale == "en_GB"
+    assert json.product.sku == sku
+
+    assert json.product.processId == processId
     assert json.product.eanCode == eanCode
 }
 

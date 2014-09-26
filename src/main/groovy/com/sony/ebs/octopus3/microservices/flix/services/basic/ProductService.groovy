@@ -4,8 +4,10 @@ import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.services.sub.FlixXmlBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -53,7 +55,12 @@ class ProductService {
 
     def createRepoUrl(RepoProduct product, boolean xml) {
         observe(execControl.blocking({
-            def urn = xml ? FlixUtils.getXmlUrn(product.urn) : FlixUtils.getGlobalSkuUrn(product.publication, product.locale, product.sku)
+            def urn
+            if (xml) {
+                urn = FlixUtils.getXmlUrn(product.urn.toString())
+            } else {
+                urn = new URNImpl(DeltaType.global_sku.toString(), [product.publication, product.locale, product.sku])
+            }
 
             def initialUrl = repositoryFileServiceUrl.replace(":urn", urn.toString())
 

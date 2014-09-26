@@ -133,9 +133,9 @@ class DeltaHandler extends GroovyHandler {
             errorMap
         }
         [
-                "package created" : flix.outputPackageUrl,
-                "package archived": flix.archivePackageUrl,
-                stats             : [
+                "package created"      : flix.outputPackageUrl,
+                "package archived"     : flix.archivePackageUrl,
+                stats                  : [
                         "number of delta products"                   : delta.deltaUrns?.size(),
                         "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
                         "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
@@ -146,8 +146,10 @@ class DeltaHandler extends GroovyHandler {
                             !it.success
                         }).size()
                 ],
-                success           : createSuccess(),
-                errors            : createErrors()
+                success                : createSuccess(),
+                errors                 : createErrors(),
+                categoryFilteredOutUrns: flix.categoryFilteredOutUrns,
+                eanCodeFilteredOutUrns : flix.eanCodeFilteredOutUrns
         ]
     }
 

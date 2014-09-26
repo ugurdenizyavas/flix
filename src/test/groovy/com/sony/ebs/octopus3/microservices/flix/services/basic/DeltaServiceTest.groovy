@@ -27,14 +27,14 @@ class DeltaServiceTest {
     final static String DELTA_FEED = '''
         {
             "results" : [
-                "urn:global_sku:score:en_gb:a",
-                "urn:global_sku:score:en_gb:b",
-                "urn:global_sku:score:en_gb:c",
-                "urn:global_sku:score:en_gb:d",
-                "urn:global_sku:score:en_gb:e",
-                "urn:global_sku:score:en_gb:f",
-                "urn:global_sku:score:en_gb:g",
-                "urn:global_sku:score:en_gb:h"
+                "urn:test_sku:score:en_gb:a",
+                "urn:test_sku:score:en_gb:b",
+                "urn:test_sku:score:en_gb:c",
+                "urn:test_sku:score:en_gb:d",
+                "urn:test_sku:score:en_gb:e",
+                "urn:test_sku:score:en_gb:f",
+                "urn:test_sku:score:en_gb:g",
+                "urn:test_sku:score:en_gb:h"
             ]
         }
 '''
@@ -123,12 +123,12 @@ class DeltaServiceTest {
                 rx.Observable.just(CATEGORY_FEED)
             }
             filterForCategory(1) { List productUrls, String categoryFeed ->
-                rx.Observable.just(productUrls - ["urn:global_sku:score:en_gb:a", "urn:global_sku:score:en_gb:b"])
+                rx.Observable.just(productUrls - ["urn:test_sku:score:en_gb:a", "urn:test_sku:score:en_gb:b"])
             }
         }
         mockEanCodeService.demand.with {
             filterForEanCodes(1) { List productUrls, List errors ->
-                List filtered = productUrls - ["urn:global_sku:score:en_gb:c", "urn:global_sku:score:en_gb:d"]
+                List filtered = productUrls - ["urn:test_sku:score:en_gb:c", "urn:test_sku:score:en_gb:d"]
                 rx.Observable.just(filtered.inject([:]) { map, String urn -> map << [(urn): "${urn[urn.size() - 1]}123"] })
             }
         }
@@ -151,10 +151,10 @@ class DeltaServiceTest {
         }
         List<ProductServiceResult> result = runFlow().sort()
         assert result.size() == 4
-        assert result[0] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:e", success: true, statusCode: 200)
-        assert result[1] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:f", success: false, statusCode: 500, errors: ["err1", "err2"])
-        assert result[2] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:g", success: false, statusCode: 0, errors: ["error in c"])
-        assert result[3] == new ProductServiceResult(jsonUrn: "urn:global_sku:score:en_gb:h", success: true, statusCode: 200)
+        assert result[0] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:e", success: true, statusCode: 200)
+        assert result[1] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:f", success: false, statusCode: 500, errors: ["err1", "err2"])
+        assert result[2] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:g", success: false, statusCode: 0, errors: ["error in c"])
+        assert result[3] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:h", success: true, statusCode: 200)
 
         assert result[0].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:e.xml"
         assert result[3].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:h.xml"
