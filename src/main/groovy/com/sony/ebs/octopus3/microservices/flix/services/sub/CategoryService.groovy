@@ -35,7 +35,7 @@ class CategoryService {
     String repositoryFileServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("internalHttpClient")
     NingHttpClient httpClient
 
     rx.Observable<String> retrieveCategoryFeed(RepoDelta delta) {

@@ -34,9 +34,14 @@ class SpringConfig {
     String octopusEanCodeServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("externalHttpClient")
     @org.springframework.context.annotation.Lazy
-    NingHttpClient localHttpClient
+    NingHttpClient externalHttpClient
+
+    @Autowired
+    @Qualifier("internalHttpClient")
+    @org.springframework.context.annotation.Lazy
+    NingHttpClient internalHttpClient
 
     @Value('${octopus3.flix.octopusIdentifiersServiceUrl}')
     String octopusIdentifiersServiceUrl
@@ -46,7 +51,7 @@ class SpringConfig {
     public EanCodeEnhancer eanCodeEnhancer() {
         new EanCodeEnhancer(execControl: execControl,
                 serviceUrl: octopusIdentifiersServiceUrl,
-                httpClient: localHttpClient)
+                httpClient: externalHttpClient)
     }
 
     @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
@@ -57,7 +62,7 @@ class SpringConfig {
     public FileAttributesProvider attributesProvider() {
         new FileAttributesProvider(execControl: execControl,
                 repositoryFileAttributesServiceUrl: repositoryFileAttributesServiceUrl,
-                httpClient: localHttpClient)
+                httpClient: externalHttpClient)
     }
 
     @Value('${octopus3.flix.repositoryFileServiceUrl}')
@@ -68,7 +73,7 @@ class SpringConfig {
     public DeltaUrlHelper deltaUrlHelper() {
         new DeltaUrlHelper(execControl: execControl,
                 repositoryFileServiceUrl: repositoryFileServiceUrl,
-                httpClient: localHttpClient,
+                httpClient: externalHttpClient,
                 fileAttributesProvider: attributesProvider()
         )
     }
@@ -85,7 +90,7 @@ class SpringConfig {
     public ResponseStorage responseStorage(
             @Value('${octopus3.flix.repositoryFileServiceUrl}') String saveUrl) {
         new ResponseStorage(
-                ningHttpClient: localHttpClient,
+                ningHttpClient: externalHttpClient,
                 saveUrl: saveUrl
         )
     }

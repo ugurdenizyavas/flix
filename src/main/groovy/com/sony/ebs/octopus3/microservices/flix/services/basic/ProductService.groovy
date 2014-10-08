@@ -32,7 +32,7 @@ class ProductService {
     String repositoryFileServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("internalHttpClient")
     NingHttpClient httpClient
 
     @Autowired

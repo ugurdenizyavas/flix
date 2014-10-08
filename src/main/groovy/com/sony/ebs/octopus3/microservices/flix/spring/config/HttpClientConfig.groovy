@@ -15,26 +15,48 @@ class HttpClientConfig {
     @Autowired
     LaunchConfig launchConfig
 
-    @Value('${octopus3.flix.local.proxy.host}')
-    String localProxyHost
+    @Value('${octopus3.flix.external.proxy.host}')
+    String externalProxyHost
 
-    @Value('${octopus3.flix.local.proxy.port}')
-    int localProxyPort
+    @Value('${octopus3.flix.external.proxy.port}')
+    int externalProxyPort
 
-    @Value('${octopus3.flix.local.proxy.user}')
-    String localProxyUser
+    @Value('${octopus3.flix.external.proxy.user}')
+    String externalProxyUser
 
-    @Value('${octopus3.flix.local.proxy.password}')
-    String localProxyPassword
+    @Value('${octopus3.flix.external.proxy.password}')
+    String externalProxyPassword
 
-    @Value('${octopus3.flix.local.proxy.nonProxyHosts}')
-    String localNonProxyHosts
+    @Value('${octopus3.flix.external.proxy.nonProxyHosts}')
+    String externalNonProxyHosts
+
+    @Value('${octopus3.flix.internal.proxy.host}')
+    String internalProxyHost
+
+    @Value('${octopus3.flix.internal.proxy.port}')
+    int internalProxyPort
+
+    @Value('${octopus3.flix.internal.proxy.user}')
+    String internalProxyUser
+
+    @Value('${octopus3.flix.internal.proxy.password}')
+    String internalProxyPassword
+
+    @Value('${octopus3.flix.internal.proxy.nonProxyHosts}')
+    String internalNonProxyHosts
 
     @Bean
-    @Qualifier("localHttpClient")
+    @Qualifier("externalHttpClient")
     @org.springframework.context.annotation.Lazy
-    public NingHttpClient localHttpClient() {
-        new NingHttpClient(launchConfig, localProxyHost, localProxyPort, localProxyUser, localProxyPassword, localNonProxyHosts, "", "", 5000, 20000)
+    public NingHttpClient externalHttpClient() {
+        new NingHttpClient(launchConfig, externalProxyHost, externalProxyPort, externalProxyUser, externalProxyPassword, externalNonProxyHosts, "", "", 5000, 20000)
+    }
+
+    @Bean
+    @Qualifier("internalHttpClient")
+    @org.springframework.context.annotation.Lazy
+    public NingHttpClient internalHttpClient() {
+        new NingHttpClient(launchConfig, internalProxyHost, internalProxyPort, internalProxyUser, internalProxyPassword, internalNonProxyHosts, "", "", 5000, 20000)
     }
 
 }
