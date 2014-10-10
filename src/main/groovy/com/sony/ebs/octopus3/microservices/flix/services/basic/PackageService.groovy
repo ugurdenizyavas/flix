@@ -50,7 +50,7 @@ class PackageService {
         def getRename = {
             it.rename {
                 source "${recipeParams["baseUrnStr"]}.zip"
-                destination recipeParams["packageName"]
+                targetName recipeParams["packageName"]
             }
         }
         def getCopyThirdParty = {
@@ -88,10 +88,10 @@ class PackageService {
                 def packageName = "Flix_${delta.locale}_${new DateTime().toString(FMT)}.zip"
 
                 def outputUrnStr = FlixUtils.getThirdPartyUrn()?.toString()
-                flix.outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrnStr)
+                flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", FlixUtils.getThirdPartyPackageUrn(packageName)?.toString())
 
                 def archiveUrnStr = FlixUtils.getArchiveUrn()?.toString()
-                flix.archiveUrl = repositoryFileServiceUrl.replace(":urn", archiveUrnStr)
+                flix.archivePackageUrl = repositoryFileServiceUrl.replace(":urn", FlixUtils.getArchivePackageUrn(packageName)?.toString())
 
                 def basePackageUrnStr = new URNImpl(delta.type.toString(), [delta.publication, packageName])?.toString()
                 def recipeParams = [

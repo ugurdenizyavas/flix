@@ -28,5 +28,13 @@ class FlixUtils {
         new URNImpl(DeltaType.archive.toString(), [DeltaType.flix_sku.toString()])
     }
 
+    static URN getThirdPartyPackageUrn(String packageName) {
+        new URNImpl(DeltaType.thirdparty.toString(), [DeltaType.flixMedia.toString(), packageName.toLowerCase()])
+    }
+
+    static URN getArchivePackageUrn(String packageName) {
+        new URNImpl(DeltaType.archive.toString(), [DeltaType.flixMedia.toString(), packageName.toLowerCase()])
+    }
+
 }
 

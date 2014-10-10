@@ -9,7 +9,7 @@ class Flix {
 
     List categoryFilteredOutUrns
     List eanCodeFilteredOutUrns
-    String outputUrl
-    String archiveUrl
+    String outputPackageUrl
+    String archivePackageUrl
 
 }

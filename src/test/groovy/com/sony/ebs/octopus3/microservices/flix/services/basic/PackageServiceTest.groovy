@@ -78,8 +78,8 @@ class PackageServiceTest {
             }
         }
         assert runFlow() == "success"
-        assert flix.outputUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia/
-        assert flix.archiveUrl ==~ /\/repo\/file\/urn:archive:flix_sku/
+        assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
     }
 
     @Test
@@ -125,7 +125,7 @@ class PackageServiceTest {
         assert actual.ops[0].zip.source == "urn:flixmedia:score:fr_be"
 
         assert actual.ops[1].rename.source == "urn:flixmedia:score:fr_be.zip"
-        assert actual.ops[1].rename.destination == "flix_fr_be_20141009_151352.zip"
+        assert actual.ops[1].rename.targetName == "flix_fr_be_20141009_151352.zip"
 
         assert actual.ops[2].copy.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
         assert actual.ops[2].copy.destination == outputUrnStr

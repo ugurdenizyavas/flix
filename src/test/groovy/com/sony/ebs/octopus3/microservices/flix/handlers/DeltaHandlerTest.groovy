@@ -45,8 +45,8 @@ class DeltaHandlerTest {
             packageFlow(1) { RepoDelta d, Flix f ->
                 assert d.publication == "SCORE"
                 assert d.locale == "en_GB"
-                f.outputUrl = "/3rdparty/flix.zip"
-                f.archiveUrl = "/archive/flix.zip"
+                f.outputPackageUrl = "/3rdparty/flix.zip"
+                f.archivePackageUrl = "/archive/flix.zip"
                 rx.Observable.just("xxx")
             }
         }
