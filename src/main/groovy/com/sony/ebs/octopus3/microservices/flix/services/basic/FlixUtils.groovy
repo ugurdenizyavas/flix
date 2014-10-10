@@ -20,12 +20,12 @@ class FlixUtils {
         new URNImpl(DeltaType.flixMedia.toString(), [publication, locale, DeltaType.category.toString() + ".xml"])
     }
 
-    static URN getThirdPartyUrn(String packageName) {
-        new URNImpl(DeltaType.thirdparty.toString(), [DeltaType.flixMedia.toString(), packageName])
+    static URN getThirdPartyUrn() {
+        new URNImpl(DeltaType.thirdparty.toString(), [DeltaType.flixMedia.toString()])
     }
 
-    static URN getArchiveUrn(String packageName) {
-        new URNImpl(DeltaType.archive.toString(), [DeltaType.flix_sku.toString(), packageName])
+    static URN getArchiveUrn() {
+        new URNImpl(DeltaType.archive.toString(), [DeltaType.flix_sku.toString()])
     }
 
 }

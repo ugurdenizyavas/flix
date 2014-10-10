@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URN
+import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
@@ -40,24 +41,30 @@ class PackageService {
     @Qualifier("localHttpClient")
     NingHttpClient httpClient
 
-    String createOpsRecipe(URN baseUrn, String outputPackageUrnStr, String archivePackageUrnStr) {
-        def packageUrnStr = baseUrn.toString()
+    String createOpsRecipe(Map recipeParams) {
+        def packageUrnStr = recipeParams["baseUrn"].toString()
 
         def getZip = {
             it.zip {
-                source packageUrnStr
+                source recipeParams["packageUrnStr"]
+            }
+        }
+        def getRename = {
+            it.rename {
+                source "${packageUrnStr}.zip"
+                destination recipeParams["packageName"]
             }
         }
         def getCopyThirdParty = {
             it.copy {
                 source "${packageUrnStr}.zip"
-                destination outputPackageUrnStr
+                destination recipeParams["outputUrnStr"]
             }
         }
         def getCopyArchive = {
             it.copy {
                 source "${packageUrnStr}.zip"
-                destination archivePackageUrnStr
+                destination recipeParams["archiveUrnStr"]
             }
         }
         def getDelete = {
@@ -68,7 +75,7 @@ class PackageService {
 
         def builder = new groovy.json.JsonBuilder()
         builder {
-            ops getZip(builder), getCopyThirdParty(builder), getCopyArchive(builder), getDelete(builder)
+            ops getZip(builder), getRename(builder), getCopyThirdParty(builder), getCopyArchive(builder), getDelete(builder)
         }
 
         def result = builder.toString()
@@ -82,13 +89,22 @@ class PackageService {
             observe(execControl.blocking {
                 def packageName = "Flix_${delta.locale}_${new DateTime().toString(FMT)}.zip"
 
-                def outputPackageUrnStr = FlixUtils.getThirdPartyUrn(packageName)?.toString()
-                flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", outputPackageUrnStr)
+                def outputUrnStr = FlixUtils.getThirdPartyUrn()?.toString()
+                flix.outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrnStr)
 
-                def archivePackageUrnStr = FlixUtils.getArchiveUrn(packageName)?.toString()
-                flix.archivePackageUrl = repositoryFileServiceUrl.replace(":urn", archivePackageUrnStr)
+                def archiveUrnStr = FlixUtils.getArchiveUrn()?.toString()
+                flix.archiveUrl = repositoryFileServiceUrl.replace(":urn", archiveUrnStr)
 
-                createOpsRecipe(delta.baseUrn, outputPackageUrnStr, archivePackageUrnStr)
+                def basePackageUrn = new URNImpl(delta.baseUrn, [packageName])?.toString()
+                def recipeParams = [
+                        baseUrn: delta.baseUrn,
+                        outputUrnStr: outputUrnStr,
+                        archiveUrnStr: archiveUrnStr,
+                        packageName: packageName,
+                        basePackageUrn: basePackageUrn
+                ]
+
+                createOpsRecipe(recipeParams)
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, EncodingUtil.CHARSET))
