@@ -98,7 +98,7 @@ class PackageService {
                         baseUrnStr: delta.baseUrn?.toString(),
                         outputUrnStr: outputUrnStr,
                         archiveUrnStr: archiveUrnStr,
-                        packageName: packageName,
+                        packageName: packageName.toLowerCase(),
                         basePackageUrnStr: basePackageUrnStr
                 ]
 
