@@ -38,7 +38,7 @@ class PackageService {
     String repositoryFileServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("internalHttpClient")
     NingHttpClient httpClient
 
     String createOpsRecipe(Map recipeParams) {

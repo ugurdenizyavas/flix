@@ -31,7 +31,7 @@ class EanCodeService {
     String octopusEanCodeServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("internalHttpClient")
     NingHttpClient httpClient
 
     rx.Observable<String> filterForEanCodes(List productUrls, List errors) {

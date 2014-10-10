@@ -47,7 +47,7 @@ class DeltaService {
     String productServiceUrl
 
     @Autowired
-    @Qualifier("localHttpClient")
+    @Qualifier("internalHttpClient")
     NingHttpClient httpClient
 
     @Autowired
