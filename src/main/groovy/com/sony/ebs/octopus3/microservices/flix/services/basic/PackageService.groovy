@@ -42,34 +42,32 @@ class PackageService {
     NingHttpClient httpClient
 
     String createOpsRecipe(Map recipeParams) {
-        def packageUrnStr = recipeParams["baseUrn"].toString()
-
         def getZip = {
             it.zip {
-                source recipeParams["packageUrnStr"]
+                source recipeParams["baseUrnStr"]
             }
         }
         def getRename = {
             it.rename {
-                source "${packageUrnStr}.zip"
+                source "${recipeParams["baseUrnStr"]}.zip"
                 destination recipeParams["packageName"]
             }
         }
         def getCopyThirdParty = {
             it.copy {
-                source "${packageUrnStr}.zip"
+                source recipeParams["basePackageUrnStr"]
                 destination recipeParams["outputUrnStr"]
             }
         }
         def getCopyArchive = {
             it.copy {
-                source "${packageUrnStr}.zip"
+                source recipeParams["basePackageUrnStr"]
                 destination recipeParams["archiveUrnStr"]
             }
         }
         def getDelete = {
             it.delete {
-                source "${packageUrnStr}.zip"
+                source recipeParams["basePackageUrnStr"]
             }
         }
 
@@ -79,7 +77,7 @@ class PackageService {
         }
 
         def result = builder.toString()
-        log.info "recipe for {} is {}", baseUrn, result
+        log.info "recipe for {} is {}", recipeParams["baseUrnStr"], result
         result
     }
 
@@ -95,13 +93,13 @@ class PackageService {
                 def archiveUrnStr = FlixUtils.getArchiveUrn()?.toString()
                 flix.archiveUrl = repositoryFileServiceUrl.replace(":urn", archiveUrnStr)
 
-                def basePackageUrn = new URNImpl(delta.baseUrn, [packageName])?.toString()
+                def basePackageUrnStr = new URNImpl(delta.type.toString(), [delta.publication, packageName])?.toString()
                 def recipeParams = [
-                        baseUrn: delta.baseUrn,
+                        baseUrnStr: delta.baseUrn?.toString(),
                         outputUrnStr: outputUrnStr,
                         archiveUrnStr: archiveUrnStr,
                         packageName: packageName,
-                        basePackageUrn: basePackageUrn
+                        basePackageUrnStr: basePackageUrnStr
                 ]
 
                 createOpsRecipe(recipeParams)

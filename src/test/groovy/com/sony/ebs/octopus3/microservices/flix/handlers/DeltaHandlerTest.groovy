@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
@@ -29,7 +30,7 @@ class DeltaHandlerTest {
         mockFlixPackageService = new StubFor(PackageService)
         mockResponseStorage = new StubFor(ResponseStorage)
 
-        delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
+        delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "en_GB")
         flix = new Flix()
     }
 

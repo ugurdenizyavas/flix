@@ -2,12 +2,14 @@ package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
+import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -44,7 +46,7 @@ class PackageServiceTest {
                 , execControl: execController.control)
         mockNingHttpClient = new StubFor(NingHttpClient)
 
-        delta = new RepoDelta(publication: "SCORE", locale: "fr_FR")
+        delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "fr_FR")
         flix = new Flix()
     }
 
@@ -76,8 +78,8 @@ class PackageServiceTest {
             }
         }
         assert runFlow() == "success"
-        assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
-        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_fr_fr_[0-9]{8}_[0-9]{6}\.zip/
+        assert flix.outputUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia/
+        assert flix.archiveUrl ==~ /\/repo\/file\/urn:archive:flix_sku/
     }
 
     @Test
@@ -103,21 +105,35 @@ class PackageServiceTest {
 
     @Test
     void "test ops recipe"() {
-        def thirdParty = "urn:thirdparty:flixmedia:flix_fr_be.zip"
-        def archive = "urn:archive:flix_sku:flix_fr_be.zip"
-        def recipe = packageService.createOpsRecipe(new URNImpl("urn:flixmedia:score:fr_be"), thirdParty, archive)
+        def packageName = "flix_fr_be_20141009_151352.zip"
+        def baseUrnStr = new URNImpl("flixmedia", ["score", "fr_be"])?.toString()
+        def outputUrnStr = "urn:thirdparty:flixmedia"
+        def archiveUrnStr = "urn:archive:flix_sku"
+        def basePackageUrnStr = new URNImpl("flixmedia", ["score", packageName])?.toString()
+        def recipeParams = [
+                baseUrnStr: baseUrnStr,
+                outputUrnStr: outputUrnStr,
+                archiveUrnStr: archiveUrnStr,
+                packageName: packageName,
+                basePackageUrnStr: basePackageUrnStr
+        ]
+
+        def recipe = packageService.createOpsRecipe(recipeParams)
 
         def actual = new JsonSlurper().parseText(recipe)
 
         assert actual.ops[0].zip.source == "urn:flixmedia:score:fr_be"
 
-        assert actual.ops[1].copy.source == "urn:flixmedia:score:fr_be.zip"
-        assert actual.ops[1].copy.destination == thirdParty
+        assert actual.ops[1].rename.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[1].rename.destination == "flix_fr_be_20141009_151352.zip"
 
-        assert actual.ops[2].copy.source == "urn:flixmedia:score:fr_be.zip"
-        assert actual.ops[2].copy.destination == archive
+        assert actual.ops[2].copy.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
+        assert actual.ops[2].copy.destination == outputUrnStr
 
-        assert actual.ops[3].delete.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[3].copy.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
+        assert actual.ops[3].copy.destination == archiveUrnStr
+
+        assert actual.ops[4].delete.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
     }
 
 }

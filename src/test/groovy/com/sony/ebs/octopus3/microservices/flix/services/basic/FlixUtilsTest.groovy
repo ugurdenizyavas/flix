@@ -50,24 +50,14 @@ class FlixUtilsTest {
         FlixUtils.getCategoryUrn("SCORE", null)
     }
 
-    @Test(expected = URNCreationException)
-    void "getThirdPartyUrn null value"() {
-        FlixUtils.getThirdPartyUrn(null)
-    }
-
     @Test
     void "getThirdPartyUrn"() {
-        assert FlixUtils.getThirdPartyUrn("aaa")?.toString() == "urn:thirdparty:flixmedia:aaa"
-    }
-
-    @Test(expected = URNCreationException)
-    void "getArchiveUrn null value"() {
-        FlixUtils.getArchiveUrn(null)
+        assert FlixUtils.getThirdPartyUrn()?.toString() == "urn:thirdparty:flixmedia"
     }
 
     @Test
     void "getArchiveUrn"() {
-        assert FlixUtils.getArchiveUrn("aaa")?.toString() == "urn:archive:flix_sku:aaa"
+        assert FlixUtils.getArchiveUrn()?.toString() == "urn:archive:flix_sku"
     }
 
 
