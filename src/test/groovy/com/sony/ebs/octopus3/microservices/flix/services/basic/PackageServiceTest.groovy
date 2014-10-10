@@ -79,7 +79,7 @@ class PackageServiceTest {
         }
         assert runFlow() == "success"
         assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
-        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
     }
 
     @Test

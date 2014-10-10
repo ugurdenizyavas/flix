@@ -33,7 +33,7 @@ class FlixUtils {
     }
 
     static URN getArchivePackageUrn(String packageName) {
-        new URNImpl(DeltaType.archive.toString(), [DeltaType.flixMedia.toString(), packageName.toLowerCase()])
+        new URNImpl(DeltaType.archive.toString(), [DeltaType.flix_sku.toString(), packageName.toLowerCase()])
     }
 
 }
