@@ -5,8 +5,12 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.classic.AsyncAppender
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
 import ch.qos.logback.classic.filter.ThresholdFilter
+import ch.qos.logback.core.filter.EvaluatorFilter
+//import ch.qos.logback.classic.boolex.JaninoEventEvaluator
+import ch.qos.logback.classic.boolex.GEventEvaluator
 
 import static ch.qos.logback.classic.Level.*
+import static ch.qos.logback.core.spi.FilterReply.*
 
 //***********************************
 // Initialization
@@ -30,9 +34,10 @@ println "[LOGBACK] Logging directory is ${logDirectory}"
 //***********************************
 
 // Create the appenders
-createStandardAppender("defaultAppender", "output")
-createStandardAppender("activityAppender", "activity")
-createStandardAppender("errorsAppender", "errors", ERROR)
+createStandardAppender("defaultAppender", "output", false)
+createStandardAppender("activityAppender", "activity", false)
+createStandardAppender("errorsAppender", "errors", false, ERROR)
+createStandardAppender("healthcheckAppender", "healthcheck", true)
 
 // Create the loggers
 switch (environment) {
@@ -51,6 +56,7 @@ switch (environment) {
         break
 }
 logger("activity", INFO, ["activityAppender"])
+logger("healthcheck", DEBUG, ["healthcheckAppender"])
 logger("org.springframework", ERROR)
 logger("com.ning", ERROR)
 
@@ -69,7 +75,7 @@ def createConsoleAppender() {
 //***********************************
 // Standard Appender
 //***********************************
-def createStandardAppender(String appenderName, String fileName, thresholdFilterLevel = null) {
+def createStandardAppender(String appenderName, String fileName, boolean isHealthCheck, thresholdFilterLevel = null) {
     def dir = logDirectory
     def format = logFormat
     println "Adding appender ${appenderName} with file name ${fileName} in directory ${dir}"
@@ -88,9 +94,19 @@ def createStandardAppender(String appenderName, String fileName, thresholdFilter
         }
         if (thresholdFilterLevel) {
             filter(ThresholdFilter) {
-                level = thresholdFilterLevel
+                level = thresholdFilterLevel //.toString()
             }
         }
+        if (!isHealthCheck) {
+            filter(EvaluatorFilter) {
+                evaluator(GEventEvaluator) {
+                    expression = "event.loggerName == 'healthcheck'"
+                }
+                onMismatch  = NEUTRAL
+                onMatch  = DENY
+            }
+        }
+
     }
     appender(appenderName, AsyncAppender) {
         appenderRef(rollingAppenderName)
