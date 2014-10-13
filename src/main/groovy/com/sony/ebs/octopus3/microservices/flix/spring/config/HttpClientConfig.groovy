@@ -49,14 +49,14 @@ class HttpClientConfig {
     @Qualifier("externalHttpClient")
     @org.springframework.context.annotation.Lazy
     public NingHttpClient externalHttpClient() {
-        new NingHttpClient(launchConfig, externalProxyHost, externalProxyPort, externalProxyUser, externalProxyPassword, externalNonProxyHosts, "", "", 5000, 20000)
+        new NingHttpClient(launchConfig, externalProxyHost, externalProxyPort, externalProxyUser, externalProxyPassword, externalNonProxyHosts, "", "", 5000, 60000)
     }
 
     @Bean
     @Qualifier("internalHttpClient")
     @org.springframework.context.annotation.Lazy
     public NingHttpClient internalHttpClient() {
-        new NingHttpClient(launchConfig, internalProxyHost, internalProxyPort, internalProxyUser, internalProxyPassword, internalNonProxyHosts, "", "", 5000, 20000)
+        new NingHttpClient(launchConfig, internalProxyHost, internalProxyPort, internalProxyUser, internalProxyPassword, internalNonProxyHosts, "", "", 5000, 60000)
     }
 
 }
