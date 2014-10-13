@@ -1,0 +1,2353 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<product xmlns='http://www.sony.eu/syndication'>
+    <id><![CDATA[urn:sony:product:sku:[sku]svd1321_m2_eb.cek_en_gb]]></id>
+    <businessUnit><![CDATA[VM]]></businessUnit>
+    <categories></categories>
+    <computerScreenSize>
+        <displayName><![CDATA[33.7 cm (13.3")]]></displayName>
+        <id><![CDATA[ID_34_34cm133in]]></id>
+        <rootId><![CDATA[34cm133in]]></rootId>
+    </computerScreenSize>
+    <createdAt><![CDATA[1.38243812391E+12]]></createdAt>
+    <differentiators>
+        <item>
+            <displayName><![CDATA[Computer Screen Size]]></displayName>
+            <id><![CDATA[ID_160_computerScreenSize]]></id>
+            <rootId><![CDATA[computerScreenSize]]></rootId>
+        </item>
+    </differentiators>
+    <eanCodes>
+        <item><![CDATA[4548736713802]]></item>
+    </eanCodes>
+    <elevatorPitch><![CDATA[Versatile, touch screen hybrid tablet-laptop]]></elevatorPitch>
+    <envLink>
+        <label><![CDATA[Visit our eco website]]></label>
+        <linkType><![CDATA[text]]></linkType>
+        <openInNewWindow><![CDATA[No]]></openInNewWindow>
+        <targetType><![CDATA[url]]></targetType>
+        <type><![CDATA[urn:sony:link]]></type>
+        <url><![CDATA[http://www.sony.co.uk/hub/eco]]></url>
+    </envLink>
+    <envStatement>
+        <![CDATA[Learn about energy saving features and our commitment to a more sustainable future.]]></envStatement>
+    <factualShortDescription>
+        <![CDATA[A thin and light hybrid Ultrabook™ that doubles as a tablet.]]></factualShortDescription>
+    <featureBenefits>
+        <item>
+            <bodyCopy>
+                <![CDATA[The unique and durable Surf Slider® design allows smooth transitions between tablet and laptop modes. Interact with the tablet by using the stylus or your fingers on the capacitive touchscreen. When you need the speed of real keys, simply slide the screen back to reveal the keyboard. It’s durable carbon fiber thin and light design is perfect for the mobile user on the go.]]></bodyCopy>
+            <headline><![CDATA[Smooth Surf Slider® design]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Wake up your VAIO® Duo 13 and resume in less than a second. During sleep mode your VAIO® Duo is connected to the Internet and your applications are running and ready to go. You can immediately check the status of incoming emails and other communications just like with a smartphone. And with the long battery life, you can stay connected for all day mobility.]]></bodyCopy>
+            <headline><![CDATA[Active, even during sleep]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[VAIO Inspiration Stream helps the thinkers and builders of tomorrow shape ideas fluidly. Bring your creativity to life through a powerful suite of applications and features that let you seamlessly capture, edit, and share with endless possibilities.]]></bodyCopy>
+            <headline><![CDATA[VAIO Inspiration Stream™]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[The multi-gesture touchpad is the most intuitive way to interact with your laptop. Scroll with two fingers, pinch to zoom in and out of images, swipe to flip through pages or photos, and you can even rotate an image, and much more. Use your touchpad in the same way as if you were touching the screen. Swipe in from the right to reveal charms or return to the start screen. Swipe in from the left to switch to your last used app.]]></bodyCopy>
+            <headline><![CDATA[Simple multi-gesture touchpad]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Forgot to charge your phone or MP3 player? Just plug your device via USB cord into the USB sleep charge port and start charging. Even if the PC is shut down and not plugged in you can still use it. And don’t forget that the USB 3.0 port is perfect for connecting a compatible external hard drive and allowing you to wait less and transfer data up to 10x faster than USB 2.0.]]></bodyCopy>
+            <headline><![CDATA[The handiest port around]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[See an image on the web that would be a great addition to your presentation? Use VAIO Clip® to trace or draw a freehand outline using your digitizer pen around the image. With intelligent edge detection you can quickly crop images in seconds with auto edge detection. Then save to your presentation, clipboard or Note Anytime for VAIO® PC where you can write or draw on it, save it, or send it to someone in e-mail.]]></bodyCopy>
+            <headline><![CDATA[VAIO Clip®]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[With the newest version of VAIO Care™ software you get an easy-to-use tool that lets you tune up, update and troubleshoot your VAIO® PC. Just press the ASSIST button to effortlessly install and uninstall new software and drivers, use the visual interface to quickly identify and troubleshoot issues, create restore and recovery media, and connect with Sony phone, chat or online support when you need to talk with a Sony expert.]]></bodyCopy>
+            <headline><![CDATA[PC tune-ups and maintenance made easy]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[The 13.3” Full HD 1920 x 1080p touchscreen LCD with TRILUMINOS Display creates incredibly true, natural shades of colors – just the way you want to see them. Thanks to a new-generation technology that makes colors purer and more distinct with a wider color range, giving images a heightened sense of depth. Equipped with IPS (in-plane switching) technology so you can enjoy a crisp image from any viewing angle - perfect for giving an important presentation or watching the latest blockbuster hit.]]></bodyCopy>
+            <headline><![CDATA[More brilliant color than ever]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Snap photos and shoot video of the world around you with the rear 8 MP camera powered by Sony Exmor RS® sensor. There's also a front-facing Full HD web camera powered by Exmor R® sensor that’s perfect for chatting on-line or capturing your own antics. With amazing low-light performance and face tracking technology that allows the camera to automatically adjust and keep you in focus as you move about.]]></bodyCopy>
+            <headline><![CDATA[Front and rear facing cameras]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Quickly share music and URLs with compatible devices. See the same website that’s on your smartphone from your VAIO® PC. With NFC (Near Field Communication), it all happens by simply tapping compatible devices together on the touch icon. Connecting devices has never been this easy.]]></bodyCopy>
+            <headline><![CDATA[One-touch connection]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[The 'standard' Sony limited warranty on VAIO® computers is hardly standard. We cover parts and labor on covered repairs. And we have extensive on-line support where you can chat with an associate and access drivers, software updates, FAQs, user forums and more. Or if you prefer, you can just call us on the phone. For some third party software, Sony provides initial support. Additional support may be available from the applicable vendor. Availability may vary by vendor.]]></bodyCopy>
+            <headline><![CDATA[Industry-leading support]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Cam Scanner is a document scanning app that enables you to edit, organize and keep track of multiple documents. Use the 8 megapixel Exmor RS® camera to take photo of a document or notes written on a whiteboard. The app automatically scans and straightens any distortions. You can share the document to a note app to edit or add notes. Easily search for archived files using OCR technology.]]></bodyCopy>
+            <headline><![CDATA[Scan your documents]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Wirelessly stream all the things you love-movies, photos, websites, and more-live from your PC to your HDTV. Requires an Intel® Wireless Display-enabled system, compatible adapter, and TV. 1080p and Blu-ray* or other protected content playback only available on 3rd or 4th generation Intel® Core™ processor-based PCs with built-in visuals enabled, a compatible adapter and media player, and supporting Intel® WiDi software and graphics driver installed. Consult your PC manufacturer. For more information, see www.intel.com/go/widi]]></bodyCopy>
+            <headline><![CDATA[Enjoy your PC on your HDTV]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Experience your content like never before with Sony's Media Apps. We bring together the very best of Sony’s state-of-the-art technologies to provide an exceptional experience. You get seamless connectivity across all of your compatible Sony devices to your content. Share and play with your content as you choose. Quick and easy access to content stored locally, on DLNA® servers, or from PlayMemories Online™.]]></bodyCopy>
+            <headline><![CDATA[Sony's Media Apps]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[The digitizer stylus delivers precise performance allowing you to write, draw, and tap the touchscreen effortlessly. With every stroke, the digitizer stylus captures even the most subtle nuances of pressure, allowing you to adjust line weight, brush size, and more by pressing harder or softer with the pen. When the pen is near the screen, the touch sensors are turned off so you can maintain a comfortable writing position, even laying your palm on the PC. Two tips are included, allowing you to simulate working with a variety of traditional art and design materials.]]></bodyCopy>
+            <headline><![CDATA[Digitizer Stylus]]></headline>
+            <shot>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_duo13_fand_b_digitizer_stylud_en_gb]]></id>
+                    <createdAt><![CDATA[1382510336724]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/103f7ad13be73c13dbdae6474629098c?fmt=jpeg]]></externalUrl>
+                            <height><![CDATA[602]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/19/46/951946.jpg]]></internalUrl>
+                            <md5><![CDATA[103f7ad13be73c13dbdae6474629098c]]></md5>
+                            <mimeType><![CDATA[image/jpeg]]></mimeType>
+                            <sizeInBytes><![CDATA[612912]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1342]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_duo13_fand_b_digitizer_stylud]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1390403107247]]></updatedAt>
+                    <version><![CDATA[20140122070020]]></version>
+                </imageFamily>
+            </shot>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Practical innovation is a cornerstone of Sony’s vision, and our keyboards are no exception. The keyboard features precisely engineered keys to create a comfortable and intuitive typing experience. When typing in dim light, an LED backlight creates a pleasant glow, framing the individual keys and illuminating the lettering to make it even easier to find the right keys.]]></bodyCopy>
+            <headline><![CDATA[Night Shift]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Note Anytime for VAIO helps you easily take notes using the digitizer stylus or keyboard. This note taking and organizational tool will not only convert your handwriting to text, but also lets you add your own creative touch by drawing on the touchscreen with your finger or stylus so you can include hand drawn diagrams or images. You can organize your notes by specific subject or project, and even add images that you clip from the web using Active Clip® or directly from your albums.]]></bodyCopy>
+            <headline><![CDATA[Note Anytime for VAIO® PCs]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Quickly and easily make a movie just the way you like it from your own photos or videos. Enhance your movies with your choice of 45 design themes and music. VAIO® Movie Creator adds the transitions and effects automatically so your movie looks polished and professional. Once your movie is ready, share it on Facebook®, YouTube™, or other social networking and video sharing sites.]]></bodyCopy>
+            <headline><![CDATA[VAIO® Movie Creator]]></headline>
+        </item>
+    </featureBenefits>
+    <featureIcons>
+        <item>
+            <copy><![CDATA[Responsive 13" touch screen]]></copy>
+            <icon><![CDATA[fonticon-30-touch]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Capture, edit and share with VAIO Inspiration Stream]]></copy>
+            <icon><![CDATA[fonticon-30-stylus]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Enjoy vivid colour with TRILUMINOS™ Display for mobile]]></copy>
+            <icon><![CDATA[fonticon-30-triluminos-display]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Easily switch from sketching to typing with SurfSlider™]]></copy>
+            <icon><![CDATA[fonticon-30-hybrid-pcs]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Compatible with the precise new Digitizer Stylus]]></copy>
+            <icon><![CDATA[fonticon-30-stylus]]></icon>
+        </item>
+    </featureIcons>
+    <images>
+        <primaryShot>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_black_en_gb]]></id>
+                    <createdAt><![CDATA[1382438123792]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/ff66e8e04b3d769154b09f453d73fee8?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[1320]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/13/17/1231317.png]]></internalUrl>
+                            <md5><![CDATA[ff66e8e04b3d769154b09f453d73fee8]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[878046]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1320]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_black]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1397732711212]]></updatedAt>
+                    <version><![CDATA[20140409053234]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </primaryShot>
+        <processorLogoShots>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_ultrabook_i5_resized_en_gb]]></id>
+                    <createdAt><![CDATA[1381329103585]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/9be077bff22127613ac1f79fc3e2891f?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[69]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/42/69/914269.png]]></internalUrl>
+                            <md5><![CDATA[9be077bff22127613ac1f79fc3e2891f]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[10545]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[140]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_ultrabook_i5_resized]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1390206308682]]></updatedAt>
+                    <version><![CDATA[20140118113238]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </processorLogoShots>
+        <productShots>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_black_en_gb]]></id>
+                    <createdAt><![CDATA[1382438123792]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/ff66e8e04b3d769154b09f453d73fee8?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[1320]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/13/17/1231317.png]]></internalUrl>
+                            <md5><![CDATA[ff66e8e04b3d769154b09f453d73fee8]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[878046]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1320]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_black]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1397732711212]]></updatedAt>
+                    <version><![CDATA[20140409053234]]></version>
+                </imageFamily>
+                <rank><![CDATA[5]]></rank>
+            </item>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_03_en_gb]]></id>
+                    <createdAt><![CDATA[1387815907809]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/55508f925fd62e28721d588248c0906f?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[792]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/89/1228489.png]]></internalUrl>
+                            <md5><![CDATA[55508f925fd62e28721d588248c0906f]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[1255901]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[2028]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_03]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <relatedSkus>
+                        <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                        <value>
+                            <item><![CDATA[SVD13217PTB.CEU]]></item>
+                            <item><![CDATA[SVD1321L2EB.CEP]]></item>
+                            <item><![CDATA[SVD1321L2EB.BE1]]></item>
+                            <item><![CDATA[SVD1321L2EB.IT1]]></item>
+                            <item><![CDATA[SVD1321L2EB.NL3]]></item>
+                            <item><![CDATA[SVD1321L9EB.ES2]]></item>
+                            <item><![CDATA[SVD1321M2EB.CEK]]></item>
+                            <item><![CDATA[SVD1321M9EB.FR5]]></item>
+                            <item><![CDATA[SVD1321M9EB.G4]]></item>
+                            <item><![CDATA[SVD1321M9RB.RU3]]></item>
+                            <item><![CDATA[SVD1321Z9EB.EE9]]></item>
+                            <item><![CDATA[SVD1321X9EB.CEK]]></item>
+                            <item><![CDATA[SVD1321Z9EB.SW1]]></item>
+                            <item><![CDATA[SVD1321Z9EB.CEK]]></item>
+                            <item><![CDATA[SVD1321Z9EB.CEZ]]></item>
+                            <item><![CDATA[SVD1321Z9EB.EC1]]></item>
+                            <item><![CDATA[SVD1321Z9EB.FR5]]></item>
+                            <item><![CDATA[SVD1321Z9EB.G4]]></item>
+                            <item><![CDATA[SVD1321Z9EB.IT1]]></item>
+                            <item><![CDATA[SVD1321Z9RB.RU3]]></item>
+                            <item><![CDATA[SVD1322U9EB.G4]]></item>
+                            <item><![CDATA[SVD1322X2EB.GC2]]></item>
+                            <item><![CDATA[SVD1322Y9EB.CEK]]></item>
+                            <item><![CDATA[SVD1322Y9EB.FR5]]></item>
+                            <item><![CDATA[SVD1322Z9EB.SW1]]></item>
+                            <item><![CDATA[SVD1323Y9EB.CEP]]></item>
+                            <item><![CDATA[SVD1323Y9EB.ES2]]></item>
+                            <item><![CDATA[SVD1323Y9EB.G4]]></item>
+                            <item><![CDATA[SVD1323Y9EB.SW1]]></item>
+                            <item><![CDATA[SVD13237CBB BR4]]></item>
+                            <item><![CDATA[SVD13237CLB]]></item>
+                            <item><![CDATA[SVD13239PLB]]></item>
+                        </value>
+                    </relatedSkus>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1404797107067]]></updatedAt>
+                    <version><![CDATA[20140707091626]]></version>
+                </imageFamily>
+                <rank><![CDATA[10]]></rank>
+            </item>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_05_en_gb]]></id>
+                    <createdAt><![CDATA[1387815907814]]></createdAt>
+                    <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/936ef445425f491d9dc7d5326a2a03d7?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[792]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/91/1228491.png]]></internalUrl>
+                            <md5><![CDATA[936ef445425f491d9dc7d5326a2a03d7]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[1221202]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[2028]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_05]]></masterId>
+                    <readyForLive><![CDATA[No]]></readyForLive>
+                    <relatedSkus>
+                        <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                        <value>
+                            <item><![CDATA[SVD13217PTB.CEU]]></item>
+                            <item><![CDATA[SVD1321L2EB.CEP]]></item>
+                            <item><![CDATA[SVD1321L2EB.BE1]]></item>
+                            <item><![CDATA[SVD1321L2EB.IT1]]></item>
+                            <item><![CDATA[SVD1321L2EB.NL3]]></item>
+                            <item><![CDATA[SVD1321L9EB.ES2]]></item>
+                            <item><![CDATA[SVD1321M2EB.CEK]]></item>
+                            <item><![CDATA[SVD1321M9EB.FR5]]></item>
+                            <item><![CDATA[SVD1321M9EB.G4]]></item>
+                            <item><![CDATA[SVD1321M9RB.RU3]]></item>
+                            <item><![CDATA[SVD1321Z9EB.EE9]]></item>
+                            <item><![CDATA[SVD1321X9EB.CEK]]></item>
+                            <item><![CDATA[SVD1321Z9EB.SW1]]></item>
+                            <item><![CDATA[SVD1321Z9EB.CEK]]></item>
+                            <item><![CDATA[SVD1321Z9EB.CEZ]]></item>
+                            <item><![CDATA[SVD1321Z9EB.EC1]]></item>
+                            <item><![CDATA[SVD1321Z9EB.FR5]]></item>
+                            <item><![CDATA[SVD1321Z9EB.G4]]></item>
+                            <item><![CDATA[SVD1321Z9EB.IT1]]></item>
+                            <item><![CDATA[SVD1321Z9RB.RU3]]></item>
+                            <item><![CDATA[SVD1322U9EB.G4]]></item>
+                            <item><![CDATA[SVD1322X2EB.GC2]]></item>
+                            <item><![CDATA[SVD1322Y9EB.CEK]]></item>
+                            <item><![CDATA[SVD1322Y9EB.FR5]]></item>
+                            <item><![CDATA[SVD1322Z9EB.SW1]]></item>
+                            <item><![CDATA[SVD1323Y9EB.CEP]]></item>
+                            <item><![CDATA[SVD1323Y9EB.ES2]]></item>
+                            <item><![CDATA[SVD1323Y9EB.G4]]></item>
+                            <item><![CDATA[SVD1323Y9EB.SW1]]></item>
+                            <item><![CDATA[SVD13237CBB BR4]]></item>
+                            <item><![CDATA[SVD13237CLB]]></item>
+                            <item><![CDATA[SVD13239PLB]]></item>
+                        </value>
+                    </relatedSkus>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1404797107068]]></updatedAt>
+                    <version><![CDATA[20140707091628]]></version>
+                </imageFamily>
+                <rank><![CDATA[20]]></rank>
+            </item>
+        </productShots>
+    </images>
+    <inTheBox>
+        <item>
+            <![CDATA[VGP-BPS36, Digitizer Stylus, AAAA batteries, alkaline x 1, AC Adapter, Power Cord, Wireless Router, HDMI to VGA adapter, Documentation Pack, VAIO International Repair Service Guide]]></item>
+    </inTheBox>
+    <keyTechSpecs>
+        <item>
+            <displayName><![CDATA[Processor Name (GHz)]]></displayName>
+            <keySpecRank><![CDATA[10]]></keySpecRank>
+            <name><![CDATA[vaioProcessorType]]></name>
+            <rank><![CDATA[10]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[Intel® Core™ i5-4200U Processor 1.60 with Turbo Boost up to 2.60 GHz]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Operating System]]></displayName>
+            <keySpecRank><![CDATA[20]]></keySpecRank>
+            <name><![CDATA[vaioSoftwareOperatingSystem]]></name>
+            <rank><![CDATA[10]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[Windows 8]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Interface]]></displayName>
+            <keySpecRank><![CDATA[30]]></keySpecRank>
+            <name><![CDATA[vaioStorageInterface]]></name>
+            <rank><![CDATA[40]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[Serial ATA 6 Gb/s]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Storage Capacity]]></displayName>
+            <keySpecRank><![CDATA[30]]></keySpecRank>
+            <name><![CDATA[vaioStorageCapacity]]></name>
+            <rank><![CDATA[20]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[128 GB]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Max. Memory]]></displayName>
+            <keySpecRank><![CDATA[40]]></keySpecRank>
+            <name><![CDATA[vaioMemoryMaxMemory]]></name>
+            <rank><![CDATA[30]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[4 GB]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Memory Specification]]></displayName>
+            <keySpecRank><![CDATA[40]]></keySpecRank>
+            <name><![CDATA[vaioMemoryMemorySpecification]]></name>
+            <rank><![CDATA[40]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[LPDDR3 SDRAM]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Memory Composition]]></displayName>
+            <keySpecRank><![CDATA[40]]></keySpecRank>
+            <name><![CDATA[vaioMemoryMemoryComposition]]></name>
+            <rank><![CDATA[50]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[4 GB (On Board)]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Screen Size]]></displayName>
+            <keySpecRank><![CDATA[50]]></keySpecRank>
+            <name><![CDATA[vaioDisplayScreenSize]]></name>
+            <rank><![CDATA[10]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item><![CDATA[33.7 cm (13.3")]]></item>
+            </value>
+        </item>
+        <item>
+            <displayName><![CDATA[Battery Life]]></displayName>
+            <keySpecRank><![CDATA[60]]></keySpecRank>
+            <name><![CDATA[vaioBatteryBatteryLife]]></name>
+            <rank><![CDATA[30]]></rank>
+            <specType><![CDATA[text]]></specType>
+            <value>
+                <item>
+                    <![CDATA[16 hours (Actual battery life will vary depending on your specific hardware and software configurations. Benchmark: MobileMark 2007)]]></item>
+            </value>
+        </item>
+    </keyTechSpecs>
+    <legacy><![CDATA[No]]></legacy>
+    <locale><![CDATA[en_GB]]></locale>
+    <mainCategories></mainCategories>
+    <mainProductType>
+        <displayName><![CDATA[notebook]]></displayName>
+        <id><![CDATA[ID_notebook]]></id>
+        <rootId><![CDATA[notebook]]></rootId>
+    </mainProductType>
+    <marketingProductName><![CDATA[VAIO Duo 13 Series, Intel® Core  i5-4200U Processor, Black]]></marketingProductName>
+    <marketingProductNameUpperCase>
+        <![CDATA[VAIO DUO 13 SERIES, INTEL® CORE  i5-4200U PROCESSOR, BLACK]]></marketingProductNameUpperCase>
+    <masterId><![CDATA[urn:sony:product:sku:[sku]svd1321_m2_eb.cek]]></masterId>
+    <mdaTagline>
+        <displayName><![CDATA[Sony recommends Windows 8.]]></displayName>
+        <id><![CDATA[ID_sonyRecommendsWindows8]]></id>
+        <rootId><![CDATA[sonyRecommendsWindows8]]></rootId>
+    </mdaTagline>
+    <minVisibleTechSpecNumber><![CDATA[]]></minVisibleTechSpecNumber>
+    <model>
+        <elevatorPitch><![CDATA[Versatile, touch screen hybrid tablet-laptop]]></elevatorPitch>
+        <factualShortDescription>
+            <![CDATA[A thin and light hybrid Ultrabook™ that doubles as a tablet.]]></factualShortDescription>
+        <featureBenefits>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The unique and durable Surf Slider® design allows smooth transitions between tablet and laptop modes. Interact with the tablet by using the stylus or your fingers on the capacitive touchscreen. When you need the speed of real keys, simply slide the screen back to reveal the keyboard. It’s durable carbon fiber thin and light design is perfect for the mobile user on the go.]]></bodyCopy>
+                <headline><![CDATA[Smooth Surf Slider® design]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Wake up your VAIO® Duo 13 and resume in less than a second. During sleep mode your VAIO® Duo is connected to the Internet and your applications are running and ready to go. You can immediately check the status of incoming emails and other communications just like with a smartphone. And with the long battery life, you can stay connected for all day mobility.]]></bodyCopy>
+                <headline><![CDATA[Active, even during sleep]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[ArtRage Studio Pro contains all the tools of ArtRage Studio: oils, watercolors, and inking pens making it easy to produce natural looking artwork on your computer. This version is ideal for artists who need to edit their projects in more depth, supporting Photoshop® compatible filters, real world color blending, post-spray editable stickers, and more.]]></bodyCopy>
+                <headline><![CDATA[ArtRage® Studio Pro]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The multi-gesture touchpad is the most intuitive way to interact with your laptop. Scroll with two fingers, pinch to zoom in and out of images, swipe to flip through pages or photos, and you can even rotate an image, and much more. Use your touchpad in the same way as if you were touching the screen. Swipe in from the right to reveal charms or return to the start screen. Swipe in from the left to switch to your last used app.]]></bodyCopy>
+                <headline><![CDATA[Simple multi-gesture touchpad]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Forgot to charge your phone or MP3 player? Just plug your device via USB cord into the USB sleep charge port and start charging. Even if the PC is shut down and not plugged in you can still use it. And don’t forget that the USB 3.0 port is perfect for connecting a compatible external hard drive for data transfers up to 10x faster than USB 2.0.]]></bodyCopy>
+                <headline><![CDATA[The handiest port around]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[See an image on the web that would be a great addition to your presentation? Use Active Clip® to trace or draw a freehand outline using your digitizer pen around the image. With intelligent edge detection you can quickly crop images in seconds with auto edge detection. Then save to your presentation, clipboard or Note Anytime for VAIO® PC where you can write or draw on it, save it, or send it to someone in e-mail.]]></bodyCopy>
+                <headline><![CDATA[Active Clip®]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[With the newest version of VAIO Care™ software you get an easy-to-use tool that lets you tune up, update and troubleshoot your VAIO® PC. Just press the ASSIST button to effortlessly install and uninstall new software and drivers, use the visual interface to quickly identify and troubleshoot issues, create restore and recovery media, and connect with Sony phone, chat or online support when you need to talk with a Sony expert.]]></bodyCopy>
+                <headline><![CDATA[PC tune-ups and maintenance made easy]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The 13.3” Full HD (1920x1080) touchscreen LCD with TRILUMINOS Display for mobile creates incredibly true, natural shades of colors. The wider color range means images are both more vibrant and authentic. The use of IPS (in-plane switching) technology also means crisp images from any viewing angle.]]></bodyCopy>
+                <headline><![CDATA[More brilliant color than ever]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Snap photos and shoot video of the world around you with the rear 8 MP camera powered by Sony Exmor RS® sensor. There's also a front-facing Full HD web camera powered by Exmor R® sensor that’s perfect for chatting on-line or capturing your own antics. With amazing low-light performance and face tracking technology that allows the camera to automatically adjust and keep you in focus as you move about.]]></bodyCopy>
+                <headline><![CDATA[Front and rear facing cameras]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Easily stream music to Bluetooth® speakers or share websites and more with your smartphone with just a tap. Using NFC (Near Field Communication), connect devices simply by aligning and touching the NFC icons.]]></bodyCopy>
+                <headline><![CDATA[One-touch connection]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[There's nothing standard about the standard Sony limited warranty on VAIO® computers. We cover parts and labor on covered repairs. And we have extensive on-line support where you can chat with an associate and access drivers, software updates, FAQs, user forums and more. Or if you prefer, you can just call us on the phone.8 We are here to help.]]></bodyCopy>
+                <headline><![CDATA[Industry-leading support]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Cam Scanner enables you to capture and organize documents, business cards and anything else from the real world. Use the 8 megapixel Exmor RS® camera to capture documents or notes written on a whiteboard. The app automatically scans and straightens images so you can edit, share and even search them using OCR technology.]]></bodyCopy>
+                <headline><![CDATA[Scan your documents]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Wirelessly stream all the things you love-movies, photos, websites, and more-live from your PC to your HDTV.13]]></bodyCopy>
+                <headline><![CDATA[Enjoy your PC on your HDTV]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Experience your content like never before with Sony's Media Apps. Enjoy all your music, movies and photos as well as easy connectivity to Sony devices, via fluid touch-friendly apps. Then share your content using DLNA® around your home or to internet services like PlayMemories Online™]]></bodyCopy>
+                <headline><![CDATA[Sony's Media Apps]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The digitizer stylus offers precise performance, allowing you to write and draw naturally on the screen. In compatible applications, pressure-sensitity adjusts line weight or brush size for a pen and paper-like experience. And smart touch sensors let you comfortably use both touch and pen simultaneously - even while resting your palm on the PC.]]></bodyCopy>
+                <headline><![CDATA[Digitizer Stylus]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Practical innovation is a cornerstone of Sony’s vision, and our keyboards are no exception. The keyboard features precisely engineered keys to create a comfortable and intuitive typing experience. When typing in dim light, an LED backlight creates a pleasant glow, framing the individual keys and illuminating the lettering to make it even easier to find the right keys.]]></bodyCopy>
+                <headline><![CDATA[Night Shift]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The TPM (Trusted Platform Module) chip provides the option of enhanced information protection. It stores cryptographic information, such as data encryption keys, independently of the main operating system to offer a security layer not exposed to external software vulnerabilities. This helps protect your data from both software attacks and even physical theft.]]></bodyCopy>
+                <headline><![CDATA[Security Measures]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Note Anytime for VAIO helps you take notes using both the digitizer stylus or keyboard. Not only will it convert your handwriting to text, but also add your own creative touch with annotations and drawings using your finger or stylus. You can organize your notes by specific subject or project, and even add images that you clip from the web using Active Clip® or directly from your albums.]]></bodyCopy>
+                <headline><![CDATA[Note Anytime for VAIO® PCs]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Quickly and easily make a movie just the way you like it from your own photos or videos. Enhance your movies with your choice of 45 design themes and music. VAIO® Movie Creator adds the transitions and effects automatically so your movie looks polished and professional. Once your movie is ready, share it on Facebook®, YouTube™, or other social networking and video sharing sites.]]></bodyCopy>
+                <headline><![CDATA[VAIO® Movie Creator]]></headline>
+            </item>
+        </featureBenefits>
+        <featureIcons>
+            <item>
+                <copy><![CDATA[Responsive 13" touch screen]]></copy>
+                <icon><![CDATA[fonticon-30-touch]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Capture, edit and share with VAIO Inspiration Stream]]></copy>
+                <icon><![CDATA[fonticon-30-stylus]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Enjoy vivid colour with TRILUMINOS™ Display for mobile]]></copy>
+                <icon><![CDATA[fonticon-30-triluminos-display]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Easily switch from sketching to typing with SurfSlider™]]></copy>
+                <icon><![CDATA[fonticon-30-hybrid-pcs]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Compatible with the precise new Digitizer Stylus]]></copy>
+                <icon><![CDATA[fonticon-30-stylus]]></icon>
+            </item>
+        </featureIcons>
+        <images>
+            <processorLogoShots>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_ultrabook_i5_resized_en_gb]]></id>
+                        <createdAt><![CDATA[1381329103585]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/9be077bff22127613ac1f79fc3e2891f?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[69]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/42/69/914269.png]]></internalUrl>
+                                <md5><![CDATA[9be077bff22127613ac1f79fc3e2891f]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[10545]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[140]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_ultrabook_i5_resized]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1390206308682]]></updatedAt>
+                        <version><![CDATA[20140118113238]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </processorLogoShots>
+        </images>
+        <keyTechSpecs>
+            <item>
+                <displayName><![CDATA[Processor Name (GHz)]]></displayName>
+                <keySpecRank><![CDATA[10]]></keySpecRank>
+                <name><![CDATA[vaioProcessorType]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Intel® Core™ i5-4200U Processor 1.60 with Turbo Boost up to 2.60 GHz]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Operating System]]></displayName>
+                <keySpecRank><![CDATA[20]]></keySpecRank>
+                <name><![CDATA[vaioSoftwareOperatingSystem]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Windows 8]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Interface]]></displayName>
+                <keySpecRank><![CDATA[30]]></keySpecRank>
+                <name><![CDATA[vaioStorageInterface]]></name>
+                <rank><![CDATA[40]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Serial ATA 6 Gb/s]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Storage Capacity]]></displayName>
+                <keySpecRank><![CDATA[30]]></keySpecRank>
+                <name><![CDATA[vaioStorageCapacity]]></name>
+                <rank><![CDATA[20]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[128 GB]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Max. Memory]]></displayName>
+                <keySpecRank><![CDATA[40]]></keySpecRank>
+                <name><![CDATA[vaioMemoryMaxMemory]]></name>
+                <rank><![CDATA[30]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[4 GB]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Memory Specification]]></displayName>
+                <keySpecRank><![CDATA[40]]></keySpecRank>
+                <name><![CDATA[vaioMemoryMemorySpecification]]></name>
+                <rank><![CDATA[40]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[LPDDR3 SDRAM]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Memory Composition]]></displayName>
+                <keySpecRank><![CDATA[40]]></keySpecRank>
+                <name><![CDATA[vaioMemoryMemoryComposition]]></name>
+                <rank><![CDATA[50]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[4 GB (On Board)]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Screen Size]]></displayName>
+                <keySpecRank><![CDATA[50]]></keySpecRank>
+                <name><![CDATA[vaioDisplayScreenSize]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[33.7 cm (13.3")]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Battery Life]]></displayName>
+                <keySpecRank><![CDATA[60]]></keySpecRank>
+                <name><![CDATA[vaioBatteryBatteryLife]]></name>
+                <rank><![CDATA[30]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item>
+                        <![CDATA[16 hours (Actual battery life will vary depending on your specific hardware and software configurations. Benchmark: MobileMark 2007)]]></item>
+                </value>
+            </item>
+        </keyTechSpecs>
+        <locale><![CDATA[en_GB]]></locale>
+        <marketingProductName><![CDATA[VAIO® Duo 13 Slider Hybrid PC]]></marketingProductName>
+        <masterId><![CDATA[urn:sony:product:model:[model]svd1321_m2_e]]></masterId>
+        <processorShortName>
+            <displayName><![CDATA[Intel® Core™ i5 Processor]]></displayName>
+            <id><![CDATA[intelCorei5Processor]]></id>
+            <rootId><![CDATA[intelCorei5Processor]]></rootId>
+        </processorShortName>
+        <slug><![CDATA[svd1321m2e]]></slug>
+        <topFeature>
+            <![CDATA[Unique Surf Slider design gives perfect stability for writing and sketching. A simple slide activates the slim, backlit keyboard.]]></topFeature>
+        <topFeatures></topFeatures>
+        <updatedAt><![CDATA[1405525514692]]></updatedAt>
+    </model>
+    <modelName><![CDATA[SVD1321M2E]]></modelName>
+    <name><![CDATA[SVD1321M2EB.CEK]]></name>
+    <number><![CDATA[SVD1321M2EB.CEK]]></number>
+    <parentId><![CDATA[urn:sony:product:model:[model]svd1321_m2_e]]></parentId>
+    <price>
+        <ecommerce></ecommerce>
+        <msrp></msrp>
+    </price>
+    <processorShortName>
+        <displayName><![CDATA[Intel® Core™ i5 Processor]]></displayName>
+        <id><![CDATA[intelCorei5Processor]]></id>
+        <rootId><![CDATA[intelCorei5Processor]]></rootId>
+    </processorShortName>
+    <productRank><![CDATA[110]]></productRank>
+    <productRegions>
+        <item>
+            <displayName><![CDATA[EU]]></displayName>
+            <id><![CDATA[EU]]></id>
+            <rootId><![CDATA[EU]]></rootId>
+        </item>
+    </productRegions>
+    <purpose><![CDATA[IF_120214]]></purpose>
+    <readyForLive><![CDATA[Yes]]></readyForLive>
+    <relatedProducts>
+        <accessoryProducts>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPURM10.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPAC10V10.CEL]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCK2.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/PI.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/LI.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/L.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/W.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/B.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/P.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPCKC4/R.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX16B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX32B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX8B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPDA15E.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPSTD2.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB101/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB102/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB103/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB104/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB105/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPEMB106/B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VGPWAR100.CE]]></product>
+            </item>
+        </accessoryProducts>
+    </relatedProducts>
+    <rootColorEquivalent>
+        <item>
+            <displayName><![CDATA[Black]]></displayName>
+            <id><![CDATA[ID_15_Black]]></id>
+            <rootId><![CDATA[Black]]></rootId>
+        </item>
+    </rootColorEquivalent>
+    <skuName><![CDATA[SVD1321M2EB.CEK]]></skuName>
+    <slug><![CDATA[svd1321m2eb.cek]]></slug>
+    <sourceLocale><![CDATA[en_GB]]></sourceLocale>
+    <sunriseDateTime><![CDATA[1.3820472E+12]]></sunriseDateTime>
+    <superModel>
+        <featureBenefits>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The unique and durable Surf Slider® design allows smooth transitions between tablet and laptop modes. Interact with the tablet by using the stylus or your fingers on the capacitive touchscreen. When you need the speed of real keys, simply slide the screen back to reveal the keyboard. It’s durable carbon fiber thin and light design is perfect for the mobile user on the go.]]></bodyCopy>
+                <headline><![CDATA[Smooth Surf Slider® design]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Wake up your VAIO® Duo 13 and resume in less than a second. During sleep mode your VAIO® Duo is connected to the Internet and your applications are running and ready to go. You can immediately check the status of incoming emails and other communications just like with a smartphone. And with the long battery life, you can stay connected for all day mobility.]]></bodyCopy>
+                <headline><![CDATA[Active, even during sleep]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[VAIO Inspiration Stream helps the thinkers and builders of tomorrow shape ideas fluidly. Bring your creativity to life through a powerful suite of applications and features that let you seamlessly capture, edit, and share with endless possibilities.]]></bodyCopy>
+                <headline><![CDATA[VAIO Inspiration Stream™]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The multi-gesture touchpad is the most intuitive way to interact with your laptop. Scroll with two fingers, pinch to zoom in and out of images, swipe to flip through pages or photos, and you can even rotate an image, and much more. Use your touchpad in the same way as if you were touching the screen. Swipe in from the right to reveal charms or return to the start screen. Swipe in from the left to switch to your last used app.]]></bodyCopy>
+                <headline><![CDATA[Simple multi-gesture touchpad]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Forgot to charge your phone or MP3 player? Just plug your device via USB cord into the USB sleep charge port and start charging. Even if the PC is shut down and not plugged in you can still use it. And don’t forget that the USB 3.0 port is perfect for connecting a compatible external hard drive and allowing you to wait less and transfer data up to 10x faster than USB 2.0.]]></bodyCopy>
+                <headline><![CDATA[The handiest port around]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[See an image on the web that would be a great addition to your presentation? Use VAIO Clip® to trace or draw a freehand outline using your digitizer pen around the image. With intelligent edge detection you can quickly crop images in seconds with auto edge detection. Then save to your presentation, clipboard or Note Anytime for VAIO® PC where you can write or draw on it, save it, or send it to someone in e-mail.]]></bodyCopy>
+                <headline><![CDATA[VAIO Clip®]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[With the newest version of VAIO Care™ software you get an easy-to-use tool that lets you tune up, update and troubleshoot your VAIO® PC. Just press the ASSIST button to effortlessly install and uninstall new software and drivers, use the visual interface to quickly identify and troubleshoot issues, create restore and recovery media, and connect with Sony phone, chat or online support when you need to talk with a Sony expert.]]></bodyCopy>
+                <headline><![CDATA[PC tune-ups and maintenance made easy]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The 13.3” Full HD 1920 x 1080p touchscreen LCD with TRILUMINOS Display creates incredibly true, natural shades of colors – just the way you want to see them. Thanks to a new-generation technology that makes colors purer and more distinct with a wider color range, giving images a heightened sense of depth. Equipped with IPS (in-plane switching) technology so you can enjoy a crisp image from any viewing angle - perfect for giving an important presentation or watching the latest blockbuster hit.]]></bodyCopy>
+                <headline><![CDATA[More brilliant color than ever]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Snap photos and shoot video of the world around you with the rear 8 MP camera powered by Sony Exmor RS® sensor. There's also a front-facing Full HD web camera powered by Exmor R® sensor that’s perfect for chatting on-line or capturing your own antics. With amazing low-light performance and face tracking technology that allows the camera to automatically adjust and keep you in focus as you move about.]]></bodyCopy>
+                <headline><![CDATA[Front and rear facing cameras]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Quickly share music and URLs with compatible devices. See the same website that’s on your smartphone from your VAIO® PC. With NFC (Near Field Communication), it all happens by simply tapping compatible devices together on the touch icon. Connecting devices has never been this easy.]]></bodyCopy>
+                <headline><![CDATA[One-touch connection]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The 'standard' Sony limited warranty on VAIO® computers is hardly standard. We cover parts and labor on covered repairs. And we have extensive on-line support where you can chat with an associate and access drivers, software updates, FAQs, user forums and more. Or if you prefer, you can just call us on the phone. For some third party software, Sony provides initial support. Additional support may be available from the applicable vendor. Availability may vary by vendor.]]></bodyCopy>
+                <headline><![CDATA[Industry-leading support]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Cam Scanner is a document scanning app that enables you to edit, organize and keep track of multiple documents. Use the 8 megapixel Exmor RS® camera to take photo of a document or notes written on a whiteboard. The app automatically scans and straightens any distortions. You can share the document to a note app to edit or add notes. Easily search for archived files using OCR technology.]]></bodyCopy>
+                <headline><![CDATA[Scan your documents]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Wirelessly stream all the things you love-movies, photos, websites, and more-live from your PC to your HDTV. Requires an Intel® Wireless Display-enabled system, compatible adapter, and TV. 1080p and Blu-ray* or other protected content playback only available on 3rd or 4th generation Intel® Core™ processor-based PCs with built-in visuals enabled, a compatible adapter and media player, and supporting Intel® WiDi software and graphics driver installed. Consult your PC manufacturer. For more information, see www.intel.com/go/widi]]></bodyCopy>
+                <headline><![CDATA[Enjoy your PC on your HDTV]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Experience your content like never before with Sony's Media Apps. We bring together the very best of Sony’s state-of-the-art technologies to provide an exceptional experience. You get seamless connectivity across all of your compatible Sony devices to your content. Share and play with your content as you choose. Quick and easy access to content stored locally, on DLNA® servers, or from PlayMemories Online™.]]></bodyCopy>
+                <headline><![CDATA[Sony's Media Apps]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[The digitizer stylus delivers precise performance allowing you to write, draw, and tap the touchscreen effortlessly. With every stroke, the digitizer stylus captures even the most subtle nuances of pressure, allowing you to adjust line weight, brush size, and more by pressing harder or softer with the pen. When the pen is near the screen, the touch sensors are turned off so you can maintain a comfortable writing position, even laying your palm on the PC. Two tips are included, allowing you to simulate working with a variety of traditional art and design materials.]]></bodyCopy>
+                <headline><![CDATA[Digitizer Stylus]]></headline>
+                <shot>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_fand_b_digitizer_stylud_en_gb]]></id>
+                        <createdAt><![CDATA[1382510336724]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/103f7ad13be73c13dbdae6474629098c?fmt=jpeg]]></externalUrl>
+                                <height><![CDATA[602]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/19/46/951946.jpg]]></internalUrl>
+                                <md5><![CDATA[103f7ad13be73c13dbdae6474629098c]]></md5>
+                                <mimeType><![CDATA[image/jpeg]]></mimeType>
+                                <sizeInBytes><![CDATA[612912]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1342]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_fand_b_digitizer_stylud]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1390403107247]]></updatedAt>
+                        <version><![CDATA[20140122070020]]></version>
+                    </imageFamily>
+                </shot>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Practical innovation is a cornerstone of Sony’s vision, and our keyboards are no exception. The keyboard features precisely engineered keys to create a comfortable and intuitive typing experience. When typing in dim light, an LED backlight creates a pleasant glow, framing the individual keys and illuminating the lettering to make it even easier to find the right keys.]]></bodyCopy>
+                <headline><![CDATA[Night Shift]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Note Anytime for VAIO helps you easily take notes using the digitizer stylus or keyboard. This note taking and organizational tool will not only convert your handwriting to text, but also lets you add your own creative touch by drawing on the touchscreen with your finger or stylus so you can include hand drawn diagrams or images. You can organize your notes by specific subject or project, and even add images that you clip from the web using Active Clip® or directly from your albums.]]></bodyCopy>
+                <headline><![CDATA[Note Anytime for VAIO® PCs]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Quickly and easily make a movie just the way you like it from your own photos or videos. Enhance your movies with your choice of 45 design themes and music. VAIO® Movie Creator adds the transitions and effects automatically so your movie looks polished and professional. Once your movie is ready, share it on Facebook®, YouTube™, or other social networking and video sharing sites.]]></bodyCopy>
+                <headline><![CDATA[VAIO® Movie Creator]]></headline>
+            </item>
+        </featureBenefits>
+        <featureIcons>
+            <item>
+                <copy><![CDATA[Available in 33.7 cm (13.3")]]></copy>
+                <icon><![CDATA[fonticon-30-touch]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Capture, edit and share with VAIO Inspiration Stream]]></copy>
+                <icon><![CDATA[fonticon-30-stylus]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Enjoy vivid colour with TRILUMINOS™ Display for mobile]]></copy>
+                <icon><![CDATA[fonticon-30-triluminos-display]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Easily switch from sketching to typing with SurfSlider™]]></copy>
+                <icon><![CDATA[fonticon-30-hybrid-pcs]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Compatible with the precise new Digitizer Stylus]]></copy>
+                <icon><![CDATA[fonticon-30-stylus]]></icon>
+            </item>
+        </featureIcons>
+        <images>
+            <primaryShot>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_white_en_gb]]></id>
+                        <aboutTfg><![CDATA[ööh]]></aboutTfg>
+                        <createdAt><![CDATA[1382438123759]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/8f8d81bbcb0c92a2679d967edc75c5ca?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[1320]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/14/10/1231410.png]]></internalUrl>
+                                <md5><![CDATA[8f8d81bbcb0c92a2679d967edc75c5ca]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[900918]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1320]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_vaio_duo_primary_shot_white]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1390077317869]]></updatedAt>
+                        <version><![CDATA[20140118100604]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </primaryShot>
+            <processorLogoShots>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_ultrabook_i7_resized_en_gb]]></id>
+                        <createdAt><![CDATA[1382370897684]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/ff8cb6271ccac912dad0d72393491f41?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[69]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/42/70/914270.png]]></internalUrl>
+                                <md5><![CDATA[ff8cb6271ccac912dad0d72393491f41]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[10523]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[140]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_ultrabook_i7_resized]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1397128511865]]></updatedAt>
+                        <version><![CDATA[20140409053319]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </processorLogoShots>
+            <productShots>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_01_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907765]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/03d905ef5b68e150d324c9c73a612d41?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/87/1228487.png]]></internalUrl>
+                                <md5><![CDATA[03d905ef5b68e150d324c9c73a612d41]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1673662]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_01]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107074]]></updatedAt>
+                        <version><![CDATA[20140707091526]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[10]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_02_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907805]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/8e2cf8ef4151e5be722def21042c7dd6?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/88/1228488.png]]></internalUrl>
+                                <md5><![CDATA[8e2cf8ef4151e5be722def21042c7dd6]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1195405]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_02]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107076]]></updatedAt>
+                        <version><![CDATA[20140707091527]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[20]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_03_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907809]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/55508f925fd62e28721d588248c0906f?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/89/1228489.png]]></internalUrl>
+                                <md5><![CDATA[55508f925fd62e28721d588248c0906f]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1255901]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_03]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13217PTB.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EB.CEP]]></item>
+                                <item><![CDATA[SVD1321L2EB.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EB.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EB.NL3]]></item>
+                                <item><![CDATA[SVD1321L9EB.ES2]]></item>
+                                <item><![CDATA[SVD1321M2EB.CEK]]></item>
+                                <item><![CDATA[SVD1321M9EB.FR5]]></item>
+                                <item><![CDATA[SVD1321M9EB.G4]]></item>
+                                <item><![CDATA[SVD1321M9RB.RU3]]></item>
+                                <item><![CDATA[SVD1321Z9EB.EE9]]></item>
+                                <item><![CDATA[SVD1321X9EB.CEK]]></item>
+                                <item><![CDATA[SVD1321Z9EB.SW1]]></item>
+                                <item><![CDATA[SVD1321Z9EB.CEK]]></item>
+                                <item><![CDATA[SVD1321Z9EB.CEZ]]></item>
+                                <item><![CDATA[SVD1321Z9EB.EC1]]></item>
+                                <item><![CDATA[SVD1321Z9EB.FR5]]></item>
+                                <item><![CDATA[SVD1321Z9EB.G4]]></item>
+                                <item><![CDATA[SVD1321Z9EB.IT1]]></item>
+                                <item><![CDATA[SVD1321Z9RB.RU3]]></item>
+                                <item><![CDATA[SVD1322U9EB.G4]]></item>
+                                <item><![CDATA[SVD1322X2EB.GC2]]></item>
+                                <item><![CDATA[SVD1322Y9EB.CEK]]></item>
+                                <item><![CDATA[SVD1322Y9EB.FR5]]></item>
+                                <item><![CDATA[SVD1322Z9EB.SW1]]></item>
+                                <item><![CDATA[SVD1323Y9EB.CEP]]></item>
+                                <item><![CDATA[SVD1323Y9EB.ES2]]></item>
+                                <item><![CDATA[SVD1323Y9EB.G4]]></item>
+                                <item><![CDATA[SVD1323Y9EB.SW1]]></item>
+                                <item><![CDATA[SVD13237CBB BR4]]></item>
+                                <item><![CDATA[SVD13237CLB]]></item>
+                                <item><![CDATA[SVD13239PLB]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107067]]></updatedAt>
+                        <version><![CDATA[20140707091626]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[30]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_04_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907806]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/7bb38a528937101f36d3bc1ca85f8db6?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/90/1228490.png]]></internalUrl>
+                                <md5><![CDATA[7bb38a528937101f36d3bc1ca85f8db6]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[902534]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_04]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107063]]></updatedAt>
+                        <version><![CDATA[20140707091627]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[40]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_05_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907814]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/936ef445425f491d9dc7d5326a2a03d7?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/91/1228491.png]]></internalUrl>
+                                <md5><![CDATA[936ef445425f491d9dc7d5326a2a03d7]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1221202]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_05]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13217PTB.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EB.CEP]]></item>
+                                <item><![CDATA[SVD1321L2EB.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EB.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EB.NL3]]></item>
+                                <item><![CDATA[SVD1321L9EB.ES2]]></item>
+                                <item><![CDATA[SVD1321M2EB.CEK]]></item>
+                                <item><![CDATA[SVD1321M9EB.FR5]]></item>
+                                <item><![CDATA[SVD1321M9EB.G4]]></item>
+                                <item><![CDATA[SVD1321M9RB.RU3]]></item>
+                                <item><![CDATA[SVD1321Z9EB.EE9]]></item>
+                                <item><![CDATA[SVD1321X9EB.CEK]]></item>
+                                <item><![CDATA[SVD1321Z9EB.SW1]]></item>
+                                <item><![CDATA[SVD1321Z9EB.CEK]]></item>
+                                <item><![CDATA[SVD1321Z9EB.CEZ]]></item>
+                                <item><![CDATA[SVD1321Z9EB.EC1]]></item>
+                                <item><![CDATA[SVD1321Z9EB.FR5]]></item>
+                                <item><![CDATA[SVD1321Z9EB.G4]]></item>
+                                <item><![CDATA[SVD1321Z9EB.IT1]]></item>
+                                <item><![CDATA[SVD1321Z9RB.RU3]]></item>
+                                <item><![CDATA[SVD1322U9EB.G4]]></item>
+                                <item><![CDATA[SVD1322X2EB.GC2]]></item>
+                                <item><![CDATA[SVD1322Y9EB.CEK]]></item>
+                                <item><![CDATA[SVD1322Y9EB.FR5]]></item>
+                                <item><![CDATA[SVD1322Z9EB.SW1]]></item>
+                                <item><![CDATA[SVD1323Y9EB.CEP]]></item>
+                                <item><![CDATA[SVD1323Y9EB.ES2]]></item>
+                                <item><![CDATA[SVD1323Y9EB.G4]]></item>
+                                <item><![CDATA[SVD1323Y9EB.SW1]]></item>
+                                <item><![CDATA[SVD13237CBB BR4]]></item>
+                                <item><![CDATA[SVD13237CLB]]></item>
+                                <item><![CDATA[SVD13239PLB]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107068]]></updatedAt>
+                        <version><![CDATA[20140707091628]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[50]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_06_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907769]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/180e52777c2e4d8e749ea8f79583037c?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/92/1228492.png]]></internalUrl>
+                                <md5><![CDATA[180e52777c2e4d8e749ea8f79583037c]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1289615]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_06]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107073]]></updatedAt>
+                        <version><![CDATA[20140707091629]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[60]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_07_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907761]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/f4cda1195487f37d832af57e59544b0f?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/93/1228493.png]]></internalUrl>
+                                <md5><![CDATA[f4cda1195487f37d832af57e59544b0f]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[1639840]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_07]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107068]]></updatedAt>
+                        <version><![CDATA[20140707091630]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[70]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_08_en_gb]]></id>
+                        <createdAt><![CDATA[1387815907767]]></createdAt>
+                        <disclaimerCopy><![CDATA[Colours and features may vary by country and model]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/d7f9b1d2789046d3aefc7af0a9aaec18?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[792]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/84/94/1228494.png]]></internalUrl>
+                                <md5><![CDATA[d7f9b1d2789046d3aefc7af0a9aaec18]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[494303]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[2028]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_duo13_slideshow_08]]></masterId>
+                        <readyForLive><![CDATA[No]]></readyForLive>
+                        <relatedSkus>
+                            <validInCurrentLocale><![CDATA[true]]></validInCurrentLocale>
+                            <value>
+                                <item><![CDATA[SVD13213STW.CEU]]></item>
+                                <item><![CDATA[SVD1321L2EW.SW1]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE9]]></item>
+                                <item><![CDATA[SVD1321L2EW.EC1]]></item>
+                                <item><![CDATA[SVD1321L2EW.NL3]]></item>
+                                <item><![CDATA[SVD1321L2EW.ESI]]></item>
+                                <item><![CDATA[SVD1321L2EW.IT1]]></item>
+                                <item><![CDATA[SVD1321L2EW.ES2]]></item>
+                                <item><![CDATA[SVD1321L2EW.EE2]]></item>
+                                <item><![CDATA[SVD1321L2EW.BE1]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEM]]></item>
+                                <item><![CDATA[SVD1321L2EW.CEZ]]></item>
+                                <item><![CDATA[SVD1321L2EW.GC2]]></item>
+                                <item><![CDATA[SVD1321M2EW.CEK]]></item>
+                                <item><![CDATA[SVD1321M2EW.FR5]]></item>
+                                <item><![CDATA[SVD1321M2EW.G4]]></item>
+                                <item><![CDATA[SVD1321M2RW.RU3]]></item>
+                                <item><![CDATA[SVD1321X9EW.CEK]]></item>
+                                <item><![CDATA[SVD1321X9EW.EC1]]></item>
+                                <item><![CDATA[SVD1321X9EW.G4]]></item>
+                                <item><![CDATA[SVD1321Z9RW.RU3]]></item>
+                                <item><![CDATA[SVD1322U2EW.G4]]></item>
+                                <item><![CDATA[SVD1322U2EW.CEK]]></item>
+                                <item><![CDATA[SVD1322X2EW.SW1]]></item>
+                                <item><![CDATA[SVD13237CBW BR4]]></item>
+                                <item><![CDATA[SVD13237CLW]]></item>
+                            </value>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1404797107074]]></updatedAt>
+                        <version><![CDATA[20140707091631]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[80]]></rank>
+                </item>
+            </productShots>
+        </images>
+        <keyTechSpecs>
+            <item>
+                <displayName><![CDATA[Processor Name (GHz)]]></displayName>
+                <keySpecRank><![CDATA[10]]></keySpecRank>
+                <name><![CDATA[vaioProcessorType]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Intel® Core™ i5, i7 processor]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Operating System]]></displayName>
+                <keySpecRank><![CDATA[20]]></keySpecRank>
+                <name><![CDATA[vaioSoftwareOperatingSystem]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Windows 8.1 Pro or other editions]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Storage Capacity]]></displayName>
+                <keySpecRank><![CDATA[30]]></keySpecRank>
+                <name><![CDATA[vaioStorageCapacity]]></name>
+                <rank><![CDATA[20]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Up to 256GB]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Max. Memory]]></displayName>
+                <keySpecRank><![CDATA[40]]></keySpecRank>
+                <name><![CDATA[vaioMemoryMaxMemory]]></name>
+                <rank><![CDATA[30]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Up to 8GB]]></item>
+                </value>
+            </item>
+            <item>
+                <displayName><![CDATA[Screen Size]]></displayName>
+                <keySpecRank><![CDATA[50]]></keySpecRank>
+                <name><![CDATA[vaioDisplayScreenSize]]></name>
+                <rank><![CDATA[10]]></rank>
+                <specType><![CDATA[text]]></specType>
+                <value>
+                    <item><![CDATA[Available in 33.7 cm (13.3")]]></item>
+                </value>
+            </item>
+        </keyTechSpecs>
+        <locale><![CDATA[en_GB]]></locale>
+        <marketingProductName><![CDATA[VAIO® Duo 13 Slider Hybrid PC]]></marketingProductName>
+        <masterId><![CDATA[urn:sony:product:super:[sm]vaio_duo13]]></masterId>
+        <slug><![CDATA[vaio-duo-13]]></slug>
+        <topFeature><![CDATA[A hybrid Surf Slider™ Ultrabook™ with creative pen and camera solutions.]]></topFeature>
+        <topFeatures></topFeatures>
+        <updatedAt><![CDATA[1405523710063]]></updatedAt>
+        <videos>
+            <heroVideos>
+                <item>
+                    <rank><![CDATA[]]></rank>
+                    <videoFamily>
+                        <id><![CDATA[urn:sony:media:video_family:vid_duo_all_2013_developer_en_gl_en_gb]]></id>
+                        <aboutTfg><![CDATA[vid.]]></aboutTfg>
+                        <createdAt><![CDATA[1385425514071]]></createdAt>
+                        <externalUrl>
+                            <![CDATA[//sonyglobal.scene7.com/is/content/gwtvid/vid-duo-all-2013-developer]]></externalUrl>
+                        <locale><![CDATA[en_GB]]></locale>
+                        <masterId><![CDATA[urn:sony:media:video_family:vid_duo_all_2013_developer_en_gl]]></masterId>
+                        <ratio><![CDATA[0.5625]]></ratio>
+                        <readyForLive><![CDATA[Yes]]></readyForLive>
+                        <status><![CDATA[published]]></status>
+                        <type><![CDATA[urn:sony:media:video_family]]></type>
+                        <updatedAt><![CDATA[1391418358233]]></updatedAt>
+                        <version><![CDATA[20140118070217]]></version>
+                        <videoDefaultQuality><![CDATA[1280x720_2000K]]></videoDefaultQuality>
+                        <videoFolder><![CDATA[2013/10/pdp-vaio-duo-developer]]></videoFolder>
+                        <videoName><![CDATA[vid-duo-all-2013-developer]]></videoName>
+                        <videoProvider><![CDATA[scene7]]></videoProvider>
+                        <videoSubtitleLocales>
+                            <item><![CDATA[en_GL]]></item>
+                        </videoSubtitleLocales>
+                    </videoFamily>
+                </item>
+            </heroVideos>
+        </videos>
+    </superModel>
+    <superModelName><![CDATA[VAIO Duo 13]]></superModelName>
+    <superModelNumber><![CDATA[VAIO Duo 13]]></superModelNumber>
+    <targetLocales>
+        <item><![CDATA[en_IE]]></item>
+        <item><![CDATA[en_GB]]></item>
+    </targetLocales>
+    <techSpecs>
+        <item>
+            <displayName><![CDATA[Operating System]]></displayName>
+            <name><![CDATA[operatingSystem]]></name>
+            <rank><![CDATA[1]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Operating System]]></displayName>
+                    <keySpecRank><![CDATA[20]]></keySpecRank>
+                    <name><![CDATA[vaioSoftwareOperatingSystem]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Windows 8]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Architecture]]></displayName>
+            <name><![CDATA[vaioArchitecture]]></name>
+            <rank><![CDATA[5]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Platform]]></displayName>
+                    <name><![CDATA[vaioArchitecturePlatform]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Intel® Core™ i5 processor. Ultrabook™. Inspired by Intel.]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[CPU]]></displayName>
+            <name><![CDATA[vaioCpu]]></name>
+            <rank><![CDATA[30]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Processor Name (GHz)]]></displayName>
+                    <keySpecRank><![CDATA[10]]></keySpecRank>
+                    <name><![CDATA[vaioProcessorType]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Intel® Core™ i5-4200U Processor 1.60 with Turbo Boost up to 2.60 GHz]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Cache Memory]]></displayName>
+                    <name><![CDATA[vaioProcessorCache]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[3 MB]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Memory]]></displayName>
+            <name><![CDATA[vaioMemory]]></name>
+            <rank><![CDATA[40]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Installed Memory]]></displayName>
+                    <name><![CDATA[vaioMemoryInstalledMemory]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[4 GB]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Memory Type/Speed]]></displayName>
+                    <name><![CDATA[vaioMemoryMemoryTypeSpeed]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[/1600 MTs]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Max. Memory]]></displayName>
+                    <keySpecRank><![CDATA[40]]></keySpecRank>
+                    <name><![CDATA[vaioMemoryMaxMemory]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[4 GB]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Memory Specification]]></displayName>
+                    <keySpecRank><![CDATA[40]]></keySpecRank>
+                    <name><![CDATA[vaioMemoryMemorySpecification]]></name>
+                    <rank><![CDATA[40]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[LPDDR3 SDRAM]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Memory Composition]]></displayName>
+                    <keySpecRank><![CDATA[40]]></keySpecRank>
+                    <name><![CDATA[vaioMemoryMemoryComposition]]></name>
+                    <rank><![CDATA[50]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[4 GB (On Board)]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Display]]></displayName>
+            <name><![CDATA[vaioDisplay]]></name>
+            <rank><![CDATA[50]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Screen Size]]></displayName>
+                    <keySpecRank><![CDATA[50]]></keySpecRank>
+                    <name><![CDATA[vaioDisplayScreenSize]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[33.7 cm (13.3")]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Resolution]]></displayName>
+                    <name><![CDATA[vaioDisplayResolution]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[1920 x 1080]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Touch Technology]]></displayName>
+                    <name><![CDATA[vaioDisplayTouchTech]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Touch Screen]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Screen Branding]]></displayName>
+                    <name><![CDATA[vaioDisplayScreenBranding]]></name>
+                    <rank><![CDATA[40]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[TRILUMINOS DISPLAY for mobile]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Picture Enhancement Feature]]></displayName>
+                    <name><![CDATA[vaioDisplayPictureEnhancementFeature]]></name>
+                    <rank><![CDATA[50]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[X-Reality for mobile]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Graphics]]></displayName>
+            <name><![CDATA[vaioGraphics]]></name>
+            <rank><![CDATA[60]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Graphic Accelerator]]></displayName>
+                    <name><![CDATA[vaioGraphicsProcessor]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Intel® HD Graphics 4400]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Storage]]></displayName>
+            <name><![CDATA[vaioStorage]]></name>
+            <rank><![CDATA[70]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Storage Type]]></displayName>
+                    <name><![CDATA[vaioStorageType]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Solid State Drive]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Storage Capacity]]></displayName>
+                    <keySpecRank><![CDATA[30]]></keySpecRank>
+                    <name><![CDATA[vaioStorageCapacity]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[128 GB]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Interface]]></displayName>
+                    <keySpecRank><![CDATA[30]]></keySpecRank>
+                    <name><![CDATA[vaioStorageInterface]]></name>
+                    <rank><![CDATA[40]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Serial ATA 6 Gb/s]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Picture and Audio Features]]></displayName>
+            <name><![CDATA[vaioPictureAndAudioFeat]]></name>
+            <rank><![CDATA[90]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Speaker]]></displayName>
+                    <name><![CDATA[vaioPictureAndAudioFeatSpeaker]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Internal Stereo speakers]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Microphone]]></displayName>
+                    <name><![CDATA[vaioPictureAndAudioFeatMicrophone]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Internal Dual microphone]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Camera]]></displayName>
+            <name><![CDATA[vaioCamera]]></name>
+            <rank><![CDATA[100]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Front Camera]]></displayName>
+                    <name><![CDATA[vaioCameraFrontCamera]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item>
+                            <![CDATA[2.07 MP Full HD web camera powered by "Exmor R for PC" (Resolution: 1920 x 1080 pixels)]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Rear camera]]></displayName>
+                    <name><![CDATA[vaioCameraRearCamera]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[8M Camera powered by "Exmor RS for PC" (Resolution: 3264 x 2448 pixels)]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Hardware]]></displayName>
+            <name><![CDATA[vaioHardware]]></name>
+            <rank><![CDATA[110]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Touchpad]]></displayName>
+                    <name><![CDATA[vaioHardwareTouchpad]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Touchpad (Gesture supported)]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Keyboard Stroke]]></displayName>
+                    <name><![CDATA[vaioHardwareKeyboardStroke]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[1.0 mm]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Key Pitch]]></displayName>
+                    <name><![CDATA[vaioHardwareKeyPitch]]></name>
+                    <rank><![CDATA[40]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[19.05 mm]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Numeric Keypad]]></displayName>
+                    <name><![CDATA[vaioHardwareNumericKeypad]]></name>
+                    <rank><![CDATA[50]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[No]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[SENSOR]]></displayName>
+                    <name><![CDATA[vaioHardwareSensor]]></name>
+                    <rank><![CDATA[60]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Accelerometer, Gyro, Digital Compass]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Interface]]></displayName>
+            <name><![CDATA[vaioInterface]]></name>
+            <rank><![CDATA[120]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Input and Output Terminals]]></displayName>
+                    <name><![CDATA[vaioInterfaceInputAndOutputTerm]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item>
+                            <![CDATA[SuperSpeed USB (USB 3.0) port Type A Connector with charging function x 1, SuperSpeed USB (USB 3.0) port Type A Connector x 1, "Memory Stick Duo" / SD memory card combined slot x 1 (No simultaneous use),Headphone Jack, HDMI Output]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Network Connectivity]]></displayName>
+            <name><![CDATA[vaioNetworkCon]]></name>
+            <rank><![CDATA[130]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Wireless LAN]]></displayName>
+                    <name><![CDATA[vaioNetworkConnectivityWifi]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[IEEE 802.11a/b/g/n]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Ethernet]]></displayName>
+                    <name><![CDATA[vaioNetworkConnectivityEthernet]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[No (Wireless Ethernet mini router Bundle)]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Bluetooth®]]></displayName>
+                    <name><![CDATA[vaioNetworkConnectivityBluetooth]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Bluetooth® standard Ver. 4.0 + HS]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Wireless LAN Max. Data Rate]]></displayName>
+                    <name><![CDATA[vaioNetworkConnectivityWirelessLanMax]]></name>
+                    <rank><![CDATA[40]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[300 (RX) / 300 (TX)]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Battery]]></displayName>
+            <name><![CDATA[vaioBattery]]></name>
+            <rank><![CDATA[140]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Battery Type]]></displayName>
+                    <name><![CDATA[vaioBatteryBatteryType]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Lithium polymer battery]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Battery Life]]></displayName>
+                    <keySpecRank><![CDATA[60]]></keySpecRank>
+                    <name><![CDATA[vaioBatteryBatteryLife]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item>
+                            <![CDATA[16 hours (Actual battery life will vary depending on your specific hardware and software configurations. Benchmark: MobileMark 2007)]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Size & Weight]]></displayName>
+            <name><![CDATA[sizeAndWeight]]></name>
+            <rank><![CDATA[150]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Dimensions (W x H x D)]]></displayName>
+                    <name><![CDATA[vaioSizeWeightDimensionsWxHxD]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[330 x 9.2-19.5 x 210 mm]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Weight]]></displayName>
+                    <name><![CDATA[vaioSizeWeightWeight]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[1.34 kg]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+        <item>
+            <displayName><![CDATA[Software]]></displayName>
+            <name><![CDATA[vaioSoftware]]></name>
+            <rank><![CDATA[160]]></rank>
+            <specs>
+                <item>
+                    <displayName><![CDATA[Software - Solution Portal]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftware]]></name>
+                    <rank><![CDATA[10]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[VAIO Message Center]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Software - Photo/Video]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwarePhotoVideo]]></name>
+                    <rank><![CDATA[20]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[PlayMemories Home, VAIO Movie Creator]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Multimedia]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareMultimedia]]></name>
+                    <rank><![CDATA[30]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Album by Sony, Music by Sony]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Software - Support and Recovery]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareSupportRec]]></name>
+                    <rank><![CDATA[50]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[VAIO Care]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Utilities]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareUtilities]]></name>
+                    <rank><![CDATA[60]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[VAIO Transfer Support, VAIO Update, VAIO Control Center]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Software - Productivity]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareProductivity]]></name>
+                    <rank><![CDATA[70]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item>
+                            <![CDATA[Buy Microsoft Office to activate Office software on this PC, Adobe® Reader® 11]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Software - Security & Backup]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareSecurity]]></name>
+                    <rank><![CDATA[80]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item>
+                            <![CDATA[McAfee Internet Security 30 day subscription, McAfee Parental Controls, Intel® Anti-Theft Service 90 day trial]]></item>
+                    </value>
+                </item>
+                <item>
+                    <displayName><![CDATA[Internet Browser]]></displayName>
+                    <name><![CDATA[vaioSoftwareSuppliedSoftwareInternet]]></name>
+                    <rank><![CDATA[100]]></rank>
+                    <specType><![CDATA[text]]></specType>
+                    <value>
+                        <item><![CDATA[Internet Explorer® 10]]></item>
+                    </value>
+                </item>
+            </specs>
+        </item>
+    </techSpecs>
+    <tier><![CDATA[2]]></tier>
+    <topFeature>
+        <![CDATA[Unique Surf Slider design gives perfect stability for writing and sketching. A simple slide activates the slim, backlit keyboard.]]></topFeature>
+    <type><![CDATA[urn:sony:product:sku]]></type>
+    <updatedAt><![CDATA[1405528507991]]></updatedAt>
+    <vaioArchitecturePlatform>
+        <![CDATA[Intel® Core™ i5 processor. Ultrabook™. Inspired by Intel.]]></vaioArchitecturePlatform>
+    <vaioBatteryBatteryLife>
+        <![CDATA[16 hours (Actual battery life will vary depending on your specific hardware and software configurations. Benchmark: MobileMark 2007)]]></vaioBatteryBatteryLife>
+    <vaioBatteryBatteryType><![CDATA[Lithium polymer battery]]></vaioBatteryBatteryType>
+    <vaioBatteryModelName><![CDATA[VGP-BPS36]]></vaioBatteryModelName>
+    <vaioBatteryWeight><![CDATA[279 g]]></vaioBatteryWeight>
+    <vaioCameraFrontCamera>
+        <![CDATA[2.07 MP Full HD web camera powered by "Exmor R for PC" (Resolution: 1920 x 1080 pixels)]]></vaioCameraFrontCamera>
+    <vaioCameraRearCamera>
+        <![CDATA[8M Camera powered by "Exmor RS for PC" (Resolution: 3264 x 2448 pixels)]]></vaioCameraRearCamera>
+    <vaioCategory>
+        <item>
+            <displayName><![CDATA[VAIO® Duo]]></displayName>
+            <id><![CDATA[ID_010_vaio-duo]]></id>
+            <rootId><![CDATA[vaio-duo]]></rootId>
+        </item>
+    </vaioCategory>
+    <vaioColorColor><![CDATA[White, black]]></vaioColorColor>
+    <vaioDisplayBacklightTech><![CDATA[LED]]></vaioDisplayBacklightTech>
+    <vaioDisplayPictureEnhancementFeature><![CDATA[X-Reality for mobile]]></vaioDisplayPictureEnhancementFeature>
+    <vaioDisplayResolution><![CDATA[1920 x 1080]]></vaioDisplayResolution>
+    <vaioDisplayScreenBranding><![CDATA[TRILUMINOS DISPLAY for mobile]]></vaioDisplayScreenBranding>
+    <vaioDisplayScreenSize><![CDATA[33.7 cm (13.3")]]></vaioDisplayScreenSize>
+    <vaioDisplayTouchTech><![CDATA[Touch Screen]]></vaioDisplayTouchTech>
+    <vaioFeatures>
+        <item>
+            <displayName><![CDATA[Carbon Fiber Body]]></displayName>
+            <id><![CDATA[ID_010_carbon-fiber-body]]></id>
+            <rootId><![CDATA[carbon-fiber-body]]></rootId>
+        </item>
+        <item>
+            <displayName><![CDATA[Rear-facing Camera]]></displayName>
+            <id><![CDATA[ID_020_rear-facing-camera]]></id>
+            <rootId><![CDATA[rear-facing-camera]]></rootId>
+        </item>
+        <item>
+            <displayName><![CDATA[Digitizer Stylus Optimized]]></displayName>
+            <id><![CDATA[ID_030_digitizer-stylus-optimized]]></id>
+            <rootId><![CDATA[digitizer-stylus-optimized]]></rootId>
+        </item>
+        <item>
+            <displayName><![CDATA[Touchscreen]]></displayName>
+            <id><![CDATA[ID_025_touchscreen]]></id>
+            <rootId><![CDATA[touchscreen]]></rootId>
+        </item>
+    </vaioFeatures>
+    <vaioGraphicsProcessor><![CDATA[Intel® HD Graphics 4400]]></vaioGraphicsProcessor>
+    <vaioHardwareKeyPitch><![CDATA[19.05 mm]]></vaioHardwareKeyPitch>
+    <vaioHardwareKeyboardStroke><![CDATA[1.0 mm]]></vaioHardwareKeyboardStroke>
+    <vaioHardwareNumericKeypad><![CDATA[No]]></vaioHardwareNumericKeypad>
+    <vaioHardwareSensor>
+        <item><![CDATA[Accelerometer, Gyro, Digital Compass]]></item>
+    </vaioHardwareSensor>
+    <vaioHardwareTouchpad><![CDATA[Touchpad (Gesture supported)]]></vaioHardwareTouchpad>
+    <vaioInterfaceInputAndOutputTerm>
+        <item>
+            <![CDATA[SuperSpeed USB (USB 3.0) port Type A Connector with charging function x 1, SuperSpeed USB (USB 3.0) port Type A Connector x 1, "Memory Stick Duo" / SD memory card combined slot x 1 (No simultaneous use),Headphone Jack, HDMI Output]]></item>
+    </vaioInterfaceInputAndOutputTerm>
+    <vaioMemoryInstalledMemory><![CDATA[4 GB]]></vaioMemoryInstalledMemory>
+    <vaioMemoryMaxMemory><![CDATA[4 GB]]></vaioMemoryMaxMemory>
+    <vaioMemoryMemoryComposition><![CDATA[4 GB (On Board)]]></vaioMemoryMemoryComposition>
+    <vaioMemoryMemorySpecification><![CDATA[LPDDR3 SDRAM]]></vaioMemoryMemorySpecification>
+    <vaioMemoryMemoryTypeSpeed>
+        <item><![CDATA[/1600 MTs]]></item>
+    </vaioMemoryMemoryTypeSpeed>
+    <vaioNetworkConnectivityBluetooth><![CDATA[Bluetooth® standard Ver. 4.0 + HS]]></vaioNetworkConnectivityBluetooth>
+    <vaioNetworkConnectivityEthernet>
+        <![CDATA[No (Wireless Ethernet mini router Bundle)]]></vaioNetworkConnectivityEthernet>
+    <vaioNetworkConnectivityWifi><![CDATA[IEEE 802.11a/b/g/n]]></vaioNetworkConnectivityWifi>
+    <vaioNetworkConnectivityWirelessLanMax><![CDATA[300 (RX) / 300 (TX)]]></vaioNetworkConnectivityWirelessLanMax>
+    <vaioPictureAndAudioFeatMicrophone><![CDATA[Internal Dual microphone]]></vaioPictureAndAudioFeatMicrophone>
+    <vaioPictureAndAudioFeatSpeaker><![CDATA[Internal Stereo speakers]]></vaioPictureAndAudioFeatSpeaker>
+    <vaioProcessorCache><![CDATA[3 MB]]></vaioProcessorCache>
+    <vaioProcessorNumOfCores><![CDATA[2]]></vaioProcessorNumOfCores>
+    <vaioProcessorSpeed><![CDATA[1.60 with Turbo Boost up to 2.60 GHz]]></vaioProcessorSpeed>
+    <vaioProcessorType>
+        <![CDATA[Intel® Core™ i5-4200U Processor 1.60 with Turbo Boost up to 2.60 GHz]]></vaioProcessorType>
+    <vaioScreenSize>
+        <displayName><![CDATA[28 - 34 cm (11 - 13”)]]></displayName>
+        <id><![CDATA[ID_010_28-34-cm-11-13-in]]></id>
+        <rootId><![CDATA[28-34-cm-11-13-in]]></rootId>
+    </vaioScreenSize>
+    <vaioSizeWeightDimensionsWxHxD><![CDATA[330 x 9.2-19.5 x 210 mm]]></vaioSizeWeightDimensionsWxHxD>
+    <vaioSizeWeightWeight><![CDATA[1.34 kg]]></vaioSizeWeightWeight>
+    <vaioSoftwareOperatingSystem><![CDATA[Windows 8]]></vaioSoftwareOperatingSystem>
+    <vaioSoftwareSuppliedSoftware>
+        <item><![CDATA[VAIO Message Center]]></item>
+    </vaioSoftwareSuppliedSoftware>
+    <vaioSoftwareSuppliedSoftwareInternet>
+        <item><![CDATA[Internet Explorer® 10]]></item>
+    </vaioSoftwareSuppliedSoftwareInternet>
+    <vaioSoftwareSuppliedSoftwareMultimedia>
+        <item><![CDATA[Album by Sony, Music by Sony]]></item>
+    </vaioSoftwareSuppliedSoftwareMultimedia>
+    <vaioSoftwareSuppliedSoftwarePhotoVideo>
+        <item><![CDATA[PlayMemories Home, VAIO Movie Creator]]></item>
+    </vaioSoftwareSuppliedSoftwarePhotoVideo>
+    <vaioSoftwareSuppliedSoftwareProductivity>
+        <item><![CDATA[Buy Microsoft Office to activate Office software on this PC, Adobe® Reader® 11]]></item>
+    </vaioSoftwareSuppliedSoftwareProductivity>
+    <vaioSoftwareSuppliedSoftwareSecurity>
+        <item>
+            <![CDATA[McAfee Internet Security 30 day subscription, McAfee Parental Controls, Intel® Anti-Theft Service 90 day trial]]></item>
+    </vaioSoftwareSuppliedSoftwareSecurity>
+    <vaioSoftwareSuppliedSoftwareSupportRec>
+        <item><![CDATA[VAIO Care]]></item>
+    </vaioSoftwareSuppliedSoftwareSupportRec>
+    <vaioSoftwareSuppliedSoftwareUtilities>
+        <item><![CDATA[VAIO Transfer Support, VAIO Update, VAIO Control Center]]></item>
+    </vaioSoftwareSuppliedSoftwareUtilities>
+    <vaioStorageCapacity><![CDATA[128 GB]]></vaioStorageCapacity>
+    <vaioStorageInterface><![CDATA[Serial ATA 6 Gb/s]]></vaioStorageInterface>
+    <vaioStorageType><![CDATA[Solid State Drive]]></vaioStorageType>
+    <version><![CDATA[20140716122721]]></version>
+    <videos>
+        <heroVideos>
+            <item>
+                <rank><![CDATA[]]></rank>
+                <videoFamily>
+                    <id><![CDATA[urn:sony:media:video_family:vid_duo_all_2013_developer_en_gl_en_gb]]></id>
+                    <aboutTfg><![CDATA[vid.]]></aboutTfg>
+                    <createdAt><![CDATA[1385425514071]]></createdAt>
+                    <externalUrl>
+                        <![CDATA[//sonyglobal.scene7.com/is/content/gwtvid/vid-duo-all-2013-developer]]></externalUrl>
+                    <locale><![CDATA[en_GB]]></locale>
+                    <masterId><![CDATA[urn:sony:media:video_family:vid_duo_all_2013_developer_en_gl]]></masterId>
+                    <ratio><![CDATA[0.5625]]></ratio>
+                    <readyForLive><![CDATA[Yes]]></readyForLive>
+                    <status><![CDATA[published]]></status>
+                    <type><![CDATA[urn:sony:media:video_family]]></type>
+                    <updatedAt><![CDATA[1391418358233]]></updatedAt>
+                    <version><![CDATA[20140118070217]]></version>
+                    <videoDefaultQuality><![CDATA[1280x720_2000K]]></videoDefaultQuality>
+                    <videoFolder><![CDATA[2013/10/pdp-vaio-duo-developer]]></videoFolder>
+                    <videoName><![CDATA[vid-duo-all-2013-developer]]></videoName>
+                    <videoProvider><![CDATA[scene7]]></videoProvider>
+                    <videoSubtitleLocales>
+                        <item><![CDATA[en_GL]]></item>
+                    </videoSubtitleLocales>
+                </videoFamily>
+            </item>
+        </heroVideos>
+    </videos>
+</product>

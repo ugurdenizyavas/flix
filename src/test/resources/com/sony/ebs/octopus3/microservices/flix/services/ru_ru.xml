@@ -1,0 +1,759 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<product xmlns='http://www.sony.eu/syndication'>
+    <id><![CDATA[urn:sony:product:sku:[sku]hdrcx220_es.ceh_ru_ru]]></id>
+    <businessUnit><![CDATA[DI]]></businessUnit>
+    <categories></categories>
+    <createdAt><![CDATA[1385330709876]]></createdAt>
+    <differentiators>
+        <item>
+            <displayName><![CDATA[Root Color Equivalent]]></displayName>
+            <id><![CDATA[ID_030_rootColorEquivalent]]></id>
+            <rootId><![CDATA[rootColorEquivalent]]></rootId>
+        </item>
+    </differentiators>
+    <featureBenefits>
+        <item>
+            <bodyCopy>
+                <![CDATA[Записывайте невероятно четкое и качественное видео Full HD в распространенном формате AVCHD]]></bodyCopy>
+            <headline><![CDATA[Благодаря широкоугольному объективу вы сможете уместить в кадр больше]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[32-кратный расширенный зум и улучшенная обработка изображений позволяет вам быстро использовать зум и снимать четкое видео]]></bodyCopy>
+            <headline><![CDATA[Ближе — одним нажатием на кнопку]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Высокочувствительная матрица Exmor R™ CMOS позволяет снимать видео и фотографии с высокой детализацией при сниженной шумности изображения даже в условиях недостаточного освещения]]></bodyCopy>
+            <headline><![CDATA[Снимайте при недостаточном освещении с высокой детализацией]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Высокоскоростной процессор изображения BIONZ улучшает качество изображения и характеристики фотокамеры при съемке движущихся объектов в кадре]]></bodyCopy>
+            <headline><![CDATA[Снимайте динамичные сцены с ультравысокой детализацией]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Запись в прогрессивном разрешении 1920x1080/50p выполняется при частоте 50 кадров Full HD в секунду]]></bodyCopy>
+            <headline><![CDATA[Плавное и четкое динамичное изображение]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Запись фотографий с разрешением 8,9 МП позволяет получать четкие и чистые фотографии и видеоклипы в разрешении High Definition]]></bodyCopy>
+            <headline><![CDATA[Снимайте фотографии с высокой детализацией]]></headline>
+        </item>
+        <item>
+            <bodyCopy><![CDATA[Результат фотосъемки удобно просматривать на 2,7" ЖК-экране Clear Photo]]></bodyCopy>
+            <headline><![CDATA[Удобство просмотра видеоклипов и фотографий]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[iAuto автоматически подстраивает настройки для достижения оптимальных результатов, определяя лица людей в кадре, освещение и тип сюжета, например, пейзаж]]></bodyCopy>
+            <headline><![CDATA[Просто наведите и снимайте, дополнительные настройки не потребуются]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Благодаря функциям фокусировки по лицу и Smile Shutter вы можете автоматически снимать фотографии улыбающихся друзей, не прерывая съемку видео]]></bodyCopy>
+            <headline><![CDATA[Улыбки в каждом кадре]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Кабель USB удобно умещается в корпусе Handycam®. С его помощью вы легко подключите фотокамеру к компьютеру, передадите видеоматериалы и зарядите аккумулятор]]></bodyCopy>
+            <headline><![CDATA[Удобная зарядка и разъемы]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[ПО PlayMemories™ позволяет передавать видеоматериалы и фотографии, организовать их, редактировать, распечатывать и публиковать их в сети]]></bodyCopy>
+            <headline><![CDATA[Удобство передачи файлов, просмотр и публикация изображений]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Разъем Micro HDMI позволяет подключать видеокамеру Handycam® к телевизору HD ready и устраивать совместные просмотры видео]]></bodyCopy>
+            <headline><![CDATA[Просматривайте запись в HD на большом экране]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Снимайте фильмы в популярном формате MP4 и с легкостью публикуйте готовый материал в Facebook™, YouTube™ или PlayMemories™]]></bodyCopy>
+            <headline><![CDATA[Легко делиться впечатлениями]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Высококачественное изображение дополняется стереозвучанием такого же качества, все готово для просмотра на домашнем кинотеатре]]></bodyCopy>
+            <headline><![CDATA[Кристально чистый звук и изображение]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[На ваш выбор съемные карты памяти Memory Stick™, Memory Stick PRO Duo™, SD, SDHC или SDXC]]></bodyCopy>
+            <headline><![CDATA[Богатство возможностей для хранения своих воспоминаний]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[Подключите видеокамеру Handycam® к телевизору BRAVIA® и управляйте поиском и воспроизведением ваших видеозаписей непосредственно на большом экране]]></bodyCopy>
+            <headline><![CDATA[Просматривайте и воспроизводите видео с помощью телевизионного пульта ДУ]]></headline>
+        </item>
+        <item>
+            <bodyCopy>
+                <![CDATA[С помощью ПО Direct Copy вы можете подключить Handycam® непосредственно к внешнему жесткому диску, чтобы сохранить и воспроизводить видео и фотографии без ПК]]></bodyCopy>
+            <headline><![CDATA[Сохраняйте дорогие воспоминания на внешний жесткий диск]]></headline>
+        </item>
+    </featureBenefits>
+    <featureIcons>
+        <item>
+            <copy><![CDATA[Матрица Exmor R CMOS 8,9 МП]]></copy>
+            <icon><![CDATA[fonticon-30-megapixel]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Объектив ZEISS Vario-Tessar с 32-кратным оптическим зумом]]></copy>
+            <icon><![CDATA[fonticon-30-carl-zeiss]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Функция стабилизации изображения SteadyShot уменьшает размытие]]></copy>
+            <icon><![CDATA[fonticon-30-stability]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[2,7" поворотный ЖК-экран для съемки с различных углов]]></copy>
+            <icon><![CDATA[fonticon-30-tiltable-screen]]></icon>
+        </item>
+        <item>
+            <copy><![CDATA[Запись в формате Full HD для красивых видеороликов]]></copy>
+            <icon><![CDATA[fonticon-30-hd]]></icon>
+        </item>
+    </featureIcons>
+    <handycamBestFor>
+        <item>
+            <displayName><![CDATA[Стандартная съемка]]></displayName>
+            <id><![CDATA[ID_010_casual-shoting]]></id>
+            <rootId><![CDATA[casual-shoting]]></rootId>
+        </item>
+    </handycamBestFor>
+    <handycamMaximumResolution>
+        <displayName><![CDATA[Full HD]]></displayName>
+        <id><![CDATA[ID_020_full-hd]]></id>
+        <rootId><![CDATA[full-hd]]></rootId>
+    </handycamMaximumResolution>
+    <images>
+        <primaryShot>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_hdr_cx220_e_product_left_open_slvr_v2_ru_ru]]></id>
+                    <bucket><![CDATA[gwtprod]]></bucket>
+                    <createdAt><![CDATA[1383678909702]]></createdAt>
+                    <disclaimerCopy><![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/a338955f86b247b0f7cb2f6ca48d4dc3?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[1320]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/01/34/1230134.png]]></internalUrl>
+                            <md5><![CDATA[a338955f86b247b0f7cb2f6ca48d4dc3]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[851771]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1320]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[ru_RU]]></locale>
+                    <masterId>
+                        <![CDATA[urn:sony:media:image_family:if_hdr_cx220_e_product_left_open_slvr_v2]]></masterId>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1390249511174]]></updatedAt>
+                    <version><![CDATA[20140118122020]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </primaryShot>
+        <productShots>
+            <item>
+                <imageFamily>
+                    <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_6_ru_ru]]></id>
+                    <bucket><![CDATA[gwtprod]]></bucket>
+                    <createdAt><![CDATA[1383678909703]]></createdAt>
+                    <disclaimerCopy><![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                    <images>
+                        <desktop>
+                            <externalUrl>
+                                <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/3485914ced75fcdc31f610cd863b5d07?fmt=png-alpha]]></externalUrl>
+                            <height><![CDATA[396]]></height>
+                            <internalUrl>
+                                <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/81/1226981.png]]></internalUrl>
+                            <md5><![CDATA[3485914ced75fcdc31f610cd863b5d07]]></md5>
+                            <mimeType><![CDATA[image/png]]></mimeType>
+                            <sizeInBytes><![CDATA[390564]]></sizeInBytes>
+                            <status><![CDATA[published]]></status>
+                            <width><![CDATA[1014]]></width>
+                        </desktop>
+                    </images>
+                    <locale><![CDATA[ru_RU]]></locale>
+                    <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_6]]></masterId>
+                    <relatedSkus>
+                        <item><![CDATA[HDRCX220ES.CEH]]></item>
+                        <item><![CDATA[HDRCX220ES.CEN]]></item>
+                        <item><![CDATA[HDRCX220ES.CEL]]></item>
+                        <item><![CDATA[HDRCX220ES.E35]]></item>
+                    </relatedSkus>
+                    <type><![CDATA[urn:sony:media:image_family]]></type>
+                    <updatedAt><![CDATA[1395684914652]]></updatedAt>
+                    <version><![CDATA[20140316111923]]></version>
+                </imageFamily>
+                <rank><![CDATA[]]></rank>
+            </item>
+        </productShots>
+    </images>
+    <inTheBox>
+        <item><![CDATA[Кабель для подключения по USB]]></item>
+        <item><![CDATA[Аккумулятор]]></item>
+        <item><![CDATA[Кабель HDMI micro]]></item>
+        <item><![CDATA[Ручная]]></item>
+    </inTheBox>
+    <legacy><![CDATA[Yes]]></legacy>
+    <locale><![CDATA[ru_RU]]></locale>
+    <mainProductType>
+        <displayName><![CDATA[видеокамера]]></displayName>
+        <id><![CDATA[ID_camcorder]]></id>
+        <rootId><![CDATA[camcorder]]></rootId>
+    </mainProductType>
+    <marketingProductName><![CDATA[Handycam® CX220]]></marketingProductName>
+    <marketingProductNameUpperCase><![CDATA[HANDYCAM® CX220]]></marketingProductNameUpperCase>
+    <masterId><![CDATA[urn:sony:product:sku:[sku]hdrcx220_es.ceh]]></masterId>
+    <minVisibleTechSpecNumber><![CDATA[]]></minVisibleTechSpecNumber>
+    <model>
+        <featureBenefits>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Записывайте невероятно четкое и качественное видео Full HD в распространенном формате AVCHD]]></bodyCopy>
+                <headline><![CDATA[Благодаря широкоугольному объективу вы сможете уместить в кадр больше]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[32-кратный расширенный зум и улучшенная обработка изображений позволяет вам быстро использовать зум и снимать четкое видео]]></bodyCopy>
+                <headline><![CDATA[Ближе — одним нажатием на кнопку]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Высокочувствительная матрица Exmor R™ CMOS позволяет снимать видео и фотографии с высокой детализацией при сниженной шумности изображения даже в условиях недостаточного освещения]]></bodyCopy>
+                <headline><![CDATA[Снимайте при недостаточном освещении с высокой детализацией]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Высокоскоростной процессор изображения BIONZ улучшает качество изображения и характеристики фотокамеры при съемке движущихся объектов в кадре]]></bodyCopy>
+                <headline><![CDATA[Снимайте динамичные сцены с ультравысокой детализацией]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Запись в прогрессивном разрешении 1920x1080/50p выполняется при частоте 50 кадров Full HD в секунду]]></bodyCopy>
+                <headline><![CDATA[Плавное и четкое динамичное изображение]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Запись фотографий с разрешением 8,9 МП позволяет получать четкие и чистые фотографии и видеоклипы в разрешении High Definition]]></bodyCopy>
+                <headline><![CDATA[Снимайте фотографии с высокой детализацией]]></headline>
+            </item>
+            <item>
+                <bodyCopy><![CDATA[Результат фотосъемки удобно просматривать на 2,7" ЖК-экране Clear Photo]]></bodyCopy>
+                <headline><![CDATA[Удобство просмотра видеоклипов и фотографий]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[iAuto автоматически подстраивает настройки для достижения оптимальных результатов, определяя лица людей в кадре, освещение и тип сюжета, например, пейзаж]]></bodyCopy>
+                <headline><![CDATA[Просто наведите и снимайте, дополнительные настройки не потребуются]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Благодаря функциям фокусировки по лицу и Smile Shutter вы можете автоматически снимать фотографии улыбающихся друзей, не прерывая съемку видео]]></bodyCopy>
+                <headline><![CDATA[Улыбки в каждом кадре]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Кабель USB удобно умещается в корпусе Handycam®. С его помощью вы легко подключите фотокамеру к компьютеру, передадите видеоматериалы и зарядите аккумулятор]]></bodyCopy>
+                <headline><![CDATA[Удобная зарядка и разъемы]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[ПО PlayMemories™ позволяет передавать видеоматериалы и фотографии, организовать их, редактировать, распечатывать и публиковать их в сети]]></bodyCopy>
+                <headline><![CDATA[Удобство передачи файлов, просмотр и публикация изображений]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Разъем Micro HDMI позволяет подключать видеокамеру Handycam® к телевизору HD ready и устраивать совместные просмотры видео]]></bodyCopy>
+                <headline><![CDATA[Просматривайте запись в HD на большом экране]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Снимайте фильмы в популярном формате MP4 и с легкостью публикуйте готовый материал в Facebook™, YouTube™ или PlayMemories™]]></bodyCopy>
+                <headline><![CDATA[Легко делиться впечатлениями]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Высококачественное изображение дополняется стереозвучанием такого же качества, все готово для просмотра на домашнем кинотеатре]]></bodyCopy>
+                <headline><![CDATA[Кристально чистый звук и изображение]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[На ваш выбор съемные карты памяти Memory Stick™, Memory Stick PRO Duo™, SD, SDHC или SDXC]]></bodyCopy>
+                <headline><![CDATA[Богатство возможностей для хранения своих воспоминаний]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[Подключите видеокамеру Handycam® к телевизору BRAVIA® и управляйте поиском и воспроизведением ваших видеозаписей непосредственно на большом экране]]></bodyCopy>
+                <headline>
+                    <![CDATA[Просматривайте и воспроизводите видео с помощью телевизионного пульта ДУ]]></headline>
+            </item>
+            <item>
+                <bodyCopy>
+                    <![CDATA[С помощью ПО Direct Copy вы можете подключить Handycam® непосредственно к внешнему жесткому диску, чтобы сохранить и воспроизводить видео и фотографии без ПК]]></bodyCopy>
+                <headline><![CDATA[Сохраняйте дорогие воспоминания на внешний жесткий диск]]></headline>
+            </item>
+        </featureBenefits>
+        <featureIcons>
+            <item>
+                <copy><![CDATA[Матрица Exmor R CMOS 8,9 МП]]></copy>
+                <icon><![CDATA[fonticon-30-megapixel]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Объектив ZEISS Vario-Tessar с 32-кратным оптическим зумом]]></copy>
+                <icon><![CDATA[fonticon-30-carl-zeiss]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Функция стабилизации изображения SteadyShot уменьшает размытие]]></copy>
+                <icon><![CDATA[fonticon-30-stability]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[2,7" поворотный ЖК-экран для съемки с различных углов]]></copy>
+                <icon><![CDATA[fonticon-30-tiltable-screen]]></icon>
+            </item>
+            <item>
+                <copy><![CDATA[Запись в формате Full HD для красивых видеороликов]]></copy>
+                <icon><![CDATA[fonticon-30-hd]]></icon>
+            </item>
+        </featureIcons>
+        <images>
+            <primaryShot>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_hdr_cx220_e_primary_left_open_black_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1383678909703]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/6dff49bbc84cb72810d9ed3de69ddd59?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[1320]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/01/26/1230126.png]]></internalUrl>
+                                <md5><![CDATA[6dff49bbc84cb72810d9ed3de69ddd59]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[913178]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1320]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId>
+                            <![CDATA[urn:sony:media:image_family:if_hdr_cx220_e_primary_left_open_black]]></masterId>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1.39007792383E+12]]></updatedAt>
+                        <version><![CDATA[20140118122017]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[]]></rank>
+                </item>
+            </primaryShot>
+            <productShots>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_1_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1385330709896]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/37425e360fd05a049dbd373c58be72ec?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[396]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/76/1226976.png]]></internalUrl>
+                                <md5><![CDATA[37425e360fd05a049dbd373c58be72ec]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[400738]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1014]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_1]]></masterId>
+                        <relatedSkus>
+                            <item><![CDATA[HDRCX220EB.CEH]]></item>
+                            <item><![CDATA[HDRCX220EB.CEL]]></item>
+                            <item><![CDATA[HDRCX220EB.CEN]]></item>
+                            <item><![CDATA[HDRCX220EB.E35]]></item>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1395684914649]]></updatedAt>
+                        <version><![CDATA[20140316111918]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[10]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_2_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1383678909699]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/cbf589073b1c9a304e5bb0c07025bf2e?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[396]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/77/1226977.png]]></internalUrl>
+                                <md5><![CDATA[cbf589073b1c9a304e5bb0c07025bf2e]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[314372]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1014]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_2]]></masterId>
+                        <relatedSkus>
+                            <item><![CDATA[HDRCX220EB.CEH]]></item>
+                            <item><![CDATA[HDRCX220EB.CEL]]></item>
+                            <item><![CDATA[HDRCX220EB.CEN]]></item>
+                            <item><![CDATA[HDRCX220EB.E35]]></item>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1395684914654]]></updatedAt>
+                        <version><![CDATA[20140316111919]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[20]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_3_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1383678909699]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/ea09e84fcfae69b3f2a7b2ea3e88dffa?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[396]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/78/1226978.png]]></internalUrl>
+                                <md5><![CDATA[ea09e84fcfae69b3f2a7b2ea3e88dffa]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[478083]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1014]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_3]]></masterId>
+                        <relatedSkus>
+                            <item><![CDATA[HDRCX220EB.CEH]]></item>
+                            <item><![CDATA[HDRCX220EB.CEL]]></item>
+                            <item><![CDATA[HDRCX220EB.CEN]]></item>
+                            <item><![CDATA[HDRCX220EB.E35]]></item>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1395684914649]]></updatedAt>
+                        <version><![CDATA[20140316111920]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[30]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_5_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1383678909701]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/f70561dd1af7ffedbc2468c61313a04c?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[396]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/80/1226980.png]]></internalUrl>
+                                <md5><![CDATA[f70561dd1af7ffedbc2468c61313a04c]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[423333]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1014]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_5]]></masterId>
+                        <relatedSkus>
+                            <item><![CDATA[HDRCX220ER.CEH]]></item>
+                            <item><![CDATA[HDRCX220ER.CEL]]></item>
+                            <item><![CDATA[HDRCX220ER.CEN]]></item>
+                            <item><![CDATA[HDRCX220ER.E35]]></item>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1395684914656]]></updatedAt>
+                        <version><![CDATA[20140316111922]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[50]]></rank>
+                </item>
+                <item>
+                    <imageFamily>
+                        <id><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_6_ru_ru]]></id>
+                        <bucket><![CDATA[gwtprod]]></bucket>
+                        <createdAt><![CDATA[1383678909703]]></createdAt>
+                        <disclaimerCopy>
+                            <![CDATA[Цвета и доступные функции зависят от страны и модели]]></disclaimerCopy>
+                        <images>
+                            <desktop>
+                                <externalUrl>
+                                    <![CDATA[//sonyglobal.scene7.com/is/image/gwtprod/3485914ced75fcdc31f610cd863b5d07?fmt=png-alpha]]></externalUrl>
+                                <height><![CDATA[396]]></height>
+                                <internalUrl>
+                                    <![CDATA[https://prod-imgws.sony.eu/pim/raw-approved/std.lang.all/69/81/1226981.png]]></internalUrl>
+                                <md5><![CDATA[3485914ced75fcdc31f610cd863b5d07]]></md5>
+                                <mimeType><![CDATA[image/png]]></mimeType>
+                                <sizeInBytes><![CDATA[390564]]></sizeInBytes>
+                                <status><![CDATA[published]]></status>
+                                <width><![CDATA[1014]]></width>
+                            </desktop>
+                        </images>
+                        <locale><![CDATA[ru_RU]]></locale>
+                        <masterId><![CDATA[urn:sony:media:image_family:if_product_shot_hdr_cx220_e_6]]></masterId>
+                        <relatedSkus>
+                            <item><![CDATA[HDRCX220ES.CEH]]></item>
+                            <item><![CDATA[HDRCX220ES.CEN]]></item>
+                            <item><![CDATA[HDRCX220ES.CEL]]></item>
+                            <item><![CDATA[HDRCX220ES.E35]]></item>
+                        </relatedSkus>
+                        <type><![CDATA[urn:sony:media:image_family]]></type>
+                        <updatedAt><![CDATA[1395684914652]]></updatedAt>
+                        <version><![CDATA[20140316111923]]></version>
+                    </imageFamily>
+                    <rank><![CDATA[60]]></rank>
+                </item>
+            </productShots>
+        </images>
+        <locale><![CDATA[ru_RU]]></locale>
+        <marketingProductName><![CDATA[Handycam® CX220]]></marketingProductName>
+        <masterId><![CDATA[urn:sony:product:model:[model]hdr_cx220_e]]></masterId>
+        <number><![CDATA[HDR-CX220E]]></number>
+        <slug><![CDATA[hdr-cx220e]]></slug>
+        <topFeatures>
+            <item><![CDATA[Широкоугольный объектив ZEISS 27х зумом]]></item>
+            <item><![CDATA[Функция стабилизации изображения SteadyShot уменьшает размытие]]></item>
+            <item><![CDATA[Удобный встроенный кабель USB]]></item>
+        </topFeatures>
+        <updatedAt><![CDATA[1395684914711]]></updatedAt>
+    </model>
+    <modelName><![CDATA[HDR-CX220E]]></modelName>
+    <name><![CDATA[HDRCX220ES.CEH]]></name>
+    <number><![CDATA[HDRCX220ES.CEH]]></number>
+    <parentId><![CDATA[urn:sony:product:model:[model]hdr_cx220_e]]></parentId>
+    <price>
+        <ecommerce></ecommerce>
+        <msrp></msrp>
+    </price>
+    <productRank><![CDATA[100]]></productRank>
+    <productRegions>
+        <item>
+            <displayName><![CDATA[EU]]></displayName>
+            <id><![CDATA[EU]]></id>
+            <rootId><![CDATA[EU]]></rootId>
+        </item>
+    </productRegions>
+    <purpose><![CDATA[Approval]]></purpose>
+    <relatedProducts>
+        <accessoryProducts>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCTVPR1.CE7]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[NPFV100.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSBBJB.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSBBJL.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VMCAVM1.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSU11B.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSU5B.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSU5H.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[NPFV50.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[NPFV70.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[RDPCA2.CE7]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCTVPR10.CE7]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[BCTRV.CEE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCTR640.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSU21B.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[ACL200.CEE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[ACCBBV5.CE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCTR100.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VMC15MR2.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCTMP1.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VMCUAM2.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[ACVQV10.CEE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[ACVQV10.CEK]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[VCT55LH.SYH]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCSVCD.AE]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX8B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX32B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[MSHX16B]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[CP-F2LSA]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[GPVPT1.CE7]]></product>
+            </item>
+            <item>
+                <isFeatured><![CDATA[No]]></isFeatured>
+                <product><![CDATA[LCMCSVHB.SYH]]></product>
+            </item>
+        </accessoryProducts>
+    </relatedProducts>
+    <rootColorEquivalent>
+        <item>
+            <displayName><![CDATA[Серебристый]]></displayName>
+            <id><![CDATA[ID_14_Silver]]></id>
+            <rootId><![CDATA[Silver]]></rootId>
+        </item>
+    </rootColorEquivalent>
+    <skuName><![CDATA[HDRCX220ES.CEH]]></skuName>
+    <slug><![CDATA[hdrcx220es.ceh]]></slug>
+    <sourceLocale><![CDATA[en_GB]]></sourceLocale>
+    <sunriseDateTime><![CDATA[1.366776E+12]]></sunriseDateTime>
+    <targetLocales>
+        <item><![CDATA[bg_BG]]></item>
+        <item><![CDATA[cs_CZ]]></item>
+        <item><![CDATA[da_DK]]></item>
+        <item><![CDATA[de_CH]]></item>
+        <item><![CDATA[de_DE]]></item>
+        <item><![CDATA[de_AT]]></item>
+        <item><![CDATA[de_LU]]></item>
+        <item><![CDATA[el_GR]]></item>
+        <item><![CDATA[en_EE]]></item>
+        <item><![CDATA[en_GB]]></item>
+        <item><![CDATA[en_IE]]></item>
+        <item><![CDATA[en_LV]]></item>
+        <item><![CDATA[es_ES]]></item>
+        <item><![CDATA[fi_FI]]></item>
+        <item><![CDATA[fr_BE]]></item>
+        <item><![CDATA[fr_CH]]></item>
+        <item><![CDATA[fr_FR]]></item>
+        <item><![CDATA[fr_LU]]></item>
+        <item><![CDATA[hr_BA]]></item>
+        <item><![CDATA[hr_HR]]></item>
+        <item><![CDATA[hu_HU]]></item>
+        <item><![CDATA[it_IT]]></item>
+        <item><![CDATA[lt_LT]]></item>
+        <item><![CDATA[mk_MK]]></item>
+        <item><![CDATA[nl_BE]]></item>
+        <item><![CDATA[nl_NL]]></item>
+        <item><![CDATA[no_NO]]></item>
+        <item><![CDATA[pl_PL]]></item>
+        <item><![CDATA[pt_PT]]></item>
+        <item><![CDATA[ro_RO]]></item>
+        <item><![CDATA[ru_KZ]]></item>
+        <item><![CDATA[ru_RU]]></item>
+        <item><![CDATA[sk_SK]]></item>
+        <item><![CDATA[sl_SI]]></item>
+        <item><![CDATA[sr_YU]]></item>
+        <item><![CDATA[sv_SE]]></item>
+        <item><![CDATA[tr_TR]]></item>
+        <item><![CDATA[uk_UA]]></item>
+    </targetLocales>
+    <tier><![CDATA[3]]></tier>
+    <topFeatures>
+        <item><![CDATA[Широкоугольный объектив ZEISS 27х зумом]]></item>
+        <item><![CDATA[Функция стабилизации изображения SteadyShot уменьшает размытие]]></item>
+        <item><![CDATA[Удобный встроенный кабель USB]]></item>
+    </topFeatures>
+    <type><![CDATA[urn:sony:product:sku]]></type>
+    <updatedAt><![CDATA[1390482910628]]></updatedAt>
+    <version><![CDATA[20140123081350]]></version>
+    <videos></videos>
+</product>

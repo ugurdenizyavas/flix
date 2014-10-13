@@ -1,11 +1,28 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
+//======================================================================
+// PROJECT
+//======================================================================
+
+group = 'com.sony.ebs.octopus3'
+
+//======================================================================
+// REPOSITORIES
+//======================================================================
+
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral()
+        maven { url 'https://mvn.sony-europe.com/content/groups/global' }
         maven { url "http://oss.jfrog.org/repo" }
+        maven { url "https://oss.sonatype.org/content/groups/public" }
+        mavenCentral()
     }
     dependencies {
-        classpath 'io.ratpack:ratpack-gradle:0.9.6'
+        classpath "io.ratpack:ratpack-gradle:$ratpackVersion"
+        classpath "org.gradle.api.plugins:gradle-nexus-plugin:0.7.1"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.0.2"
+        classpath 'com.github.townsfolk:gradle-release:1.2'
     }
 }
 
@@ -18,8 +35,20 @@ repositories {
     maven { url "http://repo.spring.io/libs-release" }
 }
 
-apply plugin: "ratpack-groovy"
+//======================================================================
+// PLUGINS
+//======================================================================
+
+apply plugin: 'io.ratpack.ratpack-groovy'
 apply plugin: "groovy"
+apply plugin: 'idea'
+apply plugin: 'nexus'
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: 'release'
+
+//======================================================================
+// CONFIGURATIONS
+//======================================================================
 
 configurations {
     all {
@@ -28,10 +57,51 @@ configurations {
     cucumberRuntime {
         extendsFrom testRuntime
     }
+    sshAntTask {
+        logging.level = LogLevel.INFO
+    }
 }
 
+idea {
+    project {
+        jdkName "1.7"
+        languageLevel "1.7"
+    }
+    module {
+        inheritOutputDirs = false
+        outputDir = compileGroovy.destinationDir
+        testOutputDir = compileTestGroovy.destinationDir
+
+    }
+}
+
+shadowJar {
+    baseName = "${project.name}-app"
+    archiveName = "${baseName}.jar"
+    classifier = group
+    transform(AppendingTransformer) {
+        resource = "META-INF/spring.handlers"
+    }
+    transform(AppendingTransformer) {
+        resource = "META-INF/spring.schemas"
+    }
+}
+
+run {
+    systemProperty('environment', System.getProperty('environment'))
+    systemProperty('logback.configurationFile', System.getProperty('logback.configurationFile'))
+}
+test { systemProperty('environment', System.getProperty('environment')) }
+
+//======================================================================
+// DEPENDENCIES
+//======================================================================
+
 dependencies {
-    compile 'com.sony.ebs.octopus3:octopus3-commons:1.0-SNAPSHOT'
+    sshAntTask 'org.apache.ant:ant-jsch:1.9.2'
+
+    compile 'com.sony.ebs.octopus3:octopus3-commons:1.2-SNAPSHOT'
+    compile 'com.sony.ebs.octopus3:octopus3-commons-ratpack:1.2-SNAPSHOT'
     compile 'commons-io:commons-io:2.4'
 
     // cucumber
@@ -41,21 +111,24 @@ dependencies {
     testCompile 'info.cukes:cucumber-groovy:1.1.7'
 
     // spring
-    compile "org.springframework:spring-core:4.0.5.RELEASE"
-    compile "org.springframework:spring-context:4.0.5.RELEASE"
-    compile "org.springframework:spring-beans:4.0.5.RELEASE"
+    compile "org.springframework:spring-core:$springVersion"
+    compile "org.springframework:spring-context:$springVersion"
+    compile "org.springframework:spring-beans:$springVersion"
 
     // ratpack
     springloaded "org.springsource.springloaded:springloaded-core:1.1.4"
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0", {
         exclude module: "groovy-all"
     }
-    compile 'io.ratpack:ratpack-rx:0.9.6'
-    compile 'io.ratpack:ratpack-jackson:0.9.6'
+    compile ratpack.dependency("jackson")
+    compile ratpack.dependency("rx")
 
     // logging
-    compile "org.slf4j:slf4j-api:1.7.5"
-    compile "org.slf4j:slf4j-log4j12:1.7.5"
+    compile group:"org.slf4j", name:"slf4j-api", version:"1.7.5"
+    compile group:"org.slf4j", name:"jcl-over-slf4j", version:"1.7.5"
+    compile group:"org.slf4j", name:"log4j-over-slf4j", version:"1.7.5"
+    compile group:"ch.qos.logback", name:"logback-core", version:"1.1.2"
+    compile group:"ch.qos.logback", name:"logback-classic", version:"1.1.2"
 
     // http clients
     compile 'com.ning:async-http-client:1.8.11', {
@@ -70,6 +143,8 @@ dependencies {
     compile 'com.netflix.rxjava:rxjava-apache-http:0.19.2', {
        exclude group: 'org.apache.httpcomponents'
     }
+    testCompile 'xmlunit:xmlunit:1.5'
+
     compile 'org.apache.httpcomponents:httpasyncclient:4.0.1'
     compile 'org.apache.httpcomponents:httpmime:4.3.4'
     compile 'org.apache.httpcomponents:httpcore:4.3.2'
@@ -77,23 +152,207 @@ dependencies {
 
 }
 
-run {
-    systemProperty('environment', System.getProperty('environment'))
-    systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir'))
-}
-test {
-    systemProperty('environment', System.getProperty('environment'))
-    systemProperty('storage.root', System.getProperty('storage.root') ?: System.getProperty('java.io.tmpdir'))
-}
+//======================================================================
+// TASKS
+//======================================================================
 
-task cucumber() {
+task cucumber(type: JavaExec) {
     dependsOn assemble
-    doLast {
-        javaexec {
-            main = "cucumber.api.cli.Main"
-            classpath = files(configurations.cucumberRuntime, sourceSets.test.runtimeClasspath)
-            args = ['-f', 'pretty', '--glue', 'src/test/groovy', 'src/test/resources/cukes']
+    main = "cucumber.api.cli.Main"
+    classpath = files(configurations.cucumberRuntime, sourceSets.test.runtimeClasspath)
+    args = ['-f', 'pretty', '--glue', 'src/test/groovy', 'src/test/resources/cukes']
+}
 
+task wrapper(type: Wrapper) {
+    gradleVersion = 2.0
+}
+
+//======================================================================
+// DEPLOY ARTIFACTS
+//======================================================================
+
+nexus {
+    attachSources = true
+    attachTests = false
+    attachJavadoc = false
+    sign = false
+    repositoryUrl = 'https://mvn.sony-europe.com/content/repositories/releases'
+    snapshotRepositoryUrl = 'https://mvn.sony-europe.com/content/repositories/snapshots'
+}
+
+task devRelease() {
+    description = "Upload shadow jar to dev server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(devReleasePassword.decodeBase64())
+
+    doLast {
+        devUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app.jar"),
+                        todir: "${devReleaseUser}@${host}:${devUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        devStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: devReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: devStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+    }
+}
+
+task tqaRelease() {
+    description = "Upload shadow jar to tqa server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(tqaReleasePassword.decodeBase64())
+
+    doLast {
+        tqaUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app.jar"),
+                        todir: "${tqaReleaseUser}@${host}:${tqaUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        tqaStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: tqaReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: tqaStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+    }
+}
+
+task prdRelease() {
+    description = "Upload shadow jar to prd server and restart application"
+    dependsOn shadowJar
+    logging.level = LogLevel.INFO
+
+    ant.taskdef(
+            name: 'scp',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    ant.taskdef(
+            name: 'ssh',
+            classname: 'org.apache.tools.ant.taskdefs.optional.ssh.SSHExec',
+            classpath: configurations.sshAntTask.asPath
+    )
+
+    // Create a new file for each execution to make
+    // sure that execution doesn't fails in case
+    // identity of host has been changed.
+    def knownHosts = File.createTempFile("knownhosts", "txt")
+    def password = new String(prdReleasePassword.decodeBase64())
+
+    doLast {
+        prdUploadHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tUPLOADING TO {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.scp(
+                        file: file("build/libs/${project.name}-app.jar"),
+                        todir: "${prdReleaseUser}@${host}:${prdUploadPath}",
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts
+                )
+            } finally {
+                knownHosts.delete()
+            }
+        }
+
+        prdStartHosts.split(',').each { host ->
+            logger.info("#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#\n\tSTARTING {}\n#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#", host)
+            try {
+                ant.ssh(
+                        host: host,
+                        username: prdReleaseUser,
+                        password: password,
+                        trust: true,
+                        verbose: true,
+                        knownhosts: knownHosts,
+                        command: prdStartCommand
+                )
+            } finally {
+                knownHosts.delete()
+            }
         }
     }
 }
