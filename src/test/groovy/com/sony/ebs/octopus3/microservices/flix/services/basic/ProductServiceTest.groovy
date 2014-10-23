@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
@@ -44,7 +44,7 @@ class ProductServiceTest {
         productService = new ProductService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
 
         product = new RepoProduct(type: DeltaType.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123", eanCode: "ea1")
-        mockHttpClient = new MockFor(NingHttpClient)
+        mockHttpClient = new MockFor(Oct3HttpClient)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)
     }
@@ -75,12 +75,12 @@ class ProductServiceTest {
         mockHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc?processId=123"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
             }
             doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:global:fr_be:a_2fb_2bc.xml?processId=123"
                 assert is.text == "some xml"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
 
@@ -99,7 +99,7 @@ class ProductServiceTest {
     void "sheet not found"() {
         mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
             }
         }
         assert runFlow() == "outOfFlow"
@@ -110,7 +110,7 @@ class ProductServiceTest {
     void "invalid sheet"() {
         mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: 'invalid json'))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: 'invalid json'.bytes))
             }
         }
         assert runFlow() == "error"
@@ -120,7 +120,7 @@ class ProductServiceTest {
     void "error building xml"() {
         mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
             }
         }
         mockFlixXmlBuilder.demand.with {
@@ -135,10 +135,10 @@ class ProductServiceTest {
     void "error saving xml"() {
         mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
             }
             doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 500))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
             }
         }
         mockFlixXmlBuilder.demand.with {
@@ -155,10 +155,10 @@ class ProductServiceTest {
         product.eanCode = null
         mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: VALID_JSON))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
             }
             doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
         mockEanCodeEnhancer.demand.with {

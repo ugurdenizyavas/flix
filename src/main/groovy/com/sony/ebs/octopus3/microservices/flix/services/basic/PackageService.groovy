@@ -1,10 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
-import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
-import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.util.logging.Slf4j
@@ -39,7 +38,7 @@ class PackageService {
 
     @Autowired
     @Qualifier("internalHttpClient")
-    NingHttpClient httpClient
+    Oct3HttpClient httpClient
 
     String createOpsRecipe(Map recipeParams) {
         def getZip = {
@@ -106,8 +105,8 @@ class PackageService {
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, EncodingUtil.CHARSET))
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "calling repo ops service", delta.errors)
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("calling repo ops service", delta.errors)
         }).map({
             "success"
         })

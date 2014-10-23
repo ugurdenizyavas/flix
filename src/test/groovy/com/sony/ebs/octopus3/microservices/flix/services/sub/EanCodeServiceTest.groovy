@@ -1,9 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
-import com.sony.ebs.octopus3.commons.urn.URN
-import com.sony.ebs.octopus3.commons.urn.URNImpl
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.AfterClass
@@ -18,7 +16,7 @@ import spock.util.concurrent.BlockingVariable
 class EanCodeServiceTest {
 
     EanCodeService eanCodeService
-    StubFor mockNingHttpClient
+    StubFor mockHttpClient
 
     static ExecController execController
 
@@ -37,11 +35,11 @@ class EanCodeServiceTest {
         eanCodeService = new EanCodeService(
                 execControl: execController.control,
                 octopusEanCodeServiceUrl: "/product/identifiers/ean_code")
-        mockNingHttpClient = new StubFor(NingHttpClient)
+        mockHttpClient = new StubFor(Oct3HttpClient)
     }
 
     def runFilterForEanCodes(List productUrls, List errors) {
-        eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
+        eanCodeService.httpClient = mockHttpClient.proxyInstance()
 
         def result = new BlockingVariable(5)
         boolean valueSet = false
@@ -61,13 +59,13 @@ class EanCodeServiceTest {
 
     @Test
     void "error in getting ean codes"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 assert it == "/product/identifiers/ean_code"
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
             }
         }
-        eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
+        eanCodeService.httpClient = mockHttpClient.proxyInstance()
 
         def errors = []
         assert runFilterForEanCodes([], errors) == "outOfFlow"
@@ -76,13 +74,13 @@ class EanCodeServiceTest {
 
     @Test
     void "exception in getting ean codes"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 assert it == "/product/identifiers/ean_code"
                 throw new Exception("error in get")
             }
         }
-        eanCodeService.httpClient = mockNingHttpClient.proxyInstance()
+        eanCodeService.httpClient = mockHttpClient.proxyInstance()
 
         def errors = []
         assert runFilterForEanCodes([], errors) == "error"
@@ -111,10 +109,10 @@ class EanCodeServiceTest {
                 "urn:gs:score:en_gb:ss-ac3_2b_2fc+ce7"
         ]
 
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 assert it == "/product/identifiers/ean_code"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: feed))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: feed.bytes))
             }
         }
 

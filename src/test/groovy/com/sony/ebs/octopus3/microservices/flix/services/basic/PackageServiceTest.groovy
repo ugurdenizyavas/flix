@@ -1,7 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -9,7 +9,6 @@ import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
-import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -22,7 +21,7 @@ import spock.util.concurrent.BlockingVariable
 class PackageServiceTest {
 
     PackageService packageService
-    StubFor mockNingHttpClient
+    StubFor mockHttpClient
     Flix flix
     RepoDelta delta
 
@@ -44,14 +43,14 @@ class PackageServiceTest {
                 repositoryOpsServiceUrl: "/repo/ops",
                 repositoryFileServiceUrl: "/repo/file/:urn"
                 , execControl: execController.control)
-        mockNingHttpClient = new StubFor(NingHttpClient)
+        mockHttpClient = new StubFor(Oct3HttpClient)
 
         delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "fr_FR")
         flix = new Flix()
     }
 
     def runFlow() {
-        packageService.httpClient = mockNingHttpClient.proxyInstance()
+        packageService.httpClient = mockHttpClient.proxyInstance()
 
         def result = new BlockingVariable(5)
         boolean valueSet = false
@@ -71,10 +70,10 @@ class PackageServiceTest {
 
     @Test
     void "success"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
                 assert url == "/repo/ops"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
         assert runFlow() == "success"
@@ -84,9 +83,9 @@ class PackageServiceTest {
 
     @Test
     void "error calling ops service"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 500))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
             }
         }
         assert runFlow() == "outOfFlow"
@@ -95,7 +94,7 @@ class PackageServiceTest {
 
     @Test
     void "exception calling ops service"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
                 throw new Exception("calling ops service")
             }

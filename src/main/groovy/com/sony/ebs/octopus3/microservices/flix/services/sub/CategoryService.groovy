@@ -1,9 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
-import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.services.basic.FlixUtils
@@ -36,7 +36,7 @@ class CategoryService {
 
     @Autowired
     @Qualifier("internalHttpClient")
-    NingHttpClient httpClient
+    Oct3HttpClient httpClient
 
     rx.Observable<String> retrieveCategoryFeed(RepoDelta delta) {
         String categoryFeed
@@ -44,17 +44,17 @@ class CategoryService {
             def categoryReadUrl = octopusCategoryServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale)
             log.info "category service url for {} is {}", delta, categoryReadUrl
             httpClient.doGet(categoryReadUrl)
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "getting octopus category feed", delta.errors)
-        }).flatMap({ Response response ->
-            categoryFeed = IOUtils.toString(response.responseBodyAsStream, EncodingUtil.CHARSET)
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("getting octopus category feed", delta.errors)
+        }).flatMap({ Oct3HttpResponse response ->
+            categoryFeed = IOUtils.toString(response.bodyAsStream, EncodingUtil.CHARSET)
             def categoryUrn = FlixUtils.getCategoryUrn(delta.publication, delta.locale)
             def categorySaveUrl = repositoryFileServiceUrl.replace(":urn", categoryUrn.toString())
             log.info "category save url for {} is {}", delta, categorySaveUrl
 
             httpClient.doPost(categorySaveUrl, IOUtils.toInputStream(categoryFeed, EncodingUtil.CHARSET))
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "saving octopus category feed", delta.errors)
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("saving octopus category feed", delta.errors)
         }).map({
             categoryFeed
         })

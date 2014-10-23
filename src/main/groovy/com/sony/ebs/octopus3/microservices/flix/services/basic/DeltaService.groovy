@@ -1,9 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
-import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
@@ -48,7 +48,7 @@ class DeltaService {
 
     @Autowired
     @Qualifier("internalHttpClient")
-    NingHttpClient httpClient
+    Oct3HttpClient httpClient
 
     @Autowired
     CategoryService categoryService
@@ -59,13 +59,12 @@ class DeltaService {
     @Autowired
     DeltaUrlHelper deltaUrlHelper
 
-    private def createProductServiceResult(Response response, String jsonUrn, String eanCode) {
+    private def createProductServiceResult(Oct3HttpResponse response, String jsonUrn, String eanCode) {
         observe(execControl.blocking({
-            boolean success = NingHttpClient.isSuccess(response)
-            def sheetServiceResult = new ProductServiceResult(jsonUrn: jsonUrn, success: success,
+            def sheetServiceResult = new ProductServiceResult(jsonUrn: jsonUrn, success: response.success,
                     statusCode: response.statusCode, eanCode: eanCode)
-            if (!success) {
-                def json = jsonSlurper.parse(response.responseBodyAsStream, EncodingUtil.CHARSET_STR)
+            if (!response.success) {
+                def json = jsonSlurper.parse(response.bodyAsStream, EncodingUtil.CHARSET_STR)
                 sheetServiceResult.errors = json.errors
             } else {
                 sheetServiceResult.with {
@@ -99,7 +98,7 @@ class DeltaService {
             createProductServiceUrl(delta, jsonUrn, eanCode)
         }).flatMap({
             httpClient.doGet(it)
-        }).flatMap({ Response response ->
+        }).flatMap({ Oct3HttpResponse response ->
             createProductServiceResult(response, jsonUrn, eanCode)
         }).onErrorReturn({
             log.error "error for $jsonUrn", it
@@ -123,12 +122,12 @@ class DeltaService {
             delta.finalDeltaUrl = it
             log.debug "delta url is {} for {}", delta.finalDeltaUrl, delta
             httpClient.doGet(delta.finalDeltaUrl)
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "retrieving global sku delta", delta.errors)
-        }).flatMap({ Response response ->
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("retrieving global sku delta", delta.errors)
+        }).flatMap({ Oct3HttpResponse response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
-                def json = jsonSlurper.parse(response.responseBodyAsStream, EncodingUtil.CHARSET_STR)
+                def json = jsonSlurper.parse(response.bodyAsStream, EncodingUtil.CHARSET_STR)
                 json?.results
             }))
         }).flatMap({
@@ -138,8 +137,8 @@ class DeltaService {
             log.info "deleting current flix xmls"
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", delta.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "deleting current flix xmls", delta.errors)
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("deleting current flix xmls", delta.errors)
         }).flatMap({
             deltaUrlHelper.updateLastModified(lastModifiedUrn, delta.errors)
         }).flatMap({

@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.spring.config
 
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClientFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -14,6 +15,9 @@ class HttpClientConfig {
 
     @Autowired
     LaunchConfig launchConfig
+
+    @Value('${http.client.type}')
+    String httpClientType
 
     @Value('${octopus3.flix.external.proxy.host}')
     String externalProxyHost
@@ -45,18 +49,30 @@ class HttpClientConfig {
     @Value('${octopus3.flix.internal.proxy.nonProxyHosts}')
     String internalNonProxyHosts
 
+
+    @Bean
+    public Oct3HttpClientFactory oct3HttpClientFactory() {
+        new Oct3HttpClientFactory()
+    }
+
     @Bean
     @Qualifier("externalHttpClient")
     @org.springframework.context.annotation.Lazy
-    public NingHttpClient externalHttpClient() {
-        new NingHttpClient(launchConfig, externalProxyHost, externalProxyPort, externalProxyUser, externalProxyPassword, externalNonProxyHosts, "", "", 5000, 60000)
+    public Oct3HttpClient externalHttpClient() {
+        oct3HttpClientFactory().createHttpClient(launchConfig, httpClientType,
+                externalProxyHost, externalProxyPort,
+                externalProxyUser, externalProxyPassword, externalNonProxyHosts,
+                '', '', 5000, 60000)
     }
 
     @Bean
     @Qualifier("internalHttpClient")
     @org.springframework.context.annotation.Lazy
-    public NingHttpClient internalHttpClient() {
-        new NingHttpClient(launchConfig, internalProxyHost, internalProxyPort, internalProxyUser, internalProxyPassword, internalNonProxyHosts, "", "", 5000, 60000)
+    public Oct3HttpClient internalHttpClient() {
+        oct3HttpClientFactory().createHttpClient(launchConfig, httpClientType,
+                internalProxyHost, internalProxyPort,
+                internalProxyUser, internalProxyPassword, internalNonProxyHosts,
+                '', '', 5000, 60000)
     }
 
 }

@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
@@ -42,7 +42,7 @@ class DeltaServiceTest {
 
     DeltaService deltaService
     StubFor mockCategoryService, mockDeltaUrlHelper, mockEanCodeService
-    MockFor mockNingHttpClient
+    MockFor mockHttpClient
 
     Flix flix
     RepoDelta delta
@@ -66,7 +66,7 @@ class DeltaServiceTest {
                 repositoryDeltaServiceUrl: "/delta/:urn",
                 repositoryFileServiceUrl: "/file/:urn",
                 repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
-        mockNingHttpClient = new MockFor(NingHttpClient)
+        mockHttpClient = new MockFor(Oct3HttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
         mockEanCodeService = new StubFor(EanCodeService)
@@ -77,7 +77,7 @@ class DeltaServiceTest {
     }
 
     def runFlow() {
-        deltaService.httpClient = mockNingHttpClient.proxyInstance()
+        deltaService.httpClient = mockHttpClient.proxyInstance()
         deltaService.categoryService = mockCategoryService.proxyInstance()
         deltaService.deltaUrlHelper = mockDeltaUrlHelper.proxyInstance()
         deltaService.eanCodeService = mockEanCodeService.proxyInstance()
@@ -96,24 +96,24 @@ class DeltaServiceTest {
 
     @Test
     void "success"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/delta/urn:global_sku:score:en_gb?dates"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: DELTA_FEED.bytes))
             }
             doDelete(1) { String url ->
                 assert url == "/file/urn:flixmedia:score:en_gb"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
             doGet(4) { String url ->
                 assert url.startsWith("/flix/product/publication/SCORE/locale/en_GB/sku/")
                 def key = url[49]
                 if (key == 'f') {
-                    rx.Observable.just(new MockNingResponse(_statusCode: 500, _responseBody: '{ "errors" : ["err1", "err2"]}'))
+                    rx.Observable.just(new Oct3HttpResponse(statusCode: 500, bodyAsBytes: '{ "errors" : ["err1", "err2"]}'.bytes))
                 } else if (key == 'g') {
                     throw new Exception("error in f")
                 } else {
-                    rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: '{ "result" : ["success"]}'))
+                    rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: '{ "result" : ["success"]}'.bytes))
                 }
             }
         }
@@ -175,9 +175,9 @@ class DeltaServiceTest {
                 rx.Observable.just("//delta?dates")
             }
         }
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
             }
         }
         assert runFlow() == []
@@ -194,12 +194,12 @@ class DeltaServiceTest {
                 rx.Observable.just("//delta?dates")
             }
         }
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: DELTA_FEED.bytes))
             }
             doDelete(1) { String url ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 500))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
             }
         }
         assert runFlow() == []
@@ -220,12 +220,12 @@ class DeltaServiceTest {
                 throw new Exception("error updating last modified time")
             }
         }
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: DELTA_FEED))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: DELTA_FEED.bytes))
             }
             doDelete(1) { String url ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
         assert runFlow() == ["error"]

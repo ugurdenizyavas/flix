@@ -1,9 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.services.basic
 
-import com.ning.http.client.Response
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
@@ -33,7 +33,7 @@ class ProductService {
 
     @Autowired
     @Qualifier("internalHttpClient")
-    NingHttpClient httpClient
+    Oct3HttpClient httpClient
 
     @Autowired
     EanCodeEnhancer eanCodeEnhancer
@@ -94,11 +94,11 @@ class ProductService {
             createRepoUrl(product, false)
         }).flatMap({
             httpClient.doGet(it)
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "getting sheet from repo", product.errors)
-        }).flatMap({ Response response ->
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("getting sheet from repo", product.errors)
+        }).flatMap({ Oct3HttpResponse response ->
             observe(execControl.blocking {
-                createSheetJson(response.responseBodyAsStream, product.eanCode)
+                createSheetJson(response.bodyAsStream, product.eanCode)
             })
         }).flatMap({ json ->
             observe(execControl.blocking {
@@ -110,8 +110,8 @@ class ProductService {
             createRepoUrl(product, true)
         }).flatMap({
             httpClient.doPost(it, IOUtils.toInputStream(xmlString, EncodingUtil.CHARSET))
-        }).filter({ Response response ->
-            NingHttpClient.isSuccess(response, "saving flix xml to repo", product.errors)
+        }).filter({ Oct3HttpResponse response ->
+            response.isSuccessful("saving flix xml to repo", product.errors)
         }).map({
             "success"
         })

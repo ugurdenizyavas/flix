@@ -2,7 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.spring.config
 
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
@@ -36,12 +36,12 @@ class SpringConfig {
     @Autowired
     @Qualifier("externalHttpClient")
     @org.springframework.context.annotation.Lazy
-    NingHttpClient externalHttpClient
+    Oct3HttpClient externalHttpClient
 
     @Autowired
     @Qualifier("internalHttpClient")
     @org.springframework.context.annotation.Lazy
-    NingHttpClient internalHttpClient
+    Oct3HttpClient internalHttpClient
 
     @Value('${octopus3.flix.octopusIdentifiersServiceUrl}')
     String octopusIdentifiersServiceUrl
@@ -90,7 +90,7 @@ class SpringConfig {
     public ResponseStorage responseStorage(
             @Value('${octopus3.flix.repositoryFileServiceUrl}') String saveUrl) {
         new ResponseStorage(
-                ningHttpClient: externalHttpClient,
+                httpClient: externalHttpClient,
                 saveUrl: saveUrl
         )
     }

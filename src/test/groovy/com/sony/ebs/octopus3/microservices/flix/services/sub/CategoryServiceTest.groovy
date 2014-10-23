@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.services.sub
 
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.MockNingResponse
-import com.sony.ebs.octopus3.commons.ratpack.http.ning.NingHttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -25,7 +25,7 @@ class CategoryServiceTest {
     final static String CATEGORY_FEED = "<categories/>"
 
     CategoryService categoryService
-    StubFor mockNingHttpClient
+    StubFor mockHttpClient
 
     static ExecController execController
 
@@ -49,11 +49,11 @@ class CategoryServiceTest {
                 execControl: execController.control,
                 octopusCategoryServiceUrl: "/product/publications/:publication/locales/:locale/hierarchies/category",
                 repositoryFileServiceUrl: "/repository/file/:urn")
-        mockNingHttpClient = new StubFor(NingHttpClient)
+        mockHttpClient = new StubFor(Oct3HttpClient)
     }
 
     def runRetrieveCategoryFeed(RepoDelta delta) {
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        categoryService.httpClient = mockHttpClient.proxyInstance()
 
         def result = new BlockingVariable<String>(5)
         boolean valueSet = false
@@ -75,15 +75,15 @@ class CategoryServiceTest {
     void "get category feed"() {
         def categoryFeed = getFileText("category_ru.xml")
 
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) { String url ->
                 assert url == "/product/publications/SCORE/locales/en_GB/hierarchies/category"
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: categoryFeed))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: categoryFeed.bytes))
             }
             doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:score:en_gb:category.xml"
                 assert IOUtils.toString(is, EncodingUtil.CHARSET) == categoryFeed
-                rx.Observable.just(new MockNingResponse(_statusCode: 200))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
         def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
@@ -92,12 +92,12 @@ class CategoryServiceTest {
 
     @Test
     void "category not found"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 500))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
             }
         }
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        categoryService.httpClient = mockHttpClient.proxyInstance()
 
         def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
         assert runRetrieveCategoryFeed(delta) == "outOfFlow"
@@ -106,15 +106,15 @@ class CategoryServiceTest {
 
     @Test
     void "could not save"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
-                rx.Observable.just(new MockNingResponse(_statusCode: 200, _responseBody: CATEGORY_FEED))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: CATEGORY_FEED.bytes))
             }
             doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new MockNingResponse(_statusCode: 404))
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
             }
         }
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        categoryService.httpClient = mockHttpClient.proxyInstance()
 
         def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
         assert runRetrieveCategoryFeed(delta) == "outOfFlow"
@@ -123,12 +123,12 @@ class CategoryServiceTest {
 
     @Test
     void "exception in get"() {
-        mockNingHttpClient.demand.with {
+        mockHttpClient.demand.with {
             doGet(1) {
                 throw new Exception("error in get")
             }
         }
-        categoryService.httpClient = mockNingHttpClient.proxyInstance()
+        categoryService.httpClient = mockHttpClient.proxyInstance()
 
         def delta = new RepoDelta(publication: "SCORE", locale: "en_GB")
         assert runRetrieveCategoryFeed(delta) == "error"
