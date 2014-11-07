@@ -7,11 +7,11 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.client.utils.URIBuilder
@@ -145,8 +145,8 @@ class DeltaService {
             categoryService.retrieveCategoryFeed(delta)
         }).flatMap({ String categoryFeed ->
             categoryService.filterForCategory(delta.deltaUrns, categoryFeed)
-        }).flatMap({
-            categoryFilteredUrns = it
+        }).flatMap({ Map categoryMap ->
+            categoryFilteredUrns = categoryMap.keySet() as List
             flix.categoryFilteredOutUrns = delta.deltaUrns - categoryFilteredUrns
             eanCodeService.filterForEanCodes(categoryFilteredUrns, delta.errors)
         }).flatMap({ Map eanCodeMap ->

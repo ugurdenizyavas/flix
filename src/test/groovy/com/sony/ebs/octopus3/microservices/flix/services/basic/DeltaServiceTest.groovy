@@ -6,10 +6,10 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.sub.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.services.sub.EanCodeService
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -123,7 +123,16 @@ class DeltaServiceTest {
                 rx.Observable.just(CATEGORY_FEED)
             }
             filterForCategory(1) { List productUrls, String categoryFeed ->
-                rx.Observable.just(productUrls - ["urn:test_sku:score:en_gb:a", "urn:test_sku:score:en_gb:b"])
+                rx.Observable.just(
+                        [
+                                "urn:test_sku:score:en_gb:c": "ps4",
+                                "urn:test_sku:score:en_gb:d": "ps4",
+                                "urn:test_sku:score:en_gb:e": "psvita",
+                                "urn:test_sku:score:en_gb:f": "ps4",
+                                "urn:test_sku:score:en_gb:g": "psvita",
+                                "urn:test_sku:score:en_gb:h": "psvita"
+                        ]
+                )
             }
         }
         mockEanCodeService.demand.with {

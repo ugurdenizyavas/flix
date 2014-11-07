@@ -6,6 +6,8 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
+import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -87,13 +89,32 @@ class SpringConfig {
     @Bean
     @Qualifier('fileStorage')
     @org.springframework.context.annotation.Lazy
-    public ResponseStorage responseStorage(
-            @Value('${octopus3.flix.repositoryFileServiceUrl}') String saveUrl) {
+    public ResponseStorage responseStorage() {
         new ResponseStorage(
                 httpClient: externalHttpClient,
-                saveUrl: saveUrl
+                saveUrl: repositoryFileServiceUrl
         )
     }
 
+    @Bean
+    @org.springframework.context.annotation.Lazy
+    public CategoryService categoryService(
+            @Value('${octopus3.flix.octopusCategoryServiceUrl}') String octopusCategoryServiceUrl
+    ) {
+        new CategoryService(execControl: execControl,
+                repositoryFileServiceUrl: repositoryFileServiceUrl,
+                octopusCategoryServiceUrl: octopusCategoryServiceUrl,
+                httpClient: internalHttpClient)
+    }
+
+    @Bean
+    @org.springframework.context.annotation.Lazy
+    public EanCodeService eanCodeService(
+            @Value('${octopus3.flix.octopusEanCodeServiceUrl}') String octopusEanCodeServiceUrl
+    ) {
+        new EanCodeService(execControl: execControl,
+                octopusEanCodeServiceUrl: octopusEanCodeServiceUrl,
+                httpClient: internalHttpClient)
+    }
 }
 
