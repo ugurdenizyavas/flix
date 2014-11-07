@@ -90,7 +90,6 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
             delta.errors << HandlerUtil.getErrorMessage(e)
             activity.error "error in $delta", e
         })
-        true
     }
 
     @Override
