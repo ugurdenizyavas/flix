@@ -1,5 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.spring.config
 
+import com.hazelcast.client.HazelcastClient
+import com.hazelcast.client.config.ClientConfig
+import com.hazelcast.core.HazelcastInstance
 import com.sony.ebs.octopus3.commons.ratpack.file.FileAttributesProvider
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
@@ -8,6 +11,7 @@ import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.Reques
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -18,6 +22,7 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer
 import ratpack.exec.ExecControl
 
+@Slf4j
 @Configuration
 @ComponentScan(value = "com.sony.ebs.octopus3.microservices.flix")
 @PropertySource(value = ['classpath:/default.properties', 'classpath:/${environment}.properties'], ignoreResourceNotFound = true)
@@ -115,6 +120,25 @@ class SpringConfig {
         new EanCodeService(execControl: execControl,
                 octopusEanCodeServiceUrl: octopusEanCodeServiceUrl,
                 httpClient: internalHttpClient)
+    }
+
+    @Bean
+    @Qualifier('hazelcastClient')
+    @org.springframework.context.annotation.Lazy
+    public static HazelcastInstance hazelcastClient(
+            @Value('${hz.group.name}') def name,
+            @Value('${hz.group.password}') def password,
+            @Value('${hz.network.members}') def networkMembers
+    ) {
+        ClientConfig clientConfig = new ClientConfig()
+        clientConfig.getGroupConfig().setName(name).setPassword(password)
+        clientConfig.getNetworkConfig().addAddress(networkMembers?.split(","))
+        try {
+            HazelcastClient.newHazelcastClient(clientConfig)
+        } catch (Exception e) {
+            log.warn "no hazelcast instance"
+            null
+        }
     }
 }
 
