@@ -102,6 +102,9 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
             packageService.packageFlow(delta, flix).finallyDo({
                 def endTime = new DateTime()
                 def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
+
+                finalizeInAsyncThread(delta)
+
                 if (delta.errors) {
                     activity.error "finished {} with errors: {}", delta, delta.errors
                     response.status(500)
