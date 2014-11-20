@@ -124,7 +124,6 @@ class SpringConfig {
     }
 
     @Bean
-    @Qualifier('hazelcastClient')
     @org.springframework.context.annotation.Lazy
     public static HazelcastInstance hazelcastClient(
             @Value('${hz.group.name}') def name,

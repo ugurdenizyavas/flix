@@ -1,13 +1,16 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
+import com.hazelcast.core.HazelcastInstance
 import com.sony.ebs.octopus3.commons.flows.FlowTypeEnum
 import com.sony.ebs.octopus3.commons.flows.ServiceTypeEnum
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HazelcastAwareDeltaHandler
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
@@ -16,6 +19,7 @@ import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import ratpack.groovy.handling.GroovyContext
 
@@ -25,14 +29,30 @@ import ratpack.groovy.handling.GroovyContext
 @org.springframework.context.annotation.Lazy
 class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
 
-    @Autowired
     DeltaService deltaService
-
-    @Autowired
     PackageService packageService
+    RequestValidator validator
 
     @Autowired
-    RequestValidator validator
+    public DeltaHandler(
+            DeltaService deltaService,
+            PackageService packageService,
+            RequestValidator validator,
+            HazelcastInstance hazelcastInstance,
+            DeltaResultService deltaResultService,
+            ResponseStorage responseStorage
+    ) {
+        this.deltaService = deltaService
+        this.packageService = packageService
+        this.validator = validator
+        super.setHazelcastInstance(hazelcastInstance)
+        super.setDeltaResultService(deltaResultService)
+        super.setResponseStorage(responseStorage)
+    }
+
+    public DeltaHandler() {
+    }
+
 
     @Override
     FlowTypeEnum getFlow() {
