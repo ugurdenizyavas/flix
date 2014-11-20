@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.services.basic.ProductService
 import groovy.mock.interceptor.StubFor
@@ -18,11 +19,13 @@ class ProductHandlerTest {
     StubFor mockFlixSheetService, mockRequestValidator
 
     RepoProduct product
+    def deltaResultService
 
     @Before
     void before() {
         mockFlixSheetService = new StubFor(ProductService)
         mockRequestValidator = new StubFor(RequestValidator)
+        deltaResultService = new DeltaResultService()
 
         product = new RepoProduct(type: DeltaType.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123")
     }
@@ -45,7 +48,10 @@ class ProductHandlerTest {
             }
         }
 
-        handle(new ProductHandler(productService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new ProductHandler(
+                productService: mockFlixSheetService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
             uri "/?processId=123&eanCode=456"
         }).with {
@@ -69,7 +75,9 @@ class ProductHandlerTest {
                 ["error"]
             }
         }
-        handle(new ProductHandler(validator: mockRequestValidator.proxyInstance()), {
+        handle(new ProductHandler(
+                validator: mockRequestValidator.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
             uri "/"
         }).with {
@@ -97,7 +105,10 @@ class ProductHandlerTest {
             }
         }
 
-        handle(new ProductHandler(productService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new ProductHandler(
+                productService: mockFlixSheetService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
             uri "/"
         }).with {
@@ -127,7 +138,10 @@ class ProductHandlerTest {
             }
         }
 
-        handle(new ProductHandler(productService: mockFlixSheetService.proxyInstance(), validator: mockRequestValidator.proxyInstance()), {
+        handle(new ProductHandler(
+                productService: mockFlixSheetService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
             uri "/"
         }).with {

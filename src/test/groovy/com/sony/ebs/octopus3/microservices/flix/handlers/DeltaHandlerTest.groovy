@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
@@ -22,6 +23,7 @@ class DeltaHandlerTest {
     StubFor mockFlixService, mockFlixPackageService, mockRequestValidator, mockResponseStorage
     RepoDelta delta
     Flix flix
+    def deltaResultService
 
     @Before
     void before() {
@@ -29,6 +31,7 @@ class DeltaHandlerTest {
         mockRequestValidator = new StubFor(RequestValidator)
         mockFlixPackageService = new StubFor(PackageService)
         mockResponseStorage = new StubFor(ResponseStorage)
+        deltaResultService = new DeltaResultService()
 
         delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "en_GB")
         flix = new Flix()
@@ -73,9 +76,12 @@ class DeltaHandlerTest {
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+        handle(new DeltaHandler(
+                deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {
@@ -118,7 +124,10 @@ class DeltaHandlerTest {
                 true
             }
         }
-        handle(new DeltaHandler(validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             uri "/"
         }).with {
             assert status.code == 400
@@ -147,9 +156,12 @@ class DeltaHandlerTest {
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+        handle(new DeltaHandler(
+                deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -183,9 +195,12 @@ class DeltaHandlerTest {
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+        handle(new DeltaHandler(
+                deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -223,9 +238,12 @@ class DeltaHandlerTest {
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+        handle(new DeltaHandler(
+                deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -264,9 +282,12 @@ class DeltaHandlerTest {
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
+        handle(new DeltaHandler(
+                deltaService: mockFlixService.proxyInstance(),
                 packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
