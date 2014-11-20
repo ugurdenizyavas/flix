@@ -81,7 +81,8 @@ class DeltaHandlerTest {
                 packageService: mockFlixPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
-                deltaResultService: deltaResultService), {
+                deltaResultService: deltaResultService
+        ), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {
@@ -95,19 +96,20 @@ class DeltaHandlerTest {
             assert ren.delta.processId.id != null
             assert !ren.errors
 
-            assert ren.result."package created" == "/3rdparty/flix.zip"
-            assert ren.result."package archived" == "/archive/flix.zip"
+            assert ren.result.other."package created" == "/3rdparty/flix.zip"
+            assert ren.result.other."package archived" == "/archive/flix.zip"
+            assert ren.result.other.xmlFileUrls?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
+
             assert ren.result.stats."number of delta products" == 6
             assert ren.result.stats."number of products filtered out by category" == 2
-            assert ren.result.stats."number of success" == 2
-            assert ren.result.stats."number of errors" == 2
+            assert ren.result.stats."number of successful" == 2
+            assert ren.result.stats."number of unsuccessful" == 2
 
-            assert ren.result.success?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
+            assert ren.result.productErrors.size() == 3
+            assert ren.result.productErrors.err3 == ["b"]
+            assert ren.result.productErrors.err4?.sort() == ["b", "f"]
+            assert ren.result.productErrors.err5 == ["f"]
 
-            assert ren.result.errors.size() == 3
-            assert ren.result.errors.err3 == ["b"]
-            assert ren.result.errors.err4?.sort() == ["b", "f"]
-            assert ren.result.errors.err5 == ["f"]
         }
     }
 

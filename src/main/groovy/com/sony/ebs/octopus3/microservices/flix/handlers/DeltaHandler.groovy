@@ -6,6 +6,7 @@ import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HazelcastAwareDeltaHandler
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
@@ -20,8 +21,6 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import ratpack.groovy.handling.GroovyContext
-
-import static ratpack.jackson.Jackson.json
 
 @Slf4j(value = "log", category = "DeltaHandler")
 @Slf4j(value = "activity", category = "activity")
@@ -71,15 +70,14 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         def startTime = new DateTime()
         def flix = new Flix()
 
-        List productServiceResults = []
+        List<ProductServiceResult> productServiceResults = []
         deltaService.processDelta(delta, flix).finallyDo({
             if (delta.errors) {
                 activity.error "finished {} with errors: {}", delta, delta.errors
                 def endTime = new DateTime()
-                def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
                 context.response.status(500)
 
-                def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+                def jsonResponse = deltaResultService.createDeltaResultWithErrors(delta, delta.errors, startTime, endTime)
 
                 responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
 
@@ -101,11 +99,10 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         [processId: processId, flow: flowTypeEnum, service: serviceTypeEnum, publication: publication, locale: locale, type: DeltaType.flixMedia]
     }
 
-    void handleFlixPackage(GroovyContext context, RepoDelta delta, Flix flix, List productServiceResults, DateTime startTime) {
+    void handleFlixPackage(GroovyContext context, RepoDelta delta, Flix flix, List<ProductServiceResult> productServiceResults, DateTime startTime) {
         context.with {
             packageService.packageFlow(delta, flix).finallyDo({
                 def endTime = new DateTime()
-                def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
 
                 finalizeInAsyncThread(delta)
 
@@ -113,18 +110,19 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
                     activity.error "finished {} with errors: {}", delta, delta.errors
                     response.status(500)
 
-                    def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
+                    def jsonResponse = deltaResultService.createDeltaResultWithErrors(delta, delta.errors, startTime, endTime)
 
-                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+                    responseStorage.store(delta.processId?.id, ["flix", "delta", delta.publication, delta.locale, delta.processId?.id], JsonOutput.toJson(jsonResponse.object))
 
                     render jsonResponse
                 } else {
                     activity.info "finished {} with success", delta
                     response.status(200)
 
-                    def jsonResponse = json(status: 200, timeStats: timeStats, result: createDeltaResult(delta, flix, productServiceResults), delta: delta)
+                    def deltaResult = createDeltaResult(delta, flix, productServiceResults)
+                    def jsonResponse = deltaResultService.createDeltaResult(delta, deltaResult, startTime, endTime)
 
-                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+                    responseStorage.store(delta.processId?.id, ["flix", "delta", delta.publication, delta.locale, delta.processId?.id], JsonOutput.toJson(jsonResponse.object))
 
                     render jsonResponse
                 }
@@ -137,39 +135,34 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         }
     }
 
-    Map createDeltaResult(RepoDelta delta, Flix flix, List sheetServiceResults) {
-        def createSuccess = {
-            sheetServiceResults.findAll({ it.success }).collect({ it.xmlFileUrl })
-        }
-        def createErrors = {
-            Map errorMap = [:]
-            sheetServiceResults.findAll({ !it.success }).each { ProductServiceResult serviceResult ->
-                serviceResult.errors.each { error ->
-                    if (errorMap[error] == null) errorMap[error] = []
-                    errorMap[error] << serviceResult.jsonUrn
-                }
+    DeltaResult createDeltaResult(RepoDelta delta, Flix flix, List<ProductServiceResult> sheetServiceResults) {
+
+        Map productErrors = [:]
+        sheetServiceResults.findAll({ !it.success }).each { ProductServiceResult serviceResult ->
+            serviceResult.errors.each { error ->
+                if (productErrors[error] == null) productErrors[error] = []
+                productErrors[error] << serviceResult.jsonUrn
             }
-            errorMap
         }
-        [
-                "package created"      : flix.outputPackageUrl,
-                "package archived"     : flix.archivePackageUrl,
-                stats                  : [
-                        "number of delta products"                   : delta.deltaUrns?.size(),
-                        "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
-                        "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
-                        "number of success"                          : sheetServiceResults?.findAll({
-                            it.success
-                        }).size(),
-                        "number of errors"                           : sheetServiceResults?.findAll({
-                            !it.success
-                        }).size()
-                ],
-                success                : createSuccess(),
-                errors                 : createErrors(),
+
+        def xmlFileUrls = sheetServiceResults.findAll({ it.success }).collect({ it.xmlFileUrl })
+        def successfulUrns = sheetServiceResults?.findAll({ it.success }).collect({ it.jsonUrn })
+        def unsuccessfulUrns = sheetServiceResults?.findAll({ !it.success }).collect({ it.jsonUrn })
+
+        new DeltaResult(
+                productErrors: productErrors,
+                deltaUrns: delta.deltaUrns,
                 categoryFilteredOutUrns: flix.categoryFilteredOutUrns,
-                eanCodeFilteredOutUrns : flix.eanCodeFilteredOutUrns
-        ]
+                eanCodeFilteredOutUrns: flix.eanCodeFilteredOutUrns,
+                successfulUrns: successfulUrns,
+                unsuccessfulUrns: unsuccessfulUrns,
+                other: [
+                        "package created" : flix.outputPackageUrl,
+                        "package archived": flix.archivePackageUrl,
+                        xmlFileUrls       : xmlFileUrls
+                ]
+
+        )
     }
 
 }

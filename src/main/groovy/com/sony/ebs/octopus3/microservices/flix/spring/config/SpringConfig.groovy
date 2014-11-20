@@ -131,13 +131,17 @@ class SpringConfig {
             @Value('${hz.group.password}') def password,
             @Value('${hz.network.members}') def networkMembers
     ) {
-        ClientConfig clientConfig = new ClientConfig()
-        clientConfig.getGroupConfig().setName(name).setPassword(password)
-        clientConfig.getNetworkConfig().addAddress(networkMembers?.split(","))
-        try {
-            HazelcastClient.newHazelcastClient(clientConfig)
-        } catch (Exception e) {
-            log.warn "no hazelcast instance"
+        if (name) {
+            ClientConfig clientConfig = new ClientConfig()
+            clientConfig.getGroupConfig().setName(name).setPassword(password)
+            clientConfig.getNetworkConfig().addAddress(networkMembers?.split(","))
+            try {
+                return HazelcastClient.newHazelcastClient(clientConfig)
+            } catch (Exception e) {
+                log.warn "no hazelcast instance"
+                return null
+            }
+        } else {
             null
         }
     }

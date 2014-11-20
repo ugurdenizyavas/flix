@@ -107,7 +107,7 @@ class DeltaService {
         })
     }
 
-    rx.Observable processDelta(RepoDelta delta, Flix flix) {
+    rx.Observable<ProductServiceResult> processDelta(RepoDelta delta, Flix flix) {
 
         List categoryFilteredUrns
         def lastModifiedUrn = delta.lastModifiedUrn

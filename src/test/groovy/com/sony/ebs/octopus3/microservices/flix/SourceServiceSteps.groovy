@@ -216,27 +216,29 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
             getUrn("g"), getUrn("h"), getUrn("ss-ac3_2b_2fc+ce7"), getUrn("ss-ac3_2f_2fc+ce7")
     ]
 
-    assert json.result."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
-    assert json.result."package archived" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:archive:flix_sku:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
+    assert json.result.other."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
+    assert json.result.other."package archived" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:archive:flix_sku:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
+
     assert json.result.stats."number of delta products" == 10
     assert json.result.stats."number of products filtered out by category" == 2
     assert json.result.stats."number of products filtered out by ean code" == 2
-    assert json.result.stats."number of success" == 4
-    assert json.result.stats."number of errors" == 2
-    assert json.result.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
-    assert json.result.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
+    assert json.result.stats."number of successful" == 4
+    assert json.result.stats."number of unsuccessful" == 2
 
-    assert json.result.success?.sort() == [
+    assert json.result.urns.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
+    assert json.result.urns.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
+
+    assert json.result.other.xmlFileUrls?.sort() == [
             getXmlUrl("e"),
             getXmlUrl("g"),
             getXmlUrl("ss-ac3_2b_2fc+ce7"),
             getXmlUrl("ss-ac3_2f_2fc+ce7")
     ]
 
-    assert json.result.errors.size() == 3
-    assert json.result.errors.err1 == [getUrn("f")]
-    assert json.result.errors.err2?.sort() == [getUrn("f"), getUrn("h")]
-    assert json.result.errors.err3 == [getUrn("h")]
+    assert json.result.productErrors.size() == 3
+    assert json.result.productErrors.err1 == [getUrn("f")]
+    assert json.result.productErrors.err2?.sort() == [getUrn("f"), getUrn("h")]
+    assert json.result.productErrors.err3 == [getUrn("h")]
 }
 
 Then(~"Flix delta service should give (.*) error") { String error ->
