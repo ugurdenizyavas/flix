@@ -1,12 +1,11 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
+import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.services.PackageService
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j

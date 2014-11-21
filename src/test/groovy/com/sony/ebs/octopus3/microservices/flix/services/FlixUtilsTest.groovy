@@ -1,7 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.services
 
 import com.sony.ebs.octopus3.commons.urn.URNCreationException
-import com.sony.ebs.octopus3.microservices.flix.services.FlixUtils
 import groovy.util.logging.Slf4j
 import org.junit.Before
 import org.junit.Test
