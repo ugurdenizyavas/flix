@@ -1,10 +1,10 @@
 package com.sony.ebs.octopus3.microservices.flix.service
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
@@ -115,7 +115,7 @@ class DeltaService {
             deltaUrlHelper.createStartDate(delta.sdate, lastModifiedUrn)
         }).flatMap({
             delta.finalStartDate = it
-            def deltaUrn = delta.getUrnForType(DeltaType.global_sku)
+            def deltaUrn = delta.getUrnForType(RepoValue.global_sku)
             def initialUrl = repositoryDeltaServiceUrl.replace(":urn", deltaUrn.toString())
             deltaUrlHelper.createRepoDeltaUrl(initialUrl, delta.finalStartDate, delta.edate)
         }).flatMap({

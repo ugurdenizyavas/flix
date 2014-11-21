@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.service
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
@@ -45,7 +45,7 @@ class PackageServiceTest {
                 , execControl: execController.control)
         mockHttpClient = new StubFor(Oct3HttpClient)
 
-        delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "fr_FR")
+        delta = new RepoDelta(type: RepoValue.flixMedia, publication: "SCORE", locale: "fr_FR")
         flix = new Flix()
     }
 

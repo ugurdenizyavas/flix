@@ -1,9 +1,9 @@
 package com.sony.ebs.octopus3.microservices.flix.service
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
@@ -71,7 +71,7 @@ class DeltaServiceTest {
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
         mockEanCodeService = new StubFor(EanCodeService)
 
-        delta = new RepoDelta(type: DeltaType.flixMedia, processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
+        delta = new RepoDelta(type: RepoValue.flixMedia, processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
         flix = new Flix()
 
     }

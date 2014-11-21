@@ -1,6 +1,6 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
@@ -27,7 +27,7 @@ class ProductHandlerTest {
         mockRequestValidator = new StubFor(RequestValidator)
         deltaResultService = new DeltaResultService()
 
-        product = new RepoProduct(type: DeltaType.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123")
+        product = new RepoProduct(type: RepoValue.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123")
     }
 
     @Test

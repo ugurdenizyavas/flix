@@ -2,13 +2,11 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.hazelcast.core.HazelcastInstance
 import com.sony.ebs.octopus3.commons.flows.FlowTypeEnum
-import com.sony.ebs.octopus3.commons.flows.ServiceTypeEnum
-import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HazelcastAwareDeltaHandler
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
@@ -30,7 +28,6 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
 
     DeltaService deltaService
     PackageService packageService
-    RequestValidator validator
 
     @Autowired
     public DeltaHandler(
@@ -43,7 +40,7 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
     ) {
         this.deltaService = deltaService
         this.packageService = packageService
-        this.validator = validator
+        super.setValidator(validator)
         super.setHazelcastInstance(hazelcastInstance)
         super.setDeltaResultService(deltaResultService)
         super.setResponseStorage(responseStorage)
@@ -52,27 +49,19 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
     public DeltaHandler() {
     }
 
+    @Override
+    RepoValue getDeltaType() {
+        return RepoValue.flixMedia
+    }
 
     @Override
-    FlowTypeEnum getFlow() {
+    RepoDelta createDelta(GroovyContext context) {
+        new RepoDelta()
+    }
+
+    @Override
+    FlowTypeEnum getFlowType() {
         FlowTypeEnum.FLIX
-    }
-
-    @Override
-    String getPublication(GroovyContext context) {
-        context.pathTokens.publication
-    }
-
-    @Override
-    String getLocale(GroovyContext context) {
-        context.pathTokens.locale
-    }
-
-    @Override
-    List flowValidate(GroovyContext context, RepoDelta delta) {
-        delta.sdate = context.request.queryParams.sdate
-        delta.edate = context.request.queryParams.edate
-        validator.validateRepoDelta(delta)
     }
 
     @Override
@@ -112,11 +101,6 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
             delta.errors << HandlerUtil.getErrorMessage(e)
             activity.error "error in $delta", e
         })
-    }
-
-    @Override
-    RepoDelta createDelta(ProcessIdImpl processId, FlowTypeEnum flowTypeEnum, ServiceTypeEnum serviceTypeEnum, String publication, String locale) {
-        [processId: processId, flow: flowTypeEnum, service: serviceTypeEnum, publication: publication, locale: locale, type: DeltaType.flixMedia]
     }
 
     DeltaResult createDeltaResult(RepoDelta delta, Flix flix, List<ProductServiceResult> sheetServiceResults) {

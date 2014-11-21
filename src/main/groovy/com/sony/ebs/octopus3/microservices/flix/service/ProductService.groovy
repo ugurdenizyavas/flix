@@ -1,10 +1,10 @@
 package com.sony.ebs.octopus3.microservices.flix.service
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -58,7 +58,7 @@ class ProductService {
             if (xml) {
                 urn = FlixUtils.getXmlUrn(product.urn.toString())
             } else {
-                urn = new URNImpl(DeltaType.global_sku.toString(), [product.publication, product.locale, product.sku])
+                urn = new URNImpl(RepoValue.global_sku.toString(), [product.publication, product.locale, product.sku])
             }
 
             def initialUrl = repositoryFileServiceUrl.replace(":urn", urn.toString())

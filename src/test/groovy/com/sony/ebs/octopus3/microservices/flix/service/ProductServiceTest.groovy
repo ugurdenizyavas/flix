@@ -1,8 +1,8 @@
 package com.sony.ebs.octopus3.microservices.flix.service
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import groovy.mock.interceptor.MockFor
@@ -42,7 +42,7 @@ class ProductServiceTest {
     void before() {
         productService = new ProductService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
 
-        product = new RepoProduct(type: DeltaType.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123", eanCode: "ea1")
+        product = new RepoProduct(type: RepoValue.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123", eanCode: "ea1")
         mockHttpClient = new MockFor(Oct3HttpClient)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)
