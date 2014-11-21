@@ -40,7 +40,7 @@ class PackageService {
     @Qualifier("internalHttpClient")
     Oct3HttpClient httpClient
 
-    String createOpsRecipe(Map recipeParams) {
+    String createOpsRecipe(Map recipeParams, boolean upload) {
         def getZip = {
             it.zip {
                 source recipeParams["baseUrnStr"]
@@ -71,8 +71,14 @@ class PackageService {
         }
 
         def builder = new groovy.json.JsonBuilder()
-        builder {
-            ops getZip(builder), getRename(builder), getCopyThirdParty(builder), getCopyArchive(builder), getDelete(builder)
+        if (upload) {
+            builder {
+                ops getZip(builder), getRename(builder), getCopyThirdParty(builder), getCopyArchive(builder), getDelete(builder)
+            }
+        } else {
+            builder {
+                ops getZip(builder), getRename(builder), getCopyArchive(builder), getDelete(builder)
+            }
         }
 
         def result = builder.toString()
@@ -87,21 +93,23 @@ class PackageService {
                 def packageName = "Flix_${delta.locale}_${new DateTime().toString(FMT)}.zip"
 
                 def outputUrnStr = FlixUtils.getThirdPartyUrn()?.toString()
-                flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", FlixUtils.getThirdPartyPackageUrn(packageName)?.toString())
+                if (delta.upload) {
+                    flix.outputPackageUrl = repositoryFileServiceUrl.replace(":urn", FlixUtils.getThirdPartyPackageUrn(packageName)?.toString())
+                }
 
                 def archiveUrnStr = FlixUtils.getArchiveUrn()?.toString()
                 flix.archivePackageUrl = repositoryFileServiceUrl.replace(":urn", FlixUtils.getArchivePackageUrn(packageName)?.toString())
 
                 def basePackageUrnStr = new URNImpl(delta.type.toString(), [delta.publication, packageName])?.toString()
                 def recipeParams = [
-                        baseUrnStr: delta.baseUrn?.toString(),
-                        outputUrnStr: outputUrnStr,
-                        archiveUrnStr: archiveUrnStr,
-                        packageName: packageName.toLowerCase(),
+                        baseUrnStr       : delta.baseUrn?.toString(),
+                        outputUrnStr     : outputUrnStr,
+                        archiveUrnStr    : archiveUrnStr,
+                        packageName      : packageName.toLowerCase(),
                         basePackageUrnStr: basePackageUrnStr
                 ]
 
-                createOpsRecipe(recipeParams)
+                createOpsRecipe(recipeParams, delta.upload)
             })
         }).flatMap({ String recipe ->
             httpClient.doPost(repositoryOpsServiceUrl, IOUtils.toInputStream(recipe, EncodingUtil.CHARSET))

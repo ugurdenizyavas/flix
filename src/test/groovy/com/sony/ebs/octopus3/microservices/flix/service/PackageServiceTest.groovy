@@ -70,6 +70,7 @@ class PackageServiceTest {
 
     @Test
     void "success"() {
+        delta.upload = true
         mockHttpClient.demand.with {
             doPost(1) { String url, InputStream is ->
                 assert url == "/repo/ops"
@@ -78,6 +79,20 @@ class PackageServiceTest {
         }
         assert runFlow() == "success"
         assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+    }
+
+    @Test
+    void "success no upload"() {
+        delta.upload = false
+        mockHttpClient.demand.with {
+            doPost(1) { String url, InputStream is ->
+                assert url == "/repo/ops"
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
+            }
+        }
+        assert runFlow() == "success"
+        assert !flix.outputPackageUrl
         assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
     }
 
@@ -104,20 +119,9 @@ class PackageServiceTest {
 
     @Test
     void "test ops recipe"() {
-        def packageName = "flix_fr_be_20141009_151352.zip"
-        def baseUrnStr = new URNImpl("flixmedia", ["score", "fr_be"])?.toString()
-        def outputUrnStr = "urn:thirdparty:flixmedia"
-        def archiveUrnStr = "urn:archive:flix_sku"
-        def basePackageUrnStr = new URNImpl("flixmedia", ["score", packageName])?.toString()
-        def recipeParams = [
-                baseUrnStr: baseUrnStr,
-                outputUrnStr: outputUrnStr,
-                archiveUrnStr: archiveUrnStr,
-                packageName: packageName,
-                basePackageUrnStr: basePackageUrnStr
-        ]
+        def (LinkedHashMap<String, String> recipeParams, String outputUrnStr, String archiveUrnStr) = prepareRecipeParams()
 
-        def recipe = packageService.createOpsRecipe(recipeParams)
+        def recipe = packageService.createOpsRecipe(recipeParams, true)
 
         def actual = new JsonSlurper().parseText(recipe)
 
@@ -133,6 +137,41 @@ class PackageServiceTest {
         assert actual.ops[3].copy.destination == archiveUrnStr
 
         assert actual.ops[4].delete.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
+    }
+
+    private prepareRecipeParams() {
+        def packageName = "flix_fr_be_20141009_151352.zip"
+        def baseUrnStr = new URNImpl("flixmedia", ["score", "fr_be"])?.toString()
+        def outputUrnStr = "urn:thirdparty:flixmedia"
+        def archiveUrnStr = "urn:archive:flix_sku"
+        def basePackageUrnStr = new URNImpl("flixmedia", ["score", packageName])?.toString()
+        def recipeParams = [
+                baseUrnStr       : baseUrnStr,
+                outputUrnStr     : outputUrnStr,
+                archiveUrnStr    : archiveUrnStr,
+                packageName      : packageName,
+                basePackageUrnStr: basePackageUrnStr
+        ]
+        [recipeParams, outputUrnStr, archiveUrnStr]
+    }
+
+    @Test
+    void "test ops recipe no upload "() {
+        def (LinkedHashMap<String, String> recipeParams, String outputUrnStr, String archiveUrnStr) = prepareRecipeParams()
+
+        def recipe = packageService.createOpsRecipe(recipeParams, false)
+
+        def actual = new JsonSlurper().parseText(recipe)
+
+        assert actual.ops[0].zip.source == "urn:flixmedia:score:fr_be"
+
+        assert actual.ops[1].rename.source == "urn:flixmedia:score:fr_be.zip"
+        assert actual.ops[1].rename.targetName == "flix_fr_be_20141009_151352.zip"
+
+        assert actual.ops[2].copy.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
+        assert actual.ops[2].copy.destination == archiveUrnStr
+
+        assert actual.ops[3].delete.source == "urn:flixmedia:score:flix_fr_be_20141009_151352.zip"
     }
 
 }

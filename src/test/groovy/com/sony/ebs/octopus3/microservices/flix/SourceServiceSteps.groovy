@@ -193,12 +193,15 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
+    get("flix/delta/publication/$publication/locale/$locale?upload=true&sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
+}
+
+When(~"I request flix delta service no upload for publication (.*) locale (.*)") { publication, locale ->
     get("flix/delta/publication/$publication/locale/$locale?sdate=2014-07-09T00:00:00.000Z&edate=2014-07-12T00:00:00.000Z")
 }
 
-Then(~"Flix delta service for publication (.*) locale (.*) should be done") { publication, locale ->
+def validateDeltaSuccess = { response, publication, locale, upload ->
     def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
-
 
     def getUrn = { "urn:test_sku:$pubAndLocale:$it".toString() }
     def getXmlUrl = { "http://localhost:12306/repository/file/urn:flixmedia:$pubAndLocale:${it}.xml".toString() }
@@ -212,7 +215,11 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.delta.edate == "2014-07-12T00:00:00.000Z"
     assert json.delta.processId
 
-    assert json.result.other."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
+    if (upload) {
+        assert json.result.other."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
+    } else {
+        assert !json.result.other."package created"
+    }
     assert json.result.other."package archived" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:archive:flix_sku:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
 
     assert json.result.stats."number of delta products" == 10
@@ -239,6 +246,13 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.result.productErrors.err1 == [getUrn("f")]
     assert json.result.productErrors.err2?.sort() == [getUrn("f"), getUrn("h")]
     assert json.result.productErrors.err3 == [getUrn("h")]
+}
+
+Then(~"Flix delta service for publication (.*) locale (.*) should be done") { publication, locale ->
+    validateDeltaSuccess(response, publication, locale, true)
+}
+Then(~"Flix delta service no upload for publication (.*) locale (.*) should be done") { publication, locale ->
+    validateDeltaSuccess(response, publication, locale, false)
 }
 
 Then(~"Flix delta service should give (.*) error") { String error ->

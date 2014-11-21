@@ -6,6 +6,11 @@ Feature: Flix Delta Service
     When I request flix delta service for publication SCORE locale en_GB
     Then Flix delta service for publication SCORE locale en_GB should be done
 
+  Scenario: flix delta service no upload
+    Given Flix delta for publication SCORE locale en_GB with success
+    When I request flix delta service no upload for publication SCORE locale en_GB
+    Then Flix delta service no upload for publication SCORE locale en_GB should be done
+
   Scenario: flix delta service with delta error
     Given Flix delta for publication SCORE locale en_GB with delta error
     When I request flix delta service for publication SCORE locale en_GB
