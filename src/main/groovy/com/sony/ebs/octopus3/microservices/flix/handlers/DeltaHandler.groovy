@@ -14,12 +14,11 @@ import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaRes
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.basic.DeltaService
-import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
+import com.sony.ebs.octopus3.microservices.flix.services.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.services.PackageService
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import ratpack.groovy.handling.GroovyContext
 

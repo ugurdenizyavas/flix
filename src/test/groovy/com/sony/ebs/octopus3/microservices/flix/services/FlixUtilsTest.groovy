@@ -1,9 +1,7 @@
-package com.sony.ebs.octopus3.microservices.flix.services.basic
+package com.sony.ebs.octopus3.microservices.flix.services
 
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
-import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNCreationException
-import com.sony.ebs.octopus3.commons.urn.URNImpl
+import com.sony.ebs.octopus3.microservices.flix.services.FlixUtils
 import groovy.util.logging.Slf4j
 import org.junit.Before
 import org.junit.Test

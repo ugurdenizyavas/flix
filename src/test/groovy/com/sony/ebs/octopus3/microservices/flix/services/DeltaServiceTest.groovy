@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services.basic
+package com.sony.ebs.octopus3.microservices.flix.services
 
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
@@ -10,6 +10,7 @@ import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
+import com.sony.ebs.octopus3.microservices.flix.services.DeltaService
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
