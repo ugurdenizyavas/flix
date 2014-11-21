@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services
+package com.sony.ebs.octopus3.microservices.flix.service
 
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.urn.URN

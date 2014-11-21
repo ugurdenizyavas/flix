@@ -4,7 +4,7 @@ import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
-import com.sony.ebs.octopus3.microservices.flix.services.ProductService
+import com.sony.ebs.octopus3.microservices.flix.service.ProductService
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before

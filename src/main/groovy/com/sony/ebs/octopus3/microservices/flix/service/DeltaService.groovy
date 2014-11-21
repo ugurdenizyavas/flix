@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services
+package com.sony.ebs.octopus3.microservices.flix.service
 
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil

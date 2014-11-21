@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services
+package com.sony.ebs.octopus3.microservices.flix.service
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j

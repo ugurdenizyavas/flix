@@ -14,8 +14,8 @@ import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaRes
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.DeltaService
-import com.sony.ebs.octopus3.microservices.flix.services.PackageService
+import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
