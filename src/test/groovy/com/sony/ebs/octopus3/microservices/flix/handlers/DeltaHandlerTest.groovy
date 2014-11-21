@@ -67,7 +67,7 @@ class DeltaHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
@@ -116,7 +116,7 @@ class DeltaHandlerTest {
     @Test
     void "error in params"() {
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) {
+            validateDelta(1) {
                 ["error"]
             }
         }
@@ -149,7 +149,7 @@ class DeltaHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
@@ -188,7 +188,7 @@ class DeltaHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
@@ -231,7 +231,7 @@ class DeltaHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
@@ -275,7 +275,7 @@ class DeltaHandlerTest {
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
