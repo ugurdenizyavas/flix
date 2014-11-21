@@ -12,7 +12,7 @@ import org.springframework.core.io.DefaultResourceLoader
 @Slf4j
 class FlixXmlBuilderTest {
 
-    final static String BASE_PATH = "classpath:com/sony/ebs/octopus3/microservices/flix/services/"
+    final static String BASE_PATH = "classpath:com/sony/ebs/octopus3/microservices/flix/service/"
 
     DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader()
 

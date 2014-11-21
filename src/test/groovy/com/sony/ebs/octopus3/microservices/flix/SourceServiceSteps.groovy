@@ -211,10 +211,6 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.delta.sdate == "2014-07-09T00:00:00.000Z"
     assert json.delta.edate == "2014-07-12T00:00:00.000Z"
     assert json.delta.processId
-    assert json.delta.deltaUrns?.sort() == [
-            getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"),
-            getUrn("g"), getUrn("h"), getUrn("ss-ac3_2b_2fc+ce7"), getUrn("ss-ac3_2f_2fc+ce7")
-    ]
 
     assert json.result.other."package created" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:thirdparty:flixmedia:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
     assert json.result.other."package archived" ==~ /http:\/\/localhost:12306\/repository\/file\/urn:archive:flix_sku:flix_[a-z]{2}_[a-z]{2}_[0-9]{8}_[0-9]{6}\.zip/
@@ -225,6 +221,10 @@ Then(~"Flix delta service for publication (.*) locale (.*) should be done") { pu
     assert json.result.stats."number of successful" == 4
     assert json.result.stats."number of unsuccessful" == 2
 
+    assert json.result.urns.deltaUrns?.sort() == [
+            getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"),
+            getUrn("g"), getUrn("h"), getUrn("ss-ac3_2b_2fc+ce7"), getUrn("ss-ac3_2f_2fc+ce7")
+    ]
     assert json.result.urns.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
     assert json.result.urns.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
 
