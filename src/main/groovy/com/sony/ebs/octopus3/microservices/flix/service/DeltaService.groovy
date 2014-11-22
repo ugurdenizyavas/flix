@@ -5,13 +5,12 @@ import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
-import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.client.utils.URIBuilder
@@ -54,60 +53,61 @@ class DeltaService {
     CategoryService categoryService
 
     @Autowired
-    EanCodeService eanCodeService
-
-    @Autowired
     DeltaUrlHelper deltaUrlHelper
 
-    private def createProductServiceResult(Oct3HttpResponse response, String jsonUrn, String eanCode) {
+    rx.Observable<ProductResult> createProductServiceResult(Oct3HttpResponse response, String inputUrn) {
         observe(execControl.blocking({
-            def sheetServiceResult = new ProductServiceResult(jsonUrn: jsonUrn, success: response.success,
-                    statusCode: response.statusCode, eanCode: eanCode)
-            if (!response.success) {
-                def json = jsonSlurper.parse(response.bodyAsStream, EncodingUtil.CHARSET_STR)
-                sheetServiceResult.errors = json.errors
-            } else {
-                sheetServiceResult.with {
-                    def xmlUrnStr = FlixUtils.getXmlUrn(jsonUrn)?.toString()
-                    xmlFileUrl = repositoryFileServiceUrl.replace(":urn", xmlUrnStr)
-                    xmlFileAttributesUrl = repositoryFileAttributesServiceUrl.replace(":urn", xmlUrnStr)
-                }
+            def productResult = new ProductResult(
+                    inputUrn: inputUrn,
+                    inputUrl: repositoryFileServiceUrl.replace(":urn", inputUrn),
+                    success: response.success,
+                    statusCode: response.statusCode
+            )
+            def json = jsonSlurper.parse(response.bodyAsStream, EncodingUtil.CHARSET_STR)
+
+            productResult.errors = json.errors
+            productResult.eanCode = json.result?.eanCode
+            if (response.success) {
+                productResult.outputUrn = json.result.outputUrn
+                productResult.outputUrl = json.result.outputUrl
             }
-            sheetServiceResult
+            productResult
         }))
     }
 
-    private def createProductServiceUrl(RepoDelta delta, String jsonUrn, String eanCode) {
+    private def createProductServiceUrl(RepoDelta delta, String inputUrn) {
         observe(execControl.blocking({
-            def sku = new URNImpl(jsonUrn).values.last()
+            def sku = new URNImpl(inputUrn).values.last()
 
             def initialUrl = productServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale).replace(":sku", sku)
             def urlBuilder = new URIBuilder(initialUrl)
             if (delta.processId?.id) {
                 urlBuilder.addParameter("processId", delta.processId?.id)
             }
-            if (eanCode) {
-                urlBuilder.addParameter("eanCode", eanCode)
-            }
             urlBuilder.toString()
         }))
     }
 
-    private rx.Observable<ProductServiceResult> doProduct(RepoDelta delta, String jsonUrn, String eanCode) {
+    rx.Observable<ProductResult> doProduct(RepoDelta delta, String inputUrn) {
         rx.Observable.just("starting").flatMap({
-            createProductServiceUrl(delta, jsonUrn, eanCode)
+            createProductServiceUrl(delta, inputUrn)
         }).flatMap({
             httpClient.doGet(it)
         }).flatMap({ Oct3HttpResponse response ->
-            createProductServiceResult(response, jsonUrn, eanCode)
+            createProductServiceResult(response, inputUrn)
         }).onErrorReturn({
-            log.error "error for $jsonUrn", it
+            log.error "error for $inputUrn", it
             def error = HandlerUtil.getErrorMessage(it)
-            new ProductServiceResult(jsonUrn: jsonUrn, success: false, errors: [error], eanCode: eanCode)
+            new ProductResult(
+                    success: false,
+                    inputUrn: inputUrn,
+                    inputUrl: repositoryFileServiceUrl.replace(":urn", inputUrn),
+                    errors: [error]
+            )
         })
     }
 
-    rx.Observable<ProductServiceResult> processDelta(RepoDelta delta, Flix flix) {
+    rx.Observable<ProductResult> processDelta(RepoDelta delta, Flix flix) {
 
         List categoryFilteredUrns
         def lastModifiedUrn = delta.lastModifiedUrn
@@ -148,11 +148,7 @@ class DeltaService {
         }).flatMap({ Map categoryMap ->
             categoryFilteredUrns = categoryMap.keySet() as List
             flix.categoryFilteredOutUrns = delta.deltaUrns - categoryFilteredUrns
-            eanCodeService.filterForEanCodes(categoryFilteredUrns, delta.errors)
-        }).flatMap({ Map eanCodeMap ->
-            List eanCodeFilteredUrns = eanCodeMap.keySet() as List
-            flix.eanCodeFilteredOutUrns = categoryFilteredUrns - eanCodeFilteredUrns
-            List list = eanCodeMap?.collect { doProduct(delta, it.key, it.value) }
+            List list = categoryFilteredUrns?.collect { doProduct(delta, it) }
             rx.Observable.merge(list, 30)
         })
     }

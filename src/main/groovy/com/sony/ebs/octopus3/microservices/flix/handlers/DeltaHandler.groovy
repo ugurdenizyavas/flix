@@ -7,11 +7,11 @@ import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HazelcastAwareDeltaHandler
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
 import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.util.logging.Slf4j
@@ -69,7 +69,7 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         def startTime = new DateTime()
         def flix = new Flix()
 
-        List<ProductServiceResult> productServiceResults = []
+        List<ProductResult> productServiceResults = []
         deltaService.processDelta(delta, flix).finallyDo({
             if (delta.errors) {
                 def jsonResponse = processError(delta, delta.errors, startTime)
@@ -103,31 +103,32 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         })
     }
 
-    DeltaResult createDeltaResult(RepoDelta delta, Flix flix, List<ProductServiceResult> sheetServiceResults) {
+    DeltaResult createDeltaResult(RepoDelta delta, Flix flix, List<ProductResult> sheetResults) {
 
         Map productErrors = [:]
-        sheetServiceResults.findAll({ !it.success }).each { ProductServiceResult serviceResult ->
+        sheetResults.findAll({ !it.success }).each { ProductResult serviceResult ->
             serviceResult.errors.each { error ->
                 if (productErrors[error] == null) productErrors[error] = []
-                productErrors[error] << serviceResult.jsonUrn
+                productErrors[error] << serviceResult.inputUrn
             }
         }
 
-        def xmlFileUrls = sheetServiceResults.findAll({ it.success }).collect({ it.xmlFileUrl })
-        def successfulUrns = sheetServiceResults?.findAll({ it.success }).collect({ it.jsonUrn })
-        def unsuccessfulUrns = sheetServiceResults?.findAll({ !it.success }).collect({ it.jsonUrn })
+        def outputUrls = sheetResults.findAll({ it.success }).collect({ it.outputUrl })
+        def successfulUrns = sheetResults?.findAll({ it.success }).collect({ it.inputUrn })
+        def unsuccessfulUrns = sheetResults?.findAll({ !it.success }).collect({ it.inputUrn })
+        def eanCodeFilteredOutUrns = sheetResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
 
         new DeltaResult(
                 productErrors: productErrors,
                 deltaUrns: delta.deltaUrns,
                 categoryFilteredOutUrns: flix.categoryFilteredOutUrns,
-                eanCodeFilteredOutUrns: flix.eanCodeFilteredOutUrns,
+                eanCodeFilteredOutUrns: eanCodeFilteredOutUrns,
                 successfulUrns: successfulUrns,
                 unsuccessfulUrns: unsuccessfulUrns,
                 other: [
                         "package created" : flix.outputPackageUrl,
                         "package archived": flix.archivePackageUrl,
-                        xmlFileUrls       : xmlFileUrls
+                        outputUrls        : outputUrls
                 ]
 
         )

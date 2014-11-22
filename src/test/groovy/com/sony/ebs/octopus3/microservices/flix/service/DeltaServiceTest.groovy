@@ -4,12 +4,11 @@ import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
-import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -41,7 +40,7 @@ class DeltaServiceTest {
     final static String CATEGORY_FEED = "<categories/>"
 
     DeltaService deltaService
-    StubFor mockCategoryService, mockDeltaUrlHelper, mockEanCodeService
+    StubFor mockCategoryService, mockDeltaUrlHelper
     MockFor mockHttpClient
 
     Flix flix
@@ -69,7 +68,6 @@ class DeltaServiceTest {
         mockHttpClient = new MockFor(Oct3HttpClient)
         mockCategoryService = new StubFor(CategoryService)
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
-        mockEanCodeService = new StubFor(EanCodeService)
 
         delta = new RepoDelta(type: RepoValue.flixMedia, processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
         flix = new Flix()
@@ -80,7 +78,6 @@ class DeltaServiceTest {
         deltaService.httpClient = mockHttpClient.proxyInstance()
         deltaService.categoryService = mockCategoryService.proxyInstance()
         deltaService.deltaUrlHelper = mockDeltaUrlHelper.proxyInstance()
-        deltaService.eanCodeService = mockEanCodeService.proxyInstance()
 
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
@@ -92,6 +89,17 @@ class DeltaServiceTest {
             })
         }
         result.get()
+    }
+
+    def createProductResponse(p) {
+        """
+         {
+            "result" : {
+                "outputUrn" : "urn:flix:score:en_gb:${p}.xml",
+                "outputUrl" : "/file/urn:flix:score:en_gb:${p}.xml"
+            }
+         }'
+        """
     }
 
     @Test
@@ -111,9 +119,9 @@ class DeltaServiceTest {
                 if (key == 'f') {
                     rx.Observable.just(new Oct3HttpResponse(statusCode: 500, bodyAsBytes: '{ "errors" : ["err1", "err2"]}'.bytes))
                 } else if (key == 'g') {
-                    throw new Exception("error in f")
+                    throw new Exception("error in g")
                 } else {
-                    rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: '{ "result" : ["success"]}'.bytes))
+                    rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: createProductResponse(key).bytes))
                 }
             }
         }
@@ -125,20 +133,12 @@ class DeltaServiceTest {
             filterForCategory(1) { List productUrls, String categoryFeed ->
                 rx.Observable.just(
                         [
-                                "urn:test_sku:score:en_gb:c": "ps4",
-                                "urn:test_sku:score:en_gb:d": "ps4",
                                 "urn:test_sku:score:en_gb:e": "psvita",
                                 "urn:test_sku:score:en_gb:f": "ps4",
                                 "urn:test_sku:score:en_gb:g": "psvita",
                                 "urn:test_sku:score:en_gb:h": "psvita"
                         ]
                 )
-            }
-        }
-        mockEanCodeService.demand.with {
-            filterForEanCodes(1) { List productUrls, List errors ->
-                List filtered = productUrls - ["urn:test_sku:score:en_gb:c", "urn:test_sku:score:en_gb:d"]
-                rx.Observable.just(filtered.inject([:]) { map, String urn -> map << [(urn): "${urn[urn.size() - 1]}123"] })
             }
         }
         mockDeltaUrlHelper.demand.with {
@@ -158,20 +158,34 @@ class DeltaServiceTest {
                 rx.Observable.just("done")
             }
         }
-        List<ProductServiceResult> result = runFlow().sort()
+        List<ProductResult> result = runFlow().sort()
         assert result.size() == 4
-        assert result[0] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:e", success: true, statusCode: 200)
-        assert result[1] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:f", success: false, statusCode: 500, errors: ["err1", "err2"])
-        assert result[2] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:g", success: false, statusCode: 0, errors: ["error in c"])
-        assert result[3] == new ProductServiceResult(jsonUrn: "urn:test_sku:score:en_gb:h", success: true, statusCode: 200)
-
-        assert result[0].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:e.xml"
-        assert result[3].xmlFileUrl == "/file/urn:flixmedia:score:en_gb:h.xml"
-
-        assert result[0].eanCode == "e123"
-        assert result[1].eanCode == "f123"
-        assert result[2].eanCode == "g123"
-        assert result[3].eanCode == "h123"
+        assert result[0] == new ProductResult(
+                success: true, statusCode: 200,
+                inputUrn: "urn:test_sku:score:en_gb:e",
+                inputUrl: "/file/urn:test_sku:score:en_gb:e",
+                outputUrn: "urn:flix:score:en_gb:e.xml",
+                outputUrl: "/file/urn:flix:score:en_gb:e.xml",
+        )
+        assert result[1] == new ProductResult(
+                success: false, statusCode: 500,
+                inputUrn: "urn:test_sku:score:en_gb:f",
+                inputUrl: "/file/urn:test_sku:score:en_gb:f",
+                errors: ["err1", "err2"]
+        )
+        assert result[2] == new ProductResult(
+                success: false, statusCode: 0,
+                inputUrn: "urn:test_sku:score:en_gb:g",
+                inputUrl: "/file/urn:test_sku:score:en_gb:g",
+                errors: ["error in g"]
+        )
+        assert result[3] == new ProductResult(
+                success: true, statusCode: 200,
+                inputUrn: "urn:test_sku:score:en_gb:h",
+                inputUrl: "/file/urn:test_sku:score:en_gb:h",
+                outputUrn: "urn:flix:score:en_gb:h.xml",
+                outputUrl: "/file/urn:flix:score:en_gb:h.xml",
+        )
     }
 
     @Test

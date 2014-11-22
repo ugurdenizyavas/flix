@@ -1,6 +1,7 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.flows.RepoValue
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
@@ -33,12 +34,18 @@ class ProductHandlerTest {
     @Test
     void "success"() {
         mockFlixSheetService.demand.with {
-            processProduct(1) { RepoProduct product ->
+            processProduct(1) { RepoProduct product, ProductResult productResult ->
                 assert product.publication == "GLOBAL"
                 assert product.locale == "fr_BE"
                 assert product.sku == "a_2fb_2bc"
                 assert product.processId == "123"
-                assert product.eanCode == "456"
+
+                productResult.eanCode = "ea1"
+                productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
+                productResult.inputUrl = "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+                productResult.outputUrn = "urn:flix:global:fr_be:a_2fb_2bc.xml"
+                productResult.outputUrl = "/repo/file/urn:flix:global:fr_be:a_2fb_2bc.xml"
+
                 rx.Observable.just("xxx")
             }
         }
@@ -53,18 +60,26 @@ class ProductHandlerTest {
                 validator: mockRequestValidator.proxyInstance(),
                 deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
-            uri "/?processId=123&eanCode=456"
+            uri "/?processId=123"
         }).with {
             assert status.code == 200
+
             def ren = rendered(DefaultJsonRender).object
+
             assert ren.status == 200
+
             assert ren.product.processId == "123"
             assert ren.product.publication == "GLOBAL"
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
-            assert ren.product.eanCode == "456"
+
+            assert ren.result.eanCode == "ea1"
+            assert ren.result.inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert ren.result.inputUrl == "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert ren.result.outputUrn == "urn:flix:global:fr_be:a_2fb_2bc.xml"
+            assert ren.result.outputUrl == "/repo/file/urn:flix:global:fr_be:a_2fb_2bc.xml"
+
             assert !ren.errors
-            assert ren.result == ["xxx"]
         }
     }
 
@@ -82,11 +97,17 @@ class ProductHandlerTest {
             uri "/"
         }).with {
             assert status.code == 400
+
             def ren = rendered(DefaultJsonRender).object
+
             assert ren.status == 400
+
             assert ren.product.publication == "GLOBAL"
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
+
+            assert !ren.result
+
             assert ren.errors == ["error"]
         }
     }
@@ -94,8 +115,12 @@ class ProductHandlerTest {
     @Test
     void "error in flow"() {
         mockFlixSheetService.demand.with {
-            processProduct(1) { RepoProduct product ->
-                product.errors << "error in sheet flow"
+            processProduct(1) { RepoProduct product, ProductResult productResult ->
+
+                productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
+                productResult.inputUrl = "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+                productResult.errors << "error in sheet flow"
+
                 rx.Observable.just(null)
             }
         }
@@ -114,19 +139,28 @@ class ProductHandlerTest {
         }).with {
             assert status.code == 500
             def ren = rendered(DefaultJsonRender).object
+
             assert ren.status == 500
+
             assert ren.product.publication == "GLOBAL"
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
+
             assert ren.errors == ["error in sheet flow"]
-            assert !ren.result
+
+            assert ren.result.inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert ren.result.inputUrl == "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
         }
     }
 
     @Test
     void "exception in flow"() {
         mockFlixSheetService.demand.with {
-            processProduct(1) { RepoProduct product ->
+            processProduct(1) { RepoProduct product, ProductResult productResult ->
+
+                productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
+                productResult.inputUrl = "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in sheet flow")
                 })
@@ -146,13 +180,19 @@ class ProductHandlerTest {
             uri "/"
         }).with {
             assert status.code == 500
+
             def ren = rendered(DefaultJsonRender).object
+
             assert ren.status == 500
+
             assert ren.product.publication == "GLOBAL"
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
+
             assert ren.errors == ["exp in sheet flow"]
-            assert !ren.result
+
+            assert ren.result.inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert ren.result.inputUrl == "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
         }
     }
 }

@@ -2,13 +2,13 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before
@@ -37,10 +37,10 @@ class DeltaHandlerTest {
         flix = new Flix()
     }
 
-    def sheetResultA = new ProductServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
-    def sheetResultB = new ProductServiceResult(jsonUrn: "b", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new ProductServiceResult(jsonUrn: "e", success: true, xmlFileUrl: "http:/repo/e.xml")
-    def sheetResultF = new ProductServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
+    def sheetResultA = new ProductResult(inputUrn: "a", success: true, outputUrl: "http:/repo/a.xml")
+    def sheetResultB = new ProductResult(inputUrn: "b", success: false, errors: ["err3", "err4"])
+    def sheetResultE = new ProductResult(inputUrn: "e", success: true, outputUrl: "http:/repo/e.xml")
+    def sheetResultF = new ProductResult(inputUrn: "f", success: false, errors: ["err4", "err5"])
 
     @Test
     void "success"() {
@@ -98,7 +98,7 @@ class DeltaHandlerTest {
 
             assert ren.result.other."package created" == "/3rdparty/flix.zip"
             assert ren.result.other."package archived" == "/archive/flix.zip"
-            assert ren.result.other.xmlFileUrls?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
+            assert ren.result.other.outputUrls?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
 
             assert ren.result.stats."number of delta products" == 6
             assert ren.result.stats."number of products filtered out by category" == 2

@@ -3,6 +3,7 @@ package com.sony.ebs.octopus3.microservices.flix.service
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import groovy.mock.interceptor.MockFor
@@ -21,6 +22,7 @@ class ProductServiceTest {
 
     ProductService productService
     RepoProduct product
+    ProductResult productResult
     StubFor mockFlixXmlBuilder, mockEanCodeEnhancer
     MockFor mockHttpClient
 
@@ -42,7 +44,10 @@ class ProductServiceTest {
     void before() {
         productService = new ProductService(execControl: execController.control, repositoryFileServiceUrl: "/repository/file/:urn")
 
-        product = new RepoProduct(type: RepoValue.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123", eanCode: "ea1")
+        product = new RepoProduct(type: RepoValue.flixMedia, publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc", processId: "123")
+
+        productResult = new ProductResult()
+
         mockHttpClient = new MockFor(Oct3HttpClient)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)
@@ -56,7 +61,7 @@ class ProductServiceTest {
         def result = new BlockingVariable(5)
         boolean valueSet = false
         execController.start {
-            productService.processProduct(product).subscribe({
+            productService.processProduct(product, productResult).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -69,94 +74,25 @@ class ProductServiceTest {
         result.get()
     }
 
+    def validateProductResult() {
+        productResult.with {
+            assert inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert inputUrl == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert outputUrn == "urn:flixmedia:global:fr_be:a_2fb_2bc.xml"
+            assert outputUrl == "/repository/file/urn:flixmedia:global:fr_be:a_2fb_2bc.xml"
+        }
+    }
+
     @Test
     void "success"() {
         mockHttpClient.demand.with {
-            doGet(1) { String url ->
-                assert url == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc?processId=123"
+            doGet(1) {
+                assert it == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc?processId=123"
                 rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
             }
             doPost(1) { String url, InputStream is ->
                 assert url == "/repository/file/urn:flixmedia:global:fr_be:a_2fb_2bc.xml?processId=123"
                 assert is.text == "some xml"
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
-            }
-        }
-
-        mockFlixXmlBuilder.demand.with {
-            buildXml(1) { json ->
-                assert json.eanCode == "ea1"
-                assert json.a == "1"
-                assert json.b.c == ["2", "3"]
-                "some xml"
-            }
-        }
-        assert runFlow() == "success"
-    }
-
-    @Test
-    void "sheet not found"() {
-        mockHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
-            }
-        }
-        assert runFlow() == "outOfFlow"
-        assert product.errors == ["HTTP 404 error getting sheet from repo"]
-    }
-
-    @Test
-    void "invalid sheet"() {
-        mockHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: 'invalid json'.bytes))
-            }
-        }
-        assert runFlow() == "error"
-    }
-
-    @Test
-    void "error building xml"() {
-        mockHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
-            }
-        }
-        mockFlixXmlBuilder.demand.with {
-            buildXml(1) {
-                throw new Exception("error building xml")
-            }
-        }
-        assert runFlow() == "error"
-    }
-
-    @Test
-    void "error saving xml"() {
-        mockHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
-            }
-            doPost(1) { String url, InputStream is ->
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
-            }
-        }
-        mockFlixXmlBuilder.demand.with {
-            buildXml(1) { json ->
-                "some xml"
-            }
-        }
-        assert runFlow() == "outOfFlow"
-        assert product.errors == ["HTTP 500 error saving flix xml to repo"]
-    }
-
-    @Test
-    void "success get ean code from octopus"() {
-        product.eanCode = null
-        mockHttpClient.demand.with {
-            doGet(1) {
-                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
-            }
-            doPost(1) { String url, InputStream is ->
                 rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
         }
@@ -176,17 +112,103 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "success"
+        validateProductResult()
+        assert productResult.eanCode == "ea2"
     }
 
     @Test
     void "error no ean code"() {
-        product.eanCode = null
         mockEanCodeEnhancer.demand.with {
             enhance(1) {
                 rx.Observable.just(it)
             }
         }
         assert runFlow() == "outOfFlow"
-        assert product.errors == ["ean code not found"]
+        validateProductResult()
+        assert productResult.errors == ["ean code not found"]
     }
+
+    @Test
+    void "sheet not found"() {
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) {
+                it.eanCode = "ea2"
+                rx.Observable.just(it)
+            }
+        }
+        mockHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 404))
+            }
+        }
+        assert runFlow() == "outOfFlow"
+        validateProductResult()
+        assert productResult.errors == ["HTTP 404 error getting sheet from repo"]
+    }
+
+    @Test
+    void "invalid sheet"() {
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) {
+                it.eanCode = "ea2"
+                rx.Observable.just(it)
+            }
+        }
+        mockHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: 'invalid json'.bytes))
+            }
+        }
+        assert runFlow() == "error"
+        validateProductResult()
+    }
+
+    @Test
+    void "error building xml"() {
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) {
+                it.eanCode = "ea2"
+                rx.Observable.just(it)
+            }
+        }
+        mockHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
+            }
+        }
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) {
+                throw new Exception("error building xml")
+            }
+        }
+        assert runFlow() == "error"
+        validateProductResult()
+    }
+
+    @Test
+    void "error saving xml"() {
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) {
+                it.eanCode = "ea2"
+                rx.Observable.just(it)
+            }
+        }
+        mockHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
+            }
+            doPost(1) { String url, InputStream is ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 500))
+            }
+        }
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) { json ->
+                "some xml"
+            }
+        }
+        assert runFlow() == "outOfFlow"
+        validateProductResult()
+        assert productResult.errors == ["HTTP 500 error saving flix xml to repo"]
+    }
+
 }

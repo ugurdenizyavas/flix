@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.commons.urn.URNImpl
@@ -52,52 +53,43 @@ class ProductService {
         json
     }
 
-    def createRepoUrl(RepoProduct product, boolean xml) {
-        observe(execControl.blocking({
-            def urn
-            if (xml) {
-                urn = FlixUtils.getXmlUrn(product.urn.toString())
-            } else {
-                urn = new URNImpl(RepoValue.global_sku.toString(), [product.publication, product.locale, product.sku])
-            }
-
-            def initialUrl = repositoryFileServiceUrl.replace(":urn", urn.toString())
-
-            def uriBuilder = new URIBuilder(initialUrl)
-            if (product.processId) {
-                uriBuilder.addParameter("processId", product.processId)
-            }
-            uriBuilder.toString()
-        }))
+    ProductResult enhanceProductResult(RepoProduct product, ProductResult productResult) {
+        productResult.with {
+            inputUrn = product.getUrnForType(RepoValue.global_sku).toString()
+            inputUrl = repositoryFileServiceUrl.replace(":urn", inputUrn)
+            outputUrn = FlixUtils.getXmlUrn(product.urn.toString()).toString()
+            outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrn)
+            it
+        }
     }
 
-    rx.Observable<String> processProduct(RepoProduct product) {
+    rx.Observable<String> processProduct(RepoProduct product, ProductResult productResult) {
         String xmlString
         rx.Observable.just("starting").flatMap({
-            if (!product.eanCode) {
-                eanCodeEnhancer.enhance([materialName: MaterialNameEncoder.decode(product.sku)])
-            } else {
-                rx.Observable.just([:])
-            }
-        }).filter({ Map map ->
-            if (!product.eanCode) {
-                if (map.eanCode) {
-                    product.eanCode = map.eanCode
-                } else {
-                    product.errors << "ean code not found"
-                }
-            }
-            product.eanCode as boolean
+            observe(execControl.blocking({
+                enhanceProductResult(product, productResult)
+            }))
         }).flatMap({
-            log.info "getting json from repo for {}", product.sku
-            createRepoUrl(product, false)
+            eanCodeEnhancer.enhance([materialName: MaterialNameEncoder.decode(product.sku)])
+        }).filter({ Map map ->
+            if (map.eanCode) {
+                productResult.eanCode = map.eanCode
+            } else {
+                productResult.errors << "ean code not found"
+            }
+            productResult.eanCode as boolean
+        }).flatMap({
+            observe(execControl.blocking({
+                log.info "getting json from repo for {}", product.sku
+                FlixUtils.addProcessId(product.processId, productResult.inputUrl)
+            }))
         }).flatMap({
             httpClient.doGet(it)
         }).filter({ Oct3HttpResponse response ->
-            response.isSuccessful("getting sheet from repo", product.errors)
+            response.isSuccessful("getting sheet from repo", productResult.errors)
         }).flatMap({ Oct3HttpResponse response ->
             observe(execControl.blocking {
-                createSheetJson(response.bodyAsStream, product.eanCode)
+                createSheetJson(response.bodyAsStream, productResult.eanCode)
             })
         }).flatMap({ json ->
             observe(execControl.blocking {
@@ -105,12 +97,14 @@ class ProductService {
             })
         }).flatMap({
             xmlString = it
-            log.info "saving xml to repo for {}", product.sku
-            createRepoUrl(product, true)
+            observe(execControl.blocking({
+                log.info "saving xml to repo for {}", product.sku
+                FlixUtils.addProcessId(product.processId, productResult.outputUrl)
+            }))
         }).flatMap({
             httpClient.doPost(it, IOUtils.toInputStream(xmlString, EncodingUtil.CHARSET))
         }).filter({ Oct3HttpResponse response ->
-            response.isSuccessful("saving flix xml to repo", product.errors)
+            response.isSuccessful("saving flix xml to repo", productResult.errors)
         }).map({
             "success"
         })

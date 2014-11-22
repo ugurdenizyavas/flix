@@ -2,6 +2,7 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
@@ -34,37 +35,33 @@ class ProductHandler extends GroovyHandler {
                 publication: context.pathTokens.publication,
                 locale: context.pathTokens.locale,
                 sku: context.pathTokens.sku,
-                eanCode: context.request.queryParams.eanCode,
                 processId: context.request.queryParams.processId
         )
         activity.debug "starting {}", product
 
         def startTime = new DateTime()
 
-        List result = []
         List errors = validator.validateRepoProduct(product)
         if (errors) {
             activity.error "error validating {} : {}", product, errors
             context.response.status(400)
             context.render deltaResultService.createProductResultInvalid(product, errors)
         } else {
-            productService.processProduct(product).finallyDo({
+            ProductResult productResult = new ProductResult()
+            productService.processProduct(product, productResult).finallyDo({
                 def endTime = new DateTime()
-                if (product.errors) {
-                    activity.error "finished {} with errors: {}", product, product.errors
+                if (productResult.errors) {
+                    activity.error "finished {} with errors: {}", product, productResult.errors
                     context.response.status(500)
-                    context.render deltaResultService.createProductResultWithErrors(product, product.errors, startTime, endTime)
                 } else {
                     activity.debug "finished {} with success", product
                     context.response.status(200)
-                    context.render deltaResultService.createProductResult(product, result, startTime, endTime)
                 }
+                context.render deltaResultService.createProductResult(product, productResult, startTime, endTime)
             }).subscribe({
-                def flowResult = it?.toString()
-                result << flowResult
-                activity.debug "sheet flow for {} emitted: {}", product, flowResult
+                activity.debug "product flow for {} finished with {}", product, productResult
             }, { e ->
-                product.errors << HandlerUtil.getErrorMessage(e)
+                productResult.errors << HandlerUtil.getErrorMessage(e)
                 activity.error "error in $product", e
             })
         }

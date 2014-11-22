@@ -8,7 +8,6 @@ import groovy.transform.ToString
 class Flix {
 
     List categoryFilteredOutUrns
-    List eanCodeFilteredOutUrns
     String outputPackageUrl
     String archivePackageUrl
 
