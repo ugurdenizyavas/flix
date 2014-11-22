@@ -3,16 +3,15 @@ package com.sony.ebs.octopus3.microservices.flix.service
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
+import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
-import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
-import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -71,7 +70,7 @@ class ProductService {
             productResult.eanCode as boolean
         }).flatMap({
             observe(execControl.blocking({
-                FlixUtils.addProcessId(productResult.inputUrl, product.processId)
+                HandlerUtil.addProcessId(productResult.inputUrl, product.processId)
             }))
         }).flatMap({
             log.info "getting json from repo for {}", product.sku
@@ -91,7 +90,7 @@ class ProductService {
             observe(execControl.blocking({
                 outputUrn = FlixUtils.getXmlUrn(product.urn.toString()).toString()
                 outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrn)
-                FlixUtils.addProcessId(outputUrl, product.processId)
+                HandlerUtil.addProcessId(outputUrl, product.processId)
             }))
         }).flatMap({
             log.info "saving xml to repo for {}", product.sku
