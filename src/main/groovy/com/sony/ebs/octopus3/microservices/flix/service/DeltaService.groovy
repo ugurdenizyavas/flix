@@ -13,7 +13,6 @@ import com.sony.ebs.octopus3.commons.urn.URNImpl
 import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import org.apache.http.client.utils.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -55,46 +54,41 @@ class DeltaService {
     @Autowired
     DeltaUrlHelper deltaUrlHelper
 
-    rx.Observable<ProductResult> createProductServiceResult(Oct3HttpResponse response, String inputUrn) {
-        observe(execControl.blocking({
-            def productResult = new ProductResult(
-                    inputUrn: inputUrn,
-                    inputUrl: repositoryFileServiceUrl.replace(":urn", inputUrn),
-                    success: response.success,
-                    statusCode: response.statusCode
-            )
-            def json = jsonSlurper.parse(response.bodyAsStream, EncodingUtil.CHARSET_STR)
+    def createProductResult(Oct3HttpResponse response, String inputUrn) {
+        def productResult = new ProductResult(
+                inputUrn: inputUrn,
+                inputUrl: repositoryFileServiceUrl.replace(":urn", inputUrn),
+                success: response.success,
+                statusCode: response.statusCode
+        )
+        def json = HandlerUtil.parseOct3ResponseQuiet(response)
 
-            productResult.errors = json.errors
-            productResult.eanCode = json.result?.eanCode
-            if (response.success) {
-                productResult.outputUrn = json.result?.outputUrn
-                productResult.outputUrl = json.result?.outputUrl
-            }
-            productResult
-        }))
+        productResult.errors = json?.errors
+        productResult.eanCode = json?.result?.eanCode
+        if (response.success) {
+            productResult.outputUrn = json?.result?.outputUrn
+            productResult.outputUrl = json?.result?.outputUrl
+        }
+        productResult
     }
 
-    private def createProductServiceUrl(RepoDelta delta, String inputUrn) {
-        observe(execControl.blocking({
-            def sku = new URNImpl(inputUrn).values.last()
-
-            def initialUrl = productServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale).replace(":sku", sku)
-            def urlBuilder = new URIBuilder(initialUrl)
-            if (delta.processId?.id) {
-                urlBuilder.addParameter("processId", delta.processId?.id)
-            }
-            urlBuilder.toString()
-        }))
+    def createProductServiceUrl(RepoDelta delta, String inputUrn) {
+        def sku = new URNImpl(inputUrn).values.last()
+        def initialUrl = productServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale).replace(":sku", sku)
+        HandlerUtil.addProcessId(initialUrl, delta.processId?.id)
     }
 
     rx.Observable<ProductResult> doProduct(RepoDelta delta, String inputUrn) {
         rx.Observable.just("starting").flatMap({
-            createProductServiceUrl(delta, inputUrn)
+            observe(execControl.blocking({
+                createProductServiceUrl(delta, inputUrn)
+            }))
         }).flatMap({
             httpClient.doGet(it)
         }).flatMap({ Oct3HttpResponse response ->
-            createProductServiceResult(response, inputUrn)
+            observe(execControl.blocking({
+                createProductResult(response, inputUrn)
+            }))
         }).onErrorReturn({
             log.error "error for $inputUrn", it
             def error = HandlerUtil.getErrorMessage(it)
