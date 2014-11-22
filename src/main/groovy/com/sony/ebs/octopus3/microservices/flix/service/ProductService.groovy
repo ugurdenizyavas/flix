@@ -53,21 +53,12 @@ class ProductService {
         json
     }
 
-    ProductResult enhanceProductResult(RepoProduct product, ProductResult productResult) {
-        productResult.with {
-            inputUrn = product.getUrnForType(RepoValue.global_sku).toString()
-            inputUrl = repositoryFileServiceUrl.replace(":urn", inputUrn)
-            outputUrn = FlixUtils.getXmlUrn(product.urn.toString()).toString()
-            outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrn)
-            it
-        }
-    }
-
     rx.Observable<String> processProduct(RepoProduct product, ProductResult productResult) {
-        String xmlString
+        String xmlString, outputUrn, outputUrl
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking({
-                enhanceProductResult(product, productResult)
+                productResult.inputUrn = product.getUrnForType(RepoValue.global_sku).toString()
+                productResult.inputUrl = repositoryFileServiceUrl.replace(":urn", productResult.inputUrn)
             }))
         }).flatMap({
             eanCodeEnhancer.enhance([materialName: MaterialNameEncoder.decode(product.sku)])
@@ -80,10 +71,10 @@ class ProductService {
             productResult.eanCode as boolean
         }).flatMap({
             observe(execControl.blocking({
-                log.info "getting json from repo for {}", product.sku
-                FlixUtils.addProcessId(product.processId, productResult.inputUrl)
+                FlixUtils.addProcessId(productResult.inputUrl, product.processId)
             }))
         }).flatMap({
+            log.info "getting json from repo for {}", product.sku
             httpClient.doGet(it)
         }).filter({ Oct3HttpResponse response ->
             response.isSuccessful("getting sheet from repo", productResult.errors)
@@ -98,14 +89,18 @@ class ProductService {
         }).flatMap({
             xmlString = it
             observe(execControl.blocking({
-                log.info "saving xml to repo for {}", product.sku
-                FlixUtils.addProcessId(product.processId, productResult.outputUrl)
+                outputUrn = FlixUtils.getXmlUrn(product.urn.toString()).toString()
+                outputUrl = repositoryFileServiceUrl.replace(":urn", outputUrn)
+                FlixUtils.addProcessId(outputUrl, product.processId)
             }))
         }).flatMap({
+            log.info "saving xml to repo for {}", product.sku
             httpClient.doPost(it, IOUtils.toInputStream(xmlString, EncodingUtil.CHARSET))
         }).filter({ Oct3HttpResponse response ->
             response.isSuccessful("saving flix xml to repo", productResult.errors)
         }).map({
+            productResult.outputUrn = outputUrn
+            productResult.outputUrl = outputUrl
             "success"
         })
     }

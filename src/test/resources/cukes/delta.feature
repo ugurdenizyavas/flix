@@ -36,11 +36,6 @@ Feature: Flix Delta Service
     When I request flix delta service for publication SCORE locale en_GB
     Then Flix delta service should give HTTP 500 error saving octopus category feed error
 
-  Scenario: flix delta service with get ean code error
-    Given Flix delta for publication SCORE locale en_GB with get ean code error
-    When I request flix delta service for publication SCORE locale en_GB
-    Then Flix delta service should give HTTP 500 error getting ean code feed error
-
   Scenario: flix delta service with ops error
     Given Flix delta for publication SCORE locale en_GB with ops error
     When I request flix delta service for publication SCORE locale en_GB

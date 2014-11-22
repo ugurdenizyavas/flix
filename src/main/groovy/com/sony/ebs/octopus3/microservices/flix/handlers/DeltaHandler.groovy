@@ -115,7 +115,7 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
 
         def outputUrls = sheetResults.findAll({ it.success }).collect({ it.outputUrl })
         def successfulUrns = sheetResults?.findAll({ it.success }).collect({ it.inputUrn })
-        def unsuccessfulUrns = sheetResults?.findAll({ !it.success }).collect({ it.inputUrn })
+        def unsuccessfulUrns = sheetResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
         def eanCodeFilteredOutUrns = sheetResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
 
         new DeltaResult(

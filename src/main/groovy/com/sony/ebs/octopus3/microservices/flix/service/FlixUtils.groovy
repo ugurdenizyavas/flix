@@ -37,7 +37,7 @@ class FlixUtils {
         new URNImpl(RepoValue.archive.toString(), [RepoValue.flix_sku.toString(), packageName.toLowerCase()])
     }
 
-    static String addProcessId(String processId, String initialUrl) {
+    static String addProcessId(String initialUrl, String processId) {
         new URIBuilder(initialUrl).with {
             if (processId) {
                 addParameter("processId", processId)

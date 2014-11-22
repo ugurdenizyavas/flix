@@ -68,8 +68,8 @@ class DeltaService {
             productResult.errors = json.errors
             productResult.eanCode = json.result?.eanCode
             if (response.success) {
-                productResult.outputUrn = json.result.outputUrn
-                productResult.outputUrl = json.result.outputUrl
+                productResult.outputUrn = json.result?.outputUrn
+                productResult.outputUrl = json.result?.outputUrl
             }
             productResult
         }))

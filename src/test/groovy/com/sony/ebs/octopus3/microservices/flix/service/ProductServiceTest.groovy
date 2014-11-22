@@ -74,7 +74,7 @@ class ProductServiceTest {
         result.get()
     }
 
-    def validateProductResult() {
+    def validateProductResultSuccess() {
         productResult.with {
             assert inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
             assert inputUrl == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc"
@@ -82,6 +82,16 @@ class ProductServiceTest {
             assert outputUrl == "/repository/file/urn:flixmedia:global:fr_be:a_2fb_2bc.xml"
         }
     }
+
+    def validateProductResultError() {
+        productResult.with {
+            assert inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert inputUrl == "/repository/file/urn:global_sku:global:fr_be:a_2fb_2bc"
+            assert !outputUrn
+            assert !outputUrl
+        }
+    }
+
 
     @Test
     void "success"() {
@@ -112,7 +122,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "success"
-        validateProductResult()
+        validateProductResultSuccess()
         assert productResult.eanCode == "ea2"
     }
 
@@ -124,7 +134,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "outOfFlow"
-        validateProductResult()
+        validateProductResultError()
         assert productResult.errors == ["ean code not found"]
     }
 
@@ -142,7 +152,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "outOfFlow"
-        validateProductResult()
+        validateProductResultError()
         assert productResult.errors == ["HTTP 404 error getting sheet from repo"]
     }
 
@@ -160,7 +170,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "error"
-        validateProductResult()
+        validateProductResultError()
     }
 
     @Test
@@ -182,7 +192,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "error"
-        validateProductResult()
+        validateProductResultError()
     }
 
     @Test
@@ -207,7 +217,7 @@ class ProductServiceTest {
             }
         }
         assert runFlow() == "outOfFlow"
-        validateProductResult()
+        validateProductResultError()
         assert productResult.errors == ["HTTP 500 error saving flix xml to repo"]
     }
 

@@ -80,6 +80,32 @@ def createIdentifiersFeed = { materialName ->
     """
 }
 
+def createProductServiceResult(String sku, eanCode, errors) {
+    """
+        {
+            "errors" : ${errors.collect({ "\"$it\"" })} ,
+            "result" : {
+                "eanCode" : "$eanCode",
+                "inputUrn" : "urn:global_sku:score:en_gb:${sku.toLowerCase()}",
+                "inputUrl" : "http://localhost:12306/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}",
+                "outputUrn" : "urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml",
+                "outputUrl" : "http://localhost:12306/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
+            }
+        }
+    """
+}
+def createProductServiceResult(String sku, errors) {
+    """
+        {
+            "errors" : ${errors.collect({ "\"$it\"" })} ,
+            "result" : {
+                "inputUrn" : "urn:global_sku:score:en_gb:${sku.toLowerCase()}",
+                "inputUrl" : "http://localhost:12306/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
+            }
+        }
+    """
+}
+
 Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publication, String locale, String expected ->
     def pubAndLocale = publication.toLowerCase() + ":" + locale.toLowerCase()
 
@@ -98,17 +124,6 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
         "urn:test_sku:$pubAndLocale:ss-ac3_2b_2fc+ce7"
     ]
 }
-"""
-
-    String EAN_CODE_FEED = """
-<identifiers type="ean_code">
-    <identifier materialName="E"><![CDATA[1]]></identifier>
-    <identifier materialName="f"><![CDATA[2]]></identifier>
-    <identifier materialName="G"><![CDATA[3]]></identifier>
-    <identifier materialName="h"><![CDATA[4]]></identifier>
-    <identifier materialName="SS-AC3+/C CE7"><![CDATA[5]]></identifier>
-    <identifier materialName="SS-AC3//C CE7"><![CDATA[6]]></identifier>
-</identifiers>
 """
 
     String CATEGORY_FEED = """
@@ -173,23 +188,22 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
     } else {
         server.post(by(uri("/repository/file/urn:flixmedia:$pubAndLocale:category.xml"))).response(status(200))
     }
-    if (expected == "get ean code error") {
-        server.get(by(uri("/product/identifiers/ean_code"))).response(status(500))
-    } else {
-        server.get(by(uri("/product/identifiers/ean_code"))).response(with(EAN_CODE_FEED), status(200))
-    }
     if (expected == "ops error") {
         server.post(by(uri("/repository/ops"))).response(status(500))
     } else {
         server.post(by(uri("/repository/ops"))).response(status(200))
     }
 
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/e"))).response(with('{}'), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/f"))).response(with('{"errors" : ["err1", "err2"]}'), status(500))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/g"))).response(with('{}'), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/h"))).response(with('{"errors" : ["err2", "err3"]}'), status(500))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2f_2fc+ce7"))).response(with('{}'), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2b_2fc+ce7"))).response(with('{}'), status(200))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/c"))).response(with(createProductServiceResult("c", [])), status(500))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/d"))).response(with(createProductServiceResult("d", [])), status(500))
+
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/e"))).response(with(createProductServiceResult("e", "1", [])), status(200))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/f"))).response(with(createProductServiceResult("f", "1", ["err1", "err2"])), status(500))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/g"))).response(with(createProductServiceResult("g", "1", [])), status(200))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/h"))).response(with(createProductServiceResult("h", "1", ["err2", "err3"])), status(500))
+
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2f_2fc+ce7"))).response(with(createProductServiceResult("ss-ac3_2f_2fc+ce7", "1", [])), status(200))
+    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2b_2fc+ce7"))).response(with(createProductServiceResult("ss-ac3_2b_2fc+ce7", "1", [])), status(200))
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
@@ -227,6 +241,7 @@ def validateDeltaSuccess = { response, publication, locale, upload ->
     assert json.result.stats."number of products filtered out by ean code" == 2
     assert json.result.stats."number of successful" == 4
     assert json.result.stats."number of unsuccessful" == 2
+    assert json.result.stats."sum" == 10
 
     assert json.result.urns.deltaUrns?.sort() == [
             getUrn("a"), getUrn("b"), getUrn("c"), getUrn("d"), getUrn("e"), getUrn("f"),
@@ -235,7 +250,7 @@ def validateDeltaSuccess = { response, publication, locale, upload ->
     assert json.result.urns.categoryFilteredOutUrns?.sort() == [getUrn("a"), getUrn("b")]
     assert json.result.urns.eanCodeFilteredOutUrns?.sort() == [getUrn("c"), getUrn("d")]
 
-    assert json.result.other.xmlFileUrls?.sort() == [
+    assert json.result.other.outputUrls?.sort() == [
             getXmlUrl("e"),
             getXmlUrl("g"),
             getXmlUrl("ss-ac3_2b_2fc+ce7"),
@@ -282,47 +297,86 @@ Then(~"Flix delta service should reject with (.*) parameter error") { paramName 
 }
 
 /*
-* ******************** FLIX SHEET SERVICE *************************************************************
+* ******************** FLIX PRODUCT SERVICE *************************************************************
 * */
 
-Given(~"Flix json for sheet (.*) with no process id") { String sheet ->
-    server.get(by(uri("/repository/file/urn:global_sku:score:en_gb:${sheet.toLowerCase()}"))).response(with('{"a":"1"}'), status(200))
-    server.post(by(uri("/repository/file/urn:flixmedia:score:en_gb:${sheet.toLowerCase()}.xml"))).response(status(200))
+Given(~"Octopus ean code (.*) for product (.*)") { String eanCode, String sku ->
+    def url = "/product/identifiers/material_name/${sku.toUpperCase()}"
+    server.get(by(uri(url))).response(with(createIdentifiersFeed(eanCode)), status(200))
 }
 
-Given(~"Flix json for sheet (.*) with process id (.*)") { String sheet, String processId ->
-    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sheet.toLowerCase()}"
+Given(~"Flix json for product (.*) no process id") { String sku ->
+    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
+    server.get(by(uri(jsonUri))).response(with('{"a":"1"}'), status(200))
+
+    def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
+    server.post(by(uri(xmlUri))).response(status(200))
+}
+
+Given(~"Flix json for product (.*) process id (.*)") { String sku, String processId ->
+    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
     server.get(and(by(uri(jsonUri)), eq(query("processId"), processId))).response(with('{"a":"1"}'), status(200))
 
-    def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sheet.toLowerCase()}.xml"
+    def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
     server.post(and(by(uri(xmlUri)), eq(query("processId"), processId))).response(status(200))
 }
 
-Given(~"Octopus ean code (.*) for sheet (.*)") { String eanCode, String sheet ->
-    def sheetUC = sheet.toUpperCase()
-    server.get(by(uri("/product/identifiers/material_name/$sheetUC"))).response(with(createIdentifiersFeed(eanCode)), status(200))
+When(~"I request flix product service for product (.*) no process id") { sku ->
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sku")
 }
 
-When(~"I request flix sheet service for process (.*) sheet (.*) no ean code") { processId, sheet ->
-
-    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?processId=$processId")
+When(~"I request flix product service for product (.*) process id (.*)") { sku, processId ->
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sku?processId=$processId")
 }
 
-When(~"I request flix sheet service for process (.*) sheet (.*) ean code (.*)") { processId, sheet, eanCode ->
-    get("flix/product/publication/SCORE/locale/en_GB/sku/$sheet?eanCode=$eanCode&processId=$processId")
-}
-
-Then(~"Flix sheet service for process (.*) sheet (.*) ean code (.*) should be done") { processId, sku, eanCode ->
-    assert response.statusCode == 200
-    def json = parseJson(response)
-    assert json.status == 200
-    assert json.result == ["success"]
-
+def validateProductResponse(json, sku, eanCode) {
     assert json.product.publication == "SCORE"
     assert json.product.locale == "en_GB"
     assert json.product.sku == sku
 
+    assert json.timeStats
+
+    assert json.result.inputUrn == "urn:global_sku:score:en_gb:${sku}"
+    assert json.result.inputUrl == "http://localhost:12306/repository/file/urn:global_sku:score:en_gb:${sku}"
+}
+
+Then(~"Flix product service with no process id for product (.*) ean code (.*) should be done") { sku, eanCode ->
+    assert response.statusCode == 200
+    def json = parseJson(response)
+
+    validateProductResponse(json, sku, eanCode)
+
+    assert json.status == 200
+    assert !json.errors
+    assert json.result.outputUrn == "urn:flixmedia:score:en_gb:${sku}.xml"
+    assert json.result.outputUrl == "http://localhost:12306/repository/file/urn:flixmedia:score:en_gb:${sku}.xml"
+    assert json.result.eanCode == eanCode
+}
+
+Then(~"Flix product service with process id (.*) for product (.*) ean code (.*) should be done") { processId, sku, eanCode ->
+    assert response.statusCode == 200
+    def json = parseJson(response)
+
+    validateProductResponse(json, sku, eanCode)
+
+    assert json.status == 200
+    assert !json.errors
+    assert json.result.outputUrn == "urn:flixmedia:score:en_gb:${sku}.xml"
+    assert json.result.outputUrl == "http://localhost:12306/repository/file/urn:flixmedia:score:en_gb:${sku}.xml"
+    assert json.result.eanCode == eanCode
     assert json.product.processId == processId
-    assert json.product.eanCode == eanCode
+}
+
+Then(~"Flix product service for product (.*) should fail") { sku ->
+    assert response.statusCode == 500
+    def json = parseJson(response)
+
+    validateProductResponse(json, sku, eanCode)
+
+    assert json.status == 500
+    assert json.errors == ["ean code not found"]
+    assert !json.result.outputUrn
+    assert !json.result.outputUrl
+    assert !json.result.eanCode
 }
 

@@ -37,10 +37,12 @@ class DeltaHandlerTest {
         flix = new Flix()
     }
 
-    def sheetResultA = new ProductResult(inputUrn: "a", success: true, outputUrl: "http:/repo/a.xml")
-    def sheetResultB = new ProductResult(inputUrn: "b", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new ProductResult(inputUrn: "e", success: true, outputUrl: "http:/repo/e.xml")
-    def sheetResultF = new ProductResult(inputUrn: "f", success: false, errors: ["err4", "err5"])
+    def sheetResultA = new ProductResult(inputUrn: "a", eanCode: "1", success: true, outputUrl: "http:/repo/a.xml")
+    def sheetResultB = new ProductResult(inputUrn: "b", eanCode: "1", success: false, errors: ["err3", "err4"])
+    def sheetResultE = new ProductResult(inputUrn: "e", eanCode: "1", success: true, outputUrl: "http:/repo/e.xml")
+    def sheetResultF = new ProductResult(inputUrn: "f", eanCode: "1", success: false, errors: ["err4", "err5"])
+    def sheetResultG = new ProductResult(inputUrn: "g", success: false, errors: ["no ean code"])
+    def sheetResultH = new ProductResult(inputUrn: "h", success: false, errors: ["no ean code"])
 
     @Test
     void "success"() {
@@ -61,9 +63,9 @@ class DeltaHandlerTest {
                 assert d.sdate == "s1"
                 assert d.edate == "s2"
 
-                d.deltaUrns = ["a", "b", "c", "d", "e", "f"]
+                d.deltaUrns = ["a", "b", "c", "d", "e", "f", "g", "h"]
                 f.categoryFilteredOutUrns = ["c", "d"]
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB, sheetResultG, sheetResultH])
             }
         }
         mockRequestValidator.demand.with {
@@ -100,16 +102,17 @@ class DeltaHandlerTest {
             assert ren.result.other."package archived" == "/archive/flix.zip"
             assert ren.result.other.outputUrls?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
 
-            assert ren.result.stats."number of delta products" == 6
+            assert ren.result.stats."number of delta products" == 8
             assert ren.result.stats."number of products filtered out by category" == 2
+            assert ren.result.stats."number of products filtered out by ean code" == 2
             assert ren.result.stats."number of successful" == 2
             assert ren.result.stats."number of unsuccessful" == 2
 
-            assert ren.result.productErrors.size() == 3
+            assert ren.result.productErrors.size() == 4
             assert ren.result.productErrors.err3 == ["b"]
             assert ren.result.productErrors.err4?.sort() == ["b", "f"]
             assert ren.result.productErrors.err5 == ["f"]
-
+            assert ren.result.productErrors."no ean code"?.sort() == ["g", "h"]
         }
     }
 
