@@ -3,9 +3,9 @@ package com.sony.ebs.octopus3.microservices.flix.service
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -22,7 +22,7 @@ class PackageServiceTest {
 
     PackageService packageService
     StubFor mockHttpClient
-    Flix flix
+    DeltaResult deltaResult
     RepoDelta delta
 
     static ExecController execController
@@ -46,7 +46,7 @@ class PackageServiceTest {
         mockHttpClient = new StubFor(Oct3HttpClient)
 
         delta = new RepoDelta(type: RepoValue.flixMedia, publication: "SCORE", locale: "fr_FR")
-        flix = new Flix()
+        deltaResult = new DeltaResult()
     }
 
     def runFlow() {
@@ -55,7 +55,7 @@ class PackageServiceTest {
         def result = new BlockingVariable(5)
         boolean valueSet = false
         execController.start {
-            packageService.packageFlow(delta, flix).subscribe({
+            packageService.processPackage(delta, deltaResult).subscribe({
                 valueSet = true
                 result.set(it)
             }, {
@@ -78,8 +78,8 @@ class PackageServiceTest {
             }
         }
         assert runFlow() == "success"
-        assert flix.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
-        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert deltaResult.other.outputPackageUrl ==~ /\/repo\/file\/urn:thirdparty:flixmedia:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert deltaResult.other.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
     }
 
     @Test
@@ -92,8 +92,8 @@ class PackageServiceTest {
             }
         }
         assert runFlow() == "success"
-        assert !flix.outputPackageUrl
-        assert flix.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
+        assert !deltaResult.other.outputPackageUrl
+        assert deltaResult.other.archivePackageUrl ==~ /\/repo\/file\/urn:archive:flix_sku:flix_[a-zA-Z]{2}_[A-Za-z]{2}_[0-9]{8}_[0-9]{6}.zip/
     }
 
     @Test
@@ -104,7 +104,7 @@ class PackageServiceTest {
             }
         }
         assert runFlow() == "outOfFlow"
-        assert delta.errors == ["HTTP 500 error calling repo ops service"]
+        assert deltaResult.errors == ["HTTP 500 error calling repo ops service"]
     }
 
     @Test

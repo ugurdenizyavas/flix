@@ -5,12 +5,12 @@ import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -101,23 +101,23 @@ class DeltaService {
         })
     }
 
-    rx.Observable<ProductResult> processDelta(RepoDelta delta, Flix flix) {
+    rx.Observable<ProductResult> processDelta(RepoDelta delta, DeltaResult deltaResult) {
 
         List categoryFilteredUrns
         def lastModifiedUrn = delta.lastModifiedUrn
         rx.Observable.just("starting").flatMap({
             deltaUrlHelper.createStartDate(delta.sdate, lastModifiedUrn)
         }).flatMap({
-            delta.finalStartDate = it
+            deltaResult.finalStartDate = it
             def deltaUrn = delta.getUrnForType(RepoValue.global_sku)
             def initialUrl = repositoryDeltaServiceUrl.replace(":urn", deltaUrn.toString())
-            deltaUrlHelper.createRepoDeltaUrl(initialUrl, delta.finalStartDate, delta.edate)
+            deltaUrlHelper.createRepoDeltaUrl(initialUrl, deltaResult.finalStartDate, delta.edate)
         }).flatMap({
-            delta.finalDeltaUrl = it
-            log.debug "delta url is {} for {}", delta.finalDeltaUrl, delta
-            httpClient.doGet(delta.finalDeltaUrl)
+            deltaResult.finalDeltaUrl = it
+            log.debug "delta url is {} for {}", deltaResult.finalDeltaUrl, delta
+            httpClient.doGet(deltaResult.finalDeltaUrl)
         }).filter({ Oct3HttpResponse response ->
-            response.isSuccessful("retrieving global sku delta", delta.errors)
+            response.isSuccessful("retrieving global sku delta", deltaResult.errors)
         }).flatMap({ Oct3HttpResponse response ->
             observe(execControl.blocking({
                 log.info "parsing delta json"
@@ -125,23 +125,25 @@ class DeltaService {
                 json?.results
             }))
         }).flatMap({
-            delta.deltaUrns = it
-            log.info "{} products found in delta", delta.deltaUrns?.size()
+            deltaResult.deltaUrns = it
+            log.info "{} products found in delta", deltaResult.deltaUrns?.size()
 
             log.info "deleting current flix xmls"
             def deleteUrl = repositoryFileServiceUrl.replace(":urn", delta.baseUrn.toString())
             httpClient.doDelete(deleteUrl)
         }).filter({ Oct3HttpResponse response ->
-            response.isSuccessful("deleting current flix xmls", delta.errors)
+            response.isSuccessful("deleting current flix xmls", deltaResult.errors)
         }).flatMap({
-            deltaUrlHelper.updateLastModified(lastModifiedUrn, delta.errors)
+            deltaUrlHelper.updateLastModified(lastModifiedUrn, deltaResult.errors)
         }).flatMap({
-            categoryService.retrieveCategoryFeed(delta)
+            categoryService.retrieveCategoryFeed(delta.publication, delta.locale, deltaResult.errors)
         }).flatMap({ String categoryFeed ->
-            categoryService.filterForCategory(delta.deltaUrns, categoryFeed)
+            categoryService.saveCategoryFeed(delta, categoryFeed, deltaResult.errors)
+        }).flatMap({ String categoryFeed ->
+            categoryService.filterForCategory(deltaResult.deltaUrns, categoryFeed)
         }).flatMap({ Map categoryMap ->
             categoryFilteredUrns = categoryMap.keySet() as List
-            flix.categoryFilteredOutUrns = delta.deltaUrns - categoryFilteredUrns
+            deltaResult.categoryFilteredOutUrns = deltaResult.deltaUrns - categoryFilteredUrns
             List list = categoryFilteredUrns?.collect { doProduct(delta, it) }
             rx.Observable.merge(list, 30)
         })

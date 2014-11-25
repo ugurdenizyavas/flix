@@ -4,11 +4,11 @@ import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
@@ -43,8 +43,8 @@ class DeltaServiceTest {
     StubFor mockCategoryService, mockDeltaUrlHelper
     MockFor mockHttpClient
 
-    Flix flix
     RepoDelta delta
+    DeltaResult deltaResult
 
     static ExecController execController
 
@@ -70,8 +70,7 @@ class DeltaServiceTest {
         mockDeltaUrlHelper = new StubFor(DeltaUrlHelper)
 
         delta = new RepoDelta(type: RepoValue.flixMedia, processId: new ProcessIdImpl("123"), publication: "SCORE", locale: "en_GB", sdate: "d1", edate: "d2")
-        flix = new Flix()
-
+        deltaResult = new DeltaResult()
     }
 
     def runFlow() {
@@ -81,7 +80,7 @@ class DeltaServiceTest {
 
         def result = new BlockingVariable<List<String>>(5)
         execController.start {
-            deltaService.processDelta(delta, flix).toList().subscribe({
+            deltaService.processDelta(delta, deltaResult).toList().subscribe({
                 result.set(it)
             }, {
                 log.error "error", it
@@ -126,8 +125,14 @@ class DeltaServiceTest {
             }
         }
         mockCategoryService.demand.with {
-            retrieveCategoryFeed(1) { d ->
+            retrieveCategoryFeed(1) { publication, locale, errors ->
+                assert publication == "SCORE"
+                assert locale == "en_GB"
+                rx.Observable.just(CATEGORY_FEED)
+            }
+            saveCategoryFeed(1) { d, feed, errors ->
                 assert d == delta
+                assert feed == CATEGORY_FEED
                 rx.Observable.just(CATEGORY_FEED)
             }
             filterForCategory(1) { List productUrls, String categoryFeed ->
@@ -145,11 +150,11 @@ class DeltaServiceTest {
             createStartDate(1) { sdate, lastModifiedUrn ->
                 assert sdate == delta.sdate
                 assert lastModifiedUrn == delta.lastModifiedUrn
-                rx.Observable.just("updated date")
+                rx.Observable.just("s1")
             }
             createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 assert initialUrl == "/delta/urn:global_sku:score:en_gb"
-                assert sdate == "updated date"
+                assert sdate == "s1"
                 assert edate == delta.edate
                 rx.Observable.just("/delta/urn:global_sku:score:en_gb?dates")
             }
@@ -158,7 +163,12 @@ class DeltaServiceTest {
                 rx.Observable.just("done")
             }
         }
+
         List<ProductResult> result = runFlow().sort()
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "/delta/urn:global_sku:score:en_gb?dates"
+
         assert result.size() == 4
         assert result[0] == new ProductResult(
                 success: true, statusCode: 200,
@@ -192,7 +202,7 @@ class DeltaServiceTest {
     void "error getting delta"() {
         mockDeltaUrlHelper.demand.with {
             createStartDate(1) { sdate, lastModifiedUrn ->
-                rx.Observable.just("updated date")
+                rx.Observable.just("s1")
             }
             createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
@@ -204,14 +214,17 @@ class DeltaServiceTest {
             }
         }
         assert runFlow() == []
-        assert delta.errors == ["HTTP 404 error retrieving global sku delta"]
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "//delta?dates"
+        assert deltaResult.errors == ["HTTP 404 error retrieving global sku delta"]
     }
 
     @Test
     void "error deleting existing feeds"() {
         mockDeltaUrlHelper.demand.with {
             createStartDate(1) { sdate, lastModifiedUrn ->
-                rx.Observable.just("updated date")
+                rx.Observable.just("s1")
             }
             createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
@@ -226,7 +239,10 @@ class DeltaServiceTest {
             }
         }
         assert runFlow() == []
-        assert delta.errors == ["HTTP 500 error deleting current flix xmls"]
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "//delta?dates"
+        assert deltaResult.errors == ["HTTP 500 error deleting current flix xmls"]
     }
 
 
@@ -234,7 +250,7 @@ class DeltaServiceTest {
     void "error updating last modified time"() {
         mockDeltaUrlHelper.demand.with {
             createStartDate(1) { sdate, lastModifiedUrn ->
-                rx.Observable.just("updated date")
+                rx.Observable.just("s1")
             }
             createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
                 rx.Observable.just("//delta?dates")
@@ -252,6 +268,77 @@ class DeltaServiceTest {
             }
         }
         assert runFlow() == ["error"]
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "//delta?dates"
+    }
+
+    @Test
+    void "error retrieving category feed"() {
+        mockHttpClient.demand.with {
+            doGet(1) { String url ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: DELTA_FEED.bytes))
+            }
+            doDelete(1) { String url ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
+            }
+        }
+        mockCategoryService.demand.with {
+            retrieveCategoryFeed(1) { publication, locale, errors ->
+                throw new Exception("exception in retrieving category feed")
+            }
+        }
+        mockDeltaUrlHelper.demand.with {
+            createStartDate(1) { sdate, lastModifiedUrn ->
+                rx.Observable.just("s1")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
+                rx.Observable.just("//delta?dates")
+            }
+            updateLastModified(1) { urn, errors ->
+                rx.Observable.just("done")
+            }
+        }
+        assert runFlow() == ["error"]
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "//delta?dates"
+    }
+
+    @Test
+    void "error saving category feed"() {
+        mockHttpClient.demand.with {
+            doGet(1) { String url ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: DELTA_FEED.bytes))
+            }
+            doDelete(1) { String url ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
+            }
+        }
+        mockCategoryService.demand.with {
+            retrieveCategoryFeed(1) { publication, locale, errors ->
+                rx.Observable.just(CATEGORY_FEED)
+            }
+            saveCategoryFeed(1) { d, feed, errors ->
+                throw new Exception("exception in saving category feed")
+            }
+        }
+        mockDeltaUrlHelper.demand.with {
+            createStartDate(1) { sdate, lastModifiedUrn ->
+                rx.Observable.just("s1")
+            }
+            createRepoDeltaUrl(1) { initialUrl, sdate, edate ->
+                rx.Observable.just("//delta?dates")
+            }
+            updateLastModified(1) { urn, errors ->
+                assert urn == delta.lastModifiedUrn
+                rx.Observable.just("done")
+            }
+        }
+        assert runFlow() == ["error"]
+
+        assert deltaResult.finalStartDate == "s1"
+        assert deltaResult.finalDeltaUrl == "//delta?dates"
     }
 
 }

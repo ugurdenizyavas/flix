@@ -11,7 +11,6 @@ import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductRes
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
 import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.util.logging.Slf4j
@@ -67,22 +66,22 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
     @Override
     void flowHandle(GroovyContext context, RepoDelta delta) {
         def startTime = new DateTime()
-        def flix = new Flix()
 
         List<ProductResult> productServiceResults = []
-        deltaService.processDelta(delta, flix).finallyDo({
-            if (delta.errors) {
-                def jsonResponse = processError(delta, delta.errors, startTime)
+        DeltaResult deltaResult = new DeltaResult()
+        deltaService.processDelta(delta, deltaResult).finallyDo({
+            if (deltaResult.errors) {
+                def jsonResponse = processError(delta, deltaResult.errors, startTime)
                 context.response.status(500)
                 context.render jsonResponse
             } else {
-                packageService.packageFlow(delta, flix).finallyDo({
-                    if (delta.errors) {
-                        def jsonResponse = processError(delta, delta.errors, startTime)
+                packageService.processPackage(delta, deltaResult).finallyDo({
+                    if (deltaResult.errors) {
+                        def jsonResponse = processError(delta, deltaResult.errors, startTime)
                         context.response.status(500)
                         context.render jsonResponse
                     } else {
-                        def deltaResult = createDeltaResult(delta, flix, productServiceResults)
+                        enhanceDeltaResult(deltaResult, productServiceResults)
                         def jsonResponse = processSuccess(delta, deltaResult, startTime)
                         context.response.status(200)
                         context.render jsonResponse
@@ -90,7 +89,7 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
                 }).subscribe({
                     activity.debug "{} emitted: {}", delta, it
                 }, { e ->
-                    delta.errors << HandlerUtil.getErrorMessage(e)
+                    deltaResult.errors << HandlerUtil.getErrorMessage(e)
                     activity.error "error in $delta", e
                 })
             }
@@ -98,40 +97,31 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
             productServiceResults << it
             activity.debug "flix flow emitted: {}", it
         }, { e ->
-            delta.errors << HandlerUtil.getErrorMessage(e)
+            deltaResult.errors << HandlerUtil.getErrorMessage(e)
             activity.error "error in $delta", e
         })
     }
 
-    DeltaResult createDeltaResult(RepoDelta delta, Flix flix, List<ProductResult> sheetResults) {
-
-        Map productErrors = [:]
+    def enhanceDeltaResult(DeltaResult deltaResult, List<ProductResult> sheetResults) {
+        Map pErrors = [:]
         sheetResults.findAll({ !it.success }).each { ProductResult serviceResult ->
             serviceResult.errors.each { error ->
-                if (productErrors[error] == null) productErrors[error] = []
-                productErrors[error] << serviceResult.inputUrn
+                if (pErrors[error] == null) pErrors[error] = []
+                pErrors[error] << serviceResult.inputUrn
             }
         }
-
-        def outputUrls = sheetResults.findAll({ it.success }).collect({ it.outputUrl })
-        def successfulUrns = sheetResults?.findAll({ it.success }).collect({ it.inputUrn })
-        def unsuccessfulUrns = sheetResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
-        def eanCodeFilteredOutUrns = sheetResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
-
-        new DeltaResult(
-                productErrors: productErrors,
-                deltaUrns: delta.deltaUrns,
-                categoryFilteredOutUrns: flix.categoryFilteredOutUrns,
-                eanCodeFilteredOutUrns: eanCodeFilteredOutUrns,
-                successfulUrns: successfulUrns,
-                unsuccessfulUrns: unsuccessfulUrns,
-                other: [
-                        "package created" : flix.outputPackageUrl,
-                        "package archived": flix.archivePackageUrl,
-                        outputUrls        : outputUrls
-                ]
-
-        )
+        deltaResult.with {
+            productErrors = pErrors
+            categoryFilteredOutUrns = deltaResult.categoryFilteredOutUrns
+            eanCodeFilteredOutUrns = sheetResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
+            successfulUrns = sheetResults?.findAll({ it.success }).collect({ it.inputUrn })
+            unsuccessfulUrns = sheetResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
+            other = [
+                    "package created" : deltaResult.other?.outputPackageUrl,
+                    "package archived": deltaResult.other?.archivePackageUrl,
+                    outputUrls        : (sheetResults.findAll({ it.success }).collect({ it.outputUrl }))
+            ]
+        }
     }
 
 }

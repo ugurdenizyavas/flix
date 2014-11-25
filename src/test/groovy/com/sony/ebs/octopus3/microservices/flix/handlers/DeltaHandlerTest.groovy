@@ -2,11 +2,11 @@ package com.sony.ebs.octopus3.microservices.flix.handlers
 
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
 import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
 import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.mock.interceptor.StubFor
@@ -20,21 +20,19 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class DeltaHandlerTest {
 
-    StubFor mockFlixService, mockFlixPackageService, mockRequestValidator, mockResponseStorage
+    StubFor mockDeltaService, mockPackageService, mockRequestValidator, mockResponseStorage
     RepoDelta delta
-    Flix flix
     def deltaResultService
 
     @Before
     void before() {
-        mockFlixService = new StubFor(DeltaService)
+        mockDeltaService = new StubFor(DeltaService)
         mockRequestValidator = new StubFor(RequestValidator)
-        mockFlixPackageService = new StubFor(PackageService)
+        mockPackageService = new StubFor(PackageService)
         mockResponseStorage = new StubFor(ResponseStorage)
         deltaResultService = new DeltaResultService()
 
         delta = new RepoDelta(type: RepoValue.flixMedia, publication: "SCORE", locale: "en_GB")
-        flix = new Flix()
     }
 
     def sheetResultA = new ProductResult(inputUrn: "a", eanCode: "1", success: true, outputUrl: "http:/repo/a.xml")
@@ -46,25 +44,25 @@ class DeltaHandlerTest {
 
     @Test
     void "success"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
                 assert d.publication == "SCORE"
                 assert d.locale == "en_GB"
-                f.outputPackageUrl = "/3rdparty/flix.zip"
-                f.archivePackageUrl = "/archive/flix.zip"
+                dr.other.outputPackageUrl = "/3rdparty/flix.zip"
+                dr.other.archivePackageUrl = "/archive/flix.zip"
                 rx.Observable.just("xxx")
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 assert d.processId != null
                 assert d.publication == "SCORE"
                 assert d.locale == "en_GB"
                 assert d.sdate == "s1"
                 assert d.edate == "s2"
 
-                d.deltaUrns = ["a", "b", "c", "d", "e", "f", "g", "h"]
-                f.categoryFilteredOutUrns = ["c", "d"]
+                dr.deltaUrns = ["a", "b", "c", "d", "e", "f", "g", "h"]
+                dr.categoryFilteredOutUrns = ["c", "d"]
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB, sheetResultG, sheetResultH])
             }
         }
@@ -79,8 +77,8 @@ class DeltaHandlerTest {
         }
 
         handle(new DeltaHandler(
-                deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
                 deltaResultService: deltaResultService
@@ -145,9 +143,9 @@ class DeltaHandlerTest {
 
     @Test
     void "error in flix flow"() {
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
-                d.errors << "error in flix flow"
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
+                dr.errors << "error in flix flow"
                 rx.Observable.just(null)
             }
         }
@@ -162,8 +160,8 @@ class DeltaHandlerTest {
         }
 
         handle(new DeltaHandler(
-                deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
                 deltaResultService: deltaResultService), {
@@ -183,8 +181,8 @@ class DeltaHandlerTest {
 
     @Test
     void "exception in flix flow"() {
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in flix flow")
                 })
@@ -201,8 +199,8 @@ class DeltaHandlerTest {
         }
 
         handle(new DeltaHandler(
-                deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
                 deltaResultService: deltaResultService), {
@@ -222,14 +220,14 @@ class DeltaHandlerTest {
 
     @Test
     void "error in package flow"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
-                d.errors << "error in package flow"
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
+                dr.errors << "error in package flow"
                 rx.Observable.just(null)
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
@@ -244,8 +242,8 @@ class DeltaHandlerTest {
         }
 
         handle(new DeltaHandler(
-                deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
                 deltaResultService: deltaResultService), {
@@ -265,15 +263,15 @@ class DeltaHandlerTest {
 
     @Test
     void "exception in package flow"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in package flow")
                 })
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
             }
         }
@@ -288,8 +286,8 @@ class DeltaHandlerTest {
         }
 
         handle(new DeltaHandler(
-                deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 responseStorage: mockResponseStorage.proxyInstance(),
                 deltaResultService: deltaResultService), {
