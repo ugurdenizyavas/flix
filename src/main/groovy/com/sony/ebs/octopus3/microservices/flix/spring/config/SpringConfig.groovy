@@ -9,11 +9,10 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaUrlHelper
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.CategoryEnhancer
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
-import com.sony.ebs.octopus3.commons.ratpack.product.filtering.EanCodeService
 import groovy.util.logging.Slf4j
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -34,68 +33,52 @@ class SpringConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Autowired
-    @org.springframework.context.annotation.Lazy
-    ExecControl execControl
-
-    @Value('${octopus3.flix.octopusEanCodeServiceUrl}')
-    String octopusEanCodeServiceUrl
-
-    @Autowired
-    @Qualifier("externalHttpClient")
-    @org.springframework.context.annotation.Lazy
-    Oct3HttpClient externalHttpClient
-
-    @Autowired
-    @Qualifier("internalHttpClient")
-    @org.springframework.context.annotation.Lazy
-    Oct3HttpClient internalHttpClient
-
-    @Value('${octopus3.flix.octopusIdentifiersServiceUrl}')
-    String octopusIdentifiersServiceUrl
-
     @Bean
     @org.springframework.context.annotation.Lazy
-    public EanCodeEnhancer eanCodeEnhancer() {
+    public EanCodeEnhancer eanCodeEnhancer(
+            ExecControl execControl,
+            @Value('${octopus3.flix.octopusIdentifiersServiceUrl}') String octopusIdentifiersServiceUrl,
+            @Qualifier("externalHttpClient") Oct3HttpClient externalHttpClient
+    ) {
         new EanCodeEnhancer(execControl: execControl,
                 serviceUrl: octopusIdentifiersServiceUrl,
                 httpClient: externalHttpClient)
     }
 
-    @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}')
-    String repositoryFileAttributesServiceUrl
-
     @Bean
     @org.springframework.context.annotation.Lazy
-    public FileAttributesProvider attributesProvider() {
+    public FileAttributesProvider attributesProvider(
+            ExecControl execControl,
+            @Value('${octopus3.flix.repositoryFileAttributesServiceUrl}') String repositoryFileAttributesServiceUrl,
+            @Qualifier("externalHttpClient") Oct3HttpClient externalHttpClient
+    ) {
         new FileAttributesProvider(execControl: execControl,
                 repositoryFileAttributesServiceUrl: repositoryFileAttributesServiceUrl,
                 httpClient: externalHttpClient)
     }
 
-    @Value('${octopus3.flix.repositoryFileServiceUrl}')
-    String repositoryFileServiceUrl
-
     @Bean
     @org.springframework.context.annotation.Lazy
-    public DeltaUrlHelper deltaUrlHelper() {
+    public DeltaUrlHelper deltaUrlHelper(
+            ExecControl execControl,
+            FileAttributesProvider fileAttributesProvider,
+            @Value('${octopus3.flix.repositoryFileServiceUrl}') String repositoryFileServiceUrl,
+            @Qualifier("externalHttpClient") Oct3HttpClient externalHttpClient
+    ) {
         new DeltaUrlHelper(execControl: execControl,
                 repositoryFileServiceUrl: repositoryFileServiceUrl,
                 httpClient: externalHttpClient,
-                fileAttributesProvider: attributesProvider()
+                fileAttributesProvider: fileAttributesProvider
         )
     }
 
     @Bean
-    public RequestValidator requestValidator() {
-        new RequestValidator()
-    }
-
-
-    @Bean
     @Qualifier('fileStorage')
     @org.springframework.context.annotation.Lazy
-    public ResponseStorage responseStorage() {
+    public ResponseStorage responseStorage(
+            @Value('${octopus3.flix.repositoryFileServiceUrl}') String repositoryFileServiceUrl,
+            @Qualifier("externalHttpClient") Oct3HttpClient externalHttpClient
+    ) {
         new ResponseStorage(
                 httpClient: externalHttpClient,
                 saveUrl: repositoryFileServiceUrl
@@ -105,6 +88,9 @@ class SpringConfig {
     @Bean
     @org.springframework.context.annotation.Lazy
     public CategoryService categoryService(
+            ExecControl execControl,
+            @Value('${octopus3.flix.repositoryFileServiceUrl}') String repositoryFileServiceUrl,
+            @Qualifier("internalHttpClient") Oct3HttpClient internalHttpClient,
             @Value('${octopus3.flix.octopusCategoryServiceUrl}') String octopusCategoryServiceUrl
     ) {
         new CategoryService(execControl: execControl,
@@ -115,12 +101,16 @@ class SpringConfig {
 
     @Bean
     @org.springframework.context.annotation.Lazy
-    public EanCodeService eanCodeService(
-            @Value('${octopus3.flix.octopusEanCodeServiceUrl}') String octopusEanCodeServiceUrl
+    public static CategoryEnhancer categoryEnhancer(
+            ExecControl execControl,
+            @Qualifier('internalHttpClient') Oct3HttpClient httpClient,
+            @Value('${octopus3.flix.octopusCategoryServiceUrl}') String octopusCategoryServiceUrl
     ) {
-        new EanCodeService(execControl: execControl,
-                octopusEanCodeServiceUrl: octopusEanCodeServiceUrl,
-                httpClient: internalHttpClient)
+        new CategoryEnhancer(
+                execControl: execControl,
+                httpClient: httpClient,
+                categoryServiceUrl: octopusCategoryServiceUrl
+        )
     }
 
     @Bean
@@ -149,6 +139,11 @@ class SpringConfig {
     @org.springframework.context.annotation.Lazy
     public DeltaResultService deltaResultService() {
         new DeltaResultService()
+    }
+
+    @Bean
+    public RequestValidator requestValidator() {
+        new RequestValidator()
     }
 
 }

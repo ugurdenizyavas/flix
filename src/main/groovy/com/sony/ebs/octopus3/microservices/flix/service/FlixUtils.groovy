@@ -3,7 +3,6 @@ package com.sony.ebs.octopus3.microservices.flix.service
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.urn.URN
 import com.sony.ebs.octopus3.commons.urn.URNImpl
-import org.apache.http.client.utils.URIBuilder
 
 class FlixUtils {
 
@@ -37,13 +36,5 @@ class FlixUtils {
         new URNImpl(RepoValue.archive.toString(), [RepoValue.flix_sku.toString(), packageName.toLowerCase()])
     }
 
-    static String addProcessId(String initialUrl, String processId) {
-        new URIBuilder(initialUrl).with {
-            if (processId) {
-                addParameter("processId", processId)
-            }
-            it.toString()
-        }
-    }
 }
 

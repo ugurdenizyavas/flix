@@ -12,6 +12,7 @@ import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
+import groovyx.net.http.URIBuilder
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -61,7 +62,7 @@ class DeltaServiceTest {
     @Before
     void before() {
         deltaService = new DeltaService(execControl: execController.control,
-                productServiceUrl: "/flix/product/publication/:publication/locale/:locale/sku/:sku",
+                productServiceUrl: "//flix/product/publication/:publication/locale/:locale/sku/:sku",
                 repositoryDeltaServiceUrl: "/delta/:urn",
                 repositoryFileServiceUrl: "/file/:urn",
                 repositoryFileAttributesServiceUrl: "/fileAttributes/:urn")
@@ -113,7 +114,10 @@ class DeltaServiceTest {
                 rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
             }
             doGet(4) { String url ->
-                assert url.startsWith("/flix/product/publication/SCORE/locale/en_GB/sku/")
+                assert url.startsWith("//flix/product/publication/SCORE/locale/en_GB/sku/")
+                def uriBuilder = new URIBuilder(url)
+                assert uriBuilder.query.category == "psvita"
+                assert uriBuilder.query.processId == "123"
                 def key = url[49]
                 if (key == 'f') {
                     rx.Observable.just(new Oct3HttpResponse(statusCode: 500, bodyAsBytes: '{ "errors" : ["err1", "err2"]}'.bytes))
@@ -139,7 +143,7 @@ class DeltaServiceTest {
                 rx.Observable.just(
                         [
                                 "urn:test_sku:score:en_gb:e": "psvita",
-                                "urn:test_sku:score:en_gb:f": "ps4",
+                                "urn:test_sku:score:en_gb:f": "psvita",
                                 "urn:test_sku:score:en_gb:g": "psvita",
                                 "urn:test_sku:score:en_gb:h": "psvita"
                         ]

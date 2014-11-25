@@ -8,6 +8,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.CategoryEnhancer
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -38,6 +39,9 @@ class ProductService {
     EanCodeEnhancer eanCodeEnhancer
 
     @Autowired
+    CategoryEnhancer categoryEnhancer
+
+    @Autowired
     @org.springframework.context.annotation.Lazy
     ExecControl execControl
 
@@ -60,7 +64,7 @@ class ProductService {
                 productResult.inputUrl = repositoryFileServiceUrl.replace(":urn", productResult.inputUrn)
             }))
         }).flatMap({
-            eanCodeEnhancer.enhance([materialName: MaterialNameEncoder.decode(product.sku)])
+            eanCodeEnhancer.enhance([sku: product.sku], true)
         }).filter({ Map map ->
             if (map.eanCode) {
                 productResult.eanCode = map.eanCode
@@ -68,6 +72,19 @@ class ProductService {
                 productResult.errors << "ean code not found"
             }
             productResult.eanCode as boolean
+        }).flatMap({
+            if (product.category) {
+                rx.Observable.just([category: product.category])
+            } else {
+                categoryEnhancer.enhance([sku: product.sku, publication: product.publication, locale: product.locale], true)
+            }
+        }).filter({ Map map ->
+            if (map.category) {
+                productResult.category = map.category
+            } else {
+                productResult.errors << "category not found"
+            }
+            productResult.category as boolean
         }).flatMap({
             observe(execControl.blocking({
                 HandlerUtil.addProcessId(productResult.inputUrl, product.processId)

@@ -35,6 +35,7 @@ class ProductHandler extends GroovyHandler {
                 publication: context.pathTokens.publication,
                 locale: context.pathTokens.locale,
                 sku: context.pathTokens.sku,
+                category: context.request.queryParams.category,
                 processId: context.request.queryParams.processId
         )
         activity.debug "starting {}", product

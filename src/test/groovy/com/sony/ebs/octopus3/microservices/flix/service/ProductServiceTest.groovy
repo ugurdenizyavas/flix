@@ -5,6 +5,7 @@ import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoProduct
+import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.CategoryEnhancer
 import com.sony.ebs.octopus3.commons.ratpack.product.enhancer.EanCodeEnhancer
 import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
@@ -23,7 +24,7 @@ class ProductServiceTest {
     ProductService productService
     RepoProduct product
     ProductResult productResult
-    StubFor mockFlixXmlBuilder, mockEanCodeEnhancer
+    StubFor mockFlixXmlBuilder, mockEanCodeEnhancer, mockCategoryEnhancer
     MockFor mockHttpClient
 
     static ExecController execController
@@ -51,12 +52,14 @@ class ProductServiceTest {
         mockHttpClient = new MockFor(Oct3HttpClient)
         mockFlixXmlBuilder = new StubFor(FlixXmlBuilder)
         mockEanCodeEnhancer = new StubFor(EanCodeEnhancer)
+        mockCategoryEnhancer = new StubFor(CategoryEnhancer)
     }
 
     def runFlow() {
         productService.httpClient = mockHttpClient.proxyInstance()
         productService.flixXmlBuilder = mockFlixXmlBuilder.proxyInstance()
         productService.eanCodeEnhancer = mockEanCodeEnhancer.proxyInstance()
+        productService.categoryEnhancer = mockCategoryEnhancer.proxyInstance()
 
         def result = new BlockingVariable(5)
         boolean valueSet = false
@@ -92,7 +95,6 @@ class ProductServiceTest {
         }
     }
 
-
     @Test
     void "success"() {
         mockHttpClient.demand.with {
@@ -107,12 +109,24 @@ class ProductServiceTest {
             }
         }
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                assert it.materialName == "A/B+C"
-                it.eanCode = "ea2"
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                assert encoded
+                assert obj.sku == "a_2fb_2bc"
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
             }
         }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                assert encoded
+                assert obj.sku == "a_2fb_2bc"
+                assert obj.publication == "GLOBAL"
+                assert obj.locale == "fr_BE"
+                obj.category = "tv"
+                rx.Observable.just(obj)
+            }
+        }
+
         mockFlixXmlBuilder.demand.with {
             buildXml(1) { json ->
                 assert json.eanCode == "ea2"
@@ -124,13 +138,14 @@ class ProductServiceTest {
         assert runFlow() == "success"
         validateProductResultSuccess()
         assert productResult.eanCode == "ea2"
+        assert productResult.category == "tv"
     }
 
     @Test
     void "error no ean code"() {
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                rx.Observable.just(obj)
             }
         }
         assert runFlow() == "outOfFlow"
@@ -139,11 +154,64 @@ class ProductServiceTest {
     }
 
     @Test
+    void "error no category"() {
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                rx.Observable.just(obj)
+            }
+        }
+        assert runFlow() == "outOfFlow"
+        validateProductResultError()
+        assert productResult.errors == ["category not found"]
+    }
+
+    @Test
+    void "with category param"() {
+        product.category = "home theatre"
+        mockHttpClient.demand.with {
+            doGet(1) {
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200, bodyAsBytes: VALID_JSON.bytes))
+            }
+            doPost(1) { String url, InputStream is ->
+                rx.Observable.just(new Oct3HttpResponse(statusCode: 200))
+            }
+        }
+        mockEanCodeEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockFlixXmlBuilder.demand.with {
+            buildXml(1) { json ->
+                "some xml"
+            }
+        }
+        assert runFlow() == "success"
+        validateProductResultSuccess()
+        assert productResult.eanCode == "ea2"
+        assert productResult.category == "home theatre"
+    }
+
+
+    @Test
     void "sheet not found"() {
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                it.eanCode = "ea2"
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.category = "tv"
+                rx.Observable.just(obj)
             }
         }
         mockHttpClient.demand.with {
@@ -159,9 +227,15 @@ class ProductServiceTest {
     @Test
     void "invalid sheet"() {
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                it.eanCode = "ea2"
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.category = "tv"
+                rx.Observable.just(obj)
             }
         }
         mockHttpClient.demand.with {
@@ -176,9 +250,15 @@ class ProductServiceTest {
     @Test
     void "error building xml"() {
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                it.eanCode = "ea2"
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.category = "tv"
+                rx.Observable.just(obj)
             }
         }
         mockHttpClient.demand.with {
@@ -198,9 +278,15 @@ class ProductServiceTest {
     @Test
     void "error saving xml"() {
         mockEanCodeEnhancer.demand.with {
-            enhance(1) {
-                it.eanCode = "ea2"
-                rx.Observable.just(it)
+            enhance(1) { obj, encoded ->
+                obj.eanCode = "ea2"
+                rx.Observable.just(obj)
+            }
+        }
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.category = "tv"
+                rx.Observable.just(obj)
             }
         }
         mockHttpClient.demand.with {

@@ -39,6 +39,7 @@ class ProductHandlerTest {
                 assert product.locale == "fr_BE"
                 assert product.sku == "a_2fb_2bc"
                 assert product.processId == "123"
+                assert product.category == "home cinema"
 
                 productResult.eanCode = "ea1"
                 productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
@@ -60,7 +61,7 @@ class ProductHandlerTest {
                 validator: mockRequestValidator.proxyInstance(),
                 deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
-            uri "/?processId=123"
+            uri "/?processId=123&category=home+cinema"
         }).with {
             assert status.code == 200
 

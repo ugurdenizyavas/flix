@@ -17,6 +17,7 @@ import static com.github.dreamhead.moco.Moco.and
 import static com.github.dreamhead.moco.Moco.eq
 import static com.github.dreamhead.moco.Moco.query
 import static com.github.dreamhead.moco.Moco.with
+import static com.github.dreamhead.moco.Moco.with
 import static com.github.dreamhead.moco.Moco.status
 
 this.metaClass.mixin(Hooks)
@@ -304,7 +305,31 @@ Given(~"Octopus ean code (.*) for product (.*)") { String eanCode, String sku ->
     server.get(by(uri(url))).response(with(createIdentifiersFeed(eanCode)), status(200))
 }
 
-Given(~"Flix json for product (.*) no process id") { String sku ->
+Given(~"Category service for product (.*)") { String sku ->
+    String categoryFeed = """
+<ProductHierarchy name="category" publication="SCORE" locale="en_GB">
+    <node>
+        <name><![CDATA[SCORE]]></name>
+        <displayName><![CDATA[SCORE]]></displayName>
+        <nodes>
+            <node>
+                <name><![CDATA[TVH TV and Home Cinema]]></name>
+                <displayName><![CDATA[TV & home cinema]]></displayName>
+                <products>
+                    <product><![CDATA[$sku]]></product>
+                </products>
+            </node>
+        </nodes>
+    </node>
+</ProductHierarchy>
+
+    """
+    def url = "/product/publications/SCORE/locales/en_GB/hierarchies/category"
+    server.get(by(uri(url))).response(with(categoryFeed), status(200))
+
+}
+
+Given(~"Flix json for product (.*)") { String sku ->
     def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
     server.get(by(uri(jsonUri))).response(with('{"a":"1"}'), status(200))
 
@@ -312,7 +337,7 @@ Given(~"Flix json for product (.*) no process id") { String sku ->
     server.post(by(uri(xmlUri))).response(status(200))
 }
 
-Given(~"Flix json for product (.*) process id (.*)") { String sku, String processId ->
+Given(~"Flix json with process id (.*) for product (.*)") { String processId, String sku->
     def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
     server.get(and(by(uri(jsonUri)), eq(query("processId"), processId))).response(with('{"a":"1"}'), status(200))
 
@@ -320,15 +345,19 @@ Given(~"Flix json for product (.*) process id (.*)") { String sku, String proces
     server.post(and(by(uri(xmlUri)), eq(query("processId"), processId))).response(status(200))
 }
 
-When(~"I request flix product service for product (.*) no process id") { sku ->
+When(~"I request flix product service for product (.*)") { sku ->
     get("flix/product/publication/SCORE/locale/en_GB/sku/$sku")
 }
 
-When(~"I request flix product service for product (.*) process id (.*)") { sku, processId ->
+When(~"I request flix product service with category (.*) for product (.*)") { category, sku ->
+    get("flix/product/publication/SCORE/locale/en_GB/sku/$sku?category=$category")
+}
+
+When(~"I request flix product service with process id (.*) for product (.*)") { processId, sku ->
     get("flix/product/publication/SCORE/locale/en_GB/sku/$sku?processId=$processId")
 }
 
-def validateProductResponse(json, sku, eanCode) {
+def validateProductResponse(json, sku) {
     assert json.product.publication == "SCORE"
     assert json.product.locale == "en_GB"
     assert json.product.sku == sku
@@ -339,11 +368,11 @@ def validateProductResponse(json, sku, eanCode) {
     assert json.result.inputUrl == "http://localhost:12306/repository/file/urn:global_sku:score:en_gb:${sku}"
 }
 
-Then(~"Flix product service with no process id for product (.*) ean code (.*) should be done") { sku, eanCode ->
+Then(~"Flix product service for product (.*) ean code (.*) should be done") { sku, eanCode ->
     assert response.statusCode == 200
     def json = parseJson(response)
 
-    validateProductResponse(json, sku, eanCode)
+    validateProductResponse(json, sku)
 
     assert json.status == 200
     assert !json.errors
@@ -356,7 +385,7 @@ Then(~"Flix product service with process id (.*) for product (.*) ean code (.*) 
     assert response.statusCode == 200
     def json = parseJson(response)
 
-    validateProductResponse(json, sku, eanCode)
+    validateProductResponse(json, sku)
 
     assert json.status == 200
     assert !json.errors
@@ -366,16 +395,17 @@ Then(~"Flix product service with process id (.*) for product (.*) ean code (.*) 
     assert json.product.processId == processId
 }
 
-Then(~"Flix product service for product (.*) should fail") { sku ->
+Then(~"Flix product service for product (.*) should fail with (.*)") { sku, error ->
     assert response.statusCode == 500
     def json = parseJson(response)
 
-    validateProductResponse(json, sku, eanCode)
+    validateProductResponse(json, sku)
 
     assert json.status == 500
-    assert json.errors == ["ean code not found"]
+    assert json.errors == [error]
     assert !json.result.outputUrn
     assert !json.result.outputUrl
-    assert !json.result.eanCode
 }
+
+
 

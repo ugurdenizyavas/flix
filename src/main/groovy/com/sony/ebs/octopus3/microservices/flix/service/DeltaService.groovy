@@ -13,6 +13,7 @@ import com.sony.ebs.octopus3.commons.ratpack.product.filtering.CategoryService
 import com.sony.ebs.octopus3.commons.urn.URNImpl
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import groovyx.net.http.URIBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -72,16 +73,24 @@ class DeltaService {
         productResult
     }
 
-    def createProductServiceUrl(RepoDelta delta, String inputUrn) {
+    def createProductServiceUrl(RepoDelta delta, String inputUrn, String category) {
         def sku = new URNImpl(inputUrn).values.last()
         def initialUrl = productServiceUrl.replace(":publication", delta.publication).replace(":locale", delta.locale).replace(":sku", sku)
-        HandlerUtil.addProcessId(initialUrl, delta.processId?.id)
+        new URIBuilder(initialUrl).with {
+            if (delta.processId?.id) {
+                addQueryParam("processId", delta.processId?.id)
+            }
+            if (category) {
+                addQueryParam("category", category)
+            }
+            it.toString()
+        }
     }
 
-    rx.Observable<ProductResult> doProduct(RepoDelta delta, String inputUrn) {
+    rx.Observable<ProductResult> doProduct(RepoDelta delta, String inputUrn, String category) {
         rx.Observable.just("starting").flatMap({
             observe(execControl.blocking({
-                createProductServiceUrl(delta, inputUrn)
+                createProductServiceUrl(delta, inputUrn, category)
             }))
         }).flatMap({
             httpClient.doGet(it)
@@ -144,7 +153,7 @@ class DeltaService {
         }).flatMap({ Map categoryMap ->
             categoryFilteredUrns = categoryMap.keySet() as List
             deltaResult.categoryFilteredOutUrns = deltaResult.deltaUrns - categoryFilteredUrns
-            List list = categoryFilteredUrns?.collect { doProduct(delta, it) }
+            List list = categoryFilteredUrns?.collect { doProduct(delta, it, categoryMap[it]) }
             rx.Observable.merge(list, 30)
         })
     }
