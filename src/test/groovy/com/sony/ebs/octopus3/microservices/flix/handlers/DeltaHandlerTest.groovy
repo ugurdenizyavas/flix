@@ -71,7 +71,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -123,7 +123,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -154,7 +154,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -175,7 +175,6 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["error in flix flow"]
-            assert !ren.result
         }
     }
 
@@ -193,7 +192,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -214,7 +213,6 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["exp in flix flow"]
-            assert !ren.result
         }
     }
 
@@ -236,7 +234,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -257,7 +255,6 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["error in package flow"]
-            assert !ren.result
         }
     }
 
@@ -280,7 +277,7 @@ class DeltaHandlerTest {
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
@@ -301,7 +298,6 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["exp in package flow"]
-            assert !ren.result
         }
     }
 }

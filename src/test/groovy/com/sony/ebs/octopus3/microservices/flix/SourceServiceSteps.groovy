@@ -277,7 +277,6 @@ Then(~"Flix delta service should give (.*) error") { String error ->
     assert json.delta.publication
     assert json.delta.locale
     assert json?.errors == [error]
-    assert !json?.result
 }
 
 When(~"I request flix delta service with invalid (.*) parameter") { paramName ->

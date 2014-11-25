@@ -71,21 +71,19 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         DeltaResult deltaResult = new DeltaResult()
         deltaService.processDelta(delta, deltaResult).finallyDo({
             if (deltaResult.errors) {
-                def jsonResponse = processError(delta, deltaResult.errors, startTime)
+                def jsonResponse = processResult(delta, deltaResult, startTime)
                 context.response.status(500)
                 context.render jsonResponse
             } else {
                 packageService.processPackage(delta, deltaResult).finallyDo({
                     if (deltaResult.errors) {
-                        def jsonResponse = processError(delta, deltaResult.errors, startTime)
                         context.response.status(500)
-                        context.render jsonResponse
                     } else {
                         enhanceDeltaResult(deltaResult, productServiceResults)
-                        def jsonResponse = processSuccess(delta, deltaResult, startTime)
                         context.response.status(200)
-                        context.render jsonResponse
                     }
+                    def jsonResponse = processResult(delta, deltaResult, startTime)
+                    context.render jsonResponse
                 }).subscribe({
                     activity.debug "{} emitted: {}", delta, it
                 }, { e ->
