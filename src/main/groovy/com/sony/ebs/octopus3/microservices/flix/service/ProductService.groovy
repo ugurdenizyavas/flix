@@ -64,15 +64,6 @@ class ProductService {
                 productResult.inputUrl = repositoryFileServiceUrl.replace(":urn", productResult.inputUrn)
             }))
         }).flatMap({
-            eanCodeEnhancer.enhance([sku: product.sku], true)
-        }).filter({ Map map ->
-            if (map.eanCode) {
-                productResult.eanCode = map.eanCode
-            } else {
-                productResult.errors << "ean code not found"
-            }
-            productResult.eanCode as boolean
-        }).flatMap({
             if (product.category) {
                 rx.Observable.just([category: product.category])
             } else {
@@ -85,6 +76,15 @@ class ProductService {
                 productResult.errors << "category not found"
             }
             productResult.category as boolean
+        }).flatMap({
+            eanCodeEnhancer.enhance([sku: product.sku], true)
+        }).filter({ Map map ->
+            if (map.eanCode) {
+                productResult.eanCode = map.eanCode
+            } else {
+                productResult.errors << "ean code not found"
+            }
+            productResult.eanCode as boolean
         }).flatMap({
             observe(execControl.blocking({
                 HandlerUtil.addProcessId(productResult.inputUrl, product.processId)

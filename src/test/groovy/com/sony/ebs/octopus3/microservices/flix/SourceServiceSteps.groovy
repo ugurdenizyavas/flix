@@ -17,7 +17,6 @@ import static com.github.dreamhead.moco.Moco.and
 import static com.github.dreamhead.moco.Moco.eq
 import static com.github.dreamhead.moco.Moco.query
 import static com.github.dreamhead.moco.Moco.with
-import static com.github.dreamhead.moco.Moco.with
 import static com.github.dreamhead.moco.Moco.status
 
 this.metaClass.mixin(Hooks)
@@ -135,11 +134,9 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
         <nodes>
             <node>
                 <name><![CDATA[TVH TV and Home Cinema]]></name>
-                <displayName><![CDATA[TV & home cinema]]></displayName>
                 <nodes>
                     <node>
-                        <name><![CDATA[HCS Home Cinema Projectors]]></name>
-                        <displayName><![CDATA[Projectors]]></displayName>
+                        <name><![CDATA[tv]]></name>
                         <products>
                             <product><![CDATA[c]]></product>
                             <product><![CDATA[D]]></product>
@@ -149,8 +146,7 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
                         </products>
                     </node>
                     <node>
-                        <name><![CDATA[HCS Home Cinema Projectors]]></name>
-                        <displayName><![CDATA[Projectors]]></displayName>
+                        <name><![CDATA[projectors]]></name>
                         <products>
                             <product><![CDATA[G]]></product>
                             <product><![CDATA[h]]></product>
@@ -195,16 +191,17 @@ Given(~"Flix delta for publication (.*) locale (.*) with (.*)") { String publica
         server.post(by(uri("/repository/ops"))).response(status(200))
     }
 
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/c"))).response(with(createProductServiceResult("c", [])), status(500))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/d"))).response(with(createProductServiceResult("d", [])), status(500))
 
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/e"))).response(with(createProductServiceResult("e", "1", [])), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/f"))).response(with(createProductServiceResult("f", "1", ["err1", "err2"])), status(500))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/g"))).response(with(createProductServiceResult("g", "1", [])), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/h"))).response(with(createProductServiceResult("h", "1", ["err2", "err3"])), status(500))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/c")), eq(query("category"), "tv"))).response(with(createProductServiceResult("c", [])), status(500))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/d")), eq(query("category"), "tv"))).response(with(createProductServiceResult("d", [])), status(500))
 
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2f_2fc+ce7"))).response(with(createProductServiceResult("ss-ac3_2f_2fc+ce7", "1", [])), status(200))
-    server.get(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2b_2fc+ce7"))).response(with(createProductServiceResult("ss-ac3_2b_2fc+ce7", "1", [])), status(200))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/e")), eq(query("category"), "tv"))).response(with(createProductServiceResult("e", "1", [])), status(200))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/f")), eq(query("category"), "tv"))).response(with(createProductServiceResult("f", "1", ["err1", "err2"])), status(500))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/g")), eq(query("category"), "projectors"))).response(with(createProductServiceResult("g", "1", [])), status(200))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/h")), eq(query("category"), "projectors"))).response(with(createProductServiceResult("h", "1", ["err2", "err3"])), status(500))
+
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2f_2fc+ce7")), eq(query("category"), "tv"))).response(with(createProductServiceResult("ss-ac3_2f_2fc+ce7", "1", [])), status(200))
+    server.get(and(by(uri("/flix/product/publication/$publication/locale/$locale/sku/ss-ac3_2b_2fc+ce7")), eq(query("category"), "projectors"))).response(with(createProductServiceResult("ss-ac3_2b_2fc+ce7", "1", [])), status(200))
 }
 
 When(~"I request flix delta service for publication (.*) locale (.*)") { publication, locale ->
@@ -305,7 +302,7 @@ Given(~"Octopus ean code (.*) for product (.*)") { String eanCode, String sku ->
     server.get(by(uri(url))).response(with(createIdentifiersFeed(eanCode)), status(200))
 }
 
-Given(~"Category service for product (.*)") { String sku ->
+Given(~"Category (.*) for product (.*)") { category,  sku ->
     String categoryFeed = """
 <ProductHierarchy name="category" publication="SCORE" locale="en_GB">
     <node>
@@ -313,8 +310,7 @@ Given(~"Category service for product (.*)") { String sku ->
         <displayName><![CDATA[SCORE]]></displayName>
         <nodes>
             <node>
-                <name><![CDATA[TVH TV and Home Cinema]]></name>
-                <displayName><![CDATA[TV & home cinema]]></displayName>
+                <name><![CDATA[$category]]></name>
                 <products>
                     <product><![CDATA[$sku]]></product>
                 </products>
@@ -368,7 +364,7 @@ def validateProductResponse(json, sku) {
     assert json.result.inputUrl == "http://localhost:12306/repository/file/urn:global_sku:score:en_gb:${sku}"
 }
 
-Then(~"Flix product service for product (.*) ean code (.*) should be done") { sku, eanCode ->
+Then(~"Flix product service for product (.*) category (.*) ean code (.*) should be done") { sku, category, eanCode ->
     assert response.statusCode == 200
     def json = parseJson(response)
 
@@ -379,9 +375,10 @@ Then(~"Flix product service for product (.*) ean code (.*) should be done") { sk
     assert json.result.outputUrn == "urn:flixmedia:score:en_gb:${sku}.xml"
     assert json.result.outputUrl == "http://localhost:12306/repository/file/urn:flixmedia:score:en_gb:${sku}.xml"
     assert json.result.eanCode == eanCode
+    assert json.result.category == category
 }
 
-Then(~"Flix product service with process id (.*) for product (.*) ean code (.*) should be done") { processId, sku, eanCode ->
+Then(~"Flix product service with process id (.*) for product (.*) category (.*) ean code (.*) should be done") { processId, sku, category, eanCode ->
     assert response.statusCode == 200
     def json = parseJson(response)
 
@@ -392,6 +389,7 @@ Then(~"Flix product service with process id (.*) for product (.*) ean code (.*) 
     assert json.result.outputUrn == "urn:flixmedia:score:en_gb:${sku}.xml"
     assert json.result.outputUrl == "http://localhost:12306/repository/file/urn:flixmedia:score:en_gb:${sku}.xml"
     assert json.result.eanCode == eanCode
+    assert json.result.category == category
     assert json.product.processId == processId
 }
 

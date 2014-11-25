@@ -143,6 +143,12 @@ class ProductServiceTest {
 
     @Test
     void "error no ean code"() {
+        mockCategoryEnhancer.demand.with {
+            enhance(1) { obj, encoded ->
+                obj.category = "tv"
+                rx.Observable.just(obj)
+            }
+        }
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj, encoded ->
                 rx.Observable.just(obj)
@@ -155,12 +161,6 @@ class ProductServiceTest {
 
     @Test
     void "error no category"() {
-        mockEanCodeEnhancer.demand.with {
-            enhance(1) { obj, encoded ->
-                obj.eanCode = "ea2"
-                rx.Observable.just(obj)
-            }
-        }
         mockCategoryEnhancer.demand.with {
             enhance(1) { obj, encoded ->
                 rx.Observable.just(obj)
