@@ -3,7 +3,7 @@ Feature: Flix Product Service
 
   Scenario: flix product service basic
     Given Repo product for product x1.ceh
-    Given Flix xml save success for product x1.ceh
+    Given Xml save success for product x1.ceh
     Given Octopus ean code 111222 for product x1.ceh
     Given Category xperia for product x1.ceh
     When I request flix product service for product x1.ceh
@@ -11,7 +11,7 @@ Feature: Flix Product Service
 
   Scenario: flix product service with process id
     Given Repo product with process id 123 for product x1.ceh
-    Given Flix xml save success with process id 123 for product x1.ceh
+    Given Xml save success with process id 123 for product x1.ceh
     Given Octopus ean code 111222 for product x1.ceh
     Given Category tv for product x1.ceh
     When I request flix product service with process id 123 for product x1.ceh
@@ -31,7 +31,7 @@ Feature: Flix Product Service
 
   Scenario: flix product service with category param
     Given Repo product for product x1.ceh
-    Given Flix xml save success for product x1.ceh
+    Given Xml save success for product x1.ceh
     Given Octopus ean code 111222 for product x1.ceh
     When I request flix product service with category playstation for product x1.ceh
     Then Flix product service for product x1.ceh category playstation ean code 111222 should be done
@@ -45,7 +45,7 @@ Feature: Flix Product Service
 
   Scenario: flix product service xml save error
     Given Repo product for product x1.ceh
-    Given Flix xml save error for product x1.ceh
+    Given Xml save error for product x1.ceh
     Given Octopus ean code 111222 for product x1.ceh
     Given Category xperia for product x1.ceh
     When I request flix product service for product x1.ceh
