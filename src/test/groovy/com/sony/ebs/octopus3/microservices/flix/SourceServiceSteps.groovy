@@ -325,18 +325,32 @@ Given(~"Category (.*) for product (.*)") { category,  sku ->
 
 }
 
-Given(~"Flix json for product (.*)") { String sku ->
+Given(~"Repo product for product (.*)") { String sku ->
     def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
     server.get(by(uri(jsonUri))).response(with('{"a":"1"}'), status(200))
+}
 
+Given(~"Repo product with process id (.*) for product (.*)") { String processId, String sku->
+    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
+    server.get(and(by(uri(jsonUri)), eq(query("processId"), processId))).response(with('{"a":"1"}'), status(200))
+}
+
+Given(~"Repo product not found for product (.*)") { String sku ->
+    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
+    server.get(by(uri(jsonUri))).response(with('{"a":"1"}'), status(404))
+}
+
+Given(~"Flix xml save error for product (.*)") { String sku ->
+    def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
+    server.post(by(uri(xmlUri))).response(status(500))
+}
+
+Given(~"Flix xml save success for product (.*)") { String sku ->
     def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
     server.post(by(uri(xmlUri))).response(status(200))
 }
 
-Given(~"Flix json with process id (.*) for product (.*)") { String processId, String sku->
-    def jsonUri = "/repository/file/urn:global_sku:score:en_gb:${sku.toLowerCase()}"
-    server.get(and(by(uri(jsonUri)), eq(query("processId"), processId))).response(with('{"a":"1"}'), status(200))
-
+Given(~"Flix xml save success with process id (.*) for product (.*)") { String processId, String sku->
     def xmlUri = "/repository/file/urn:flixmedia:score:en_gb:${sku.toLowerCase()}.xml"
     server.post(and(by(uri(xmlUri)), eq(query("processId"), processId))).response(status(200))
 }

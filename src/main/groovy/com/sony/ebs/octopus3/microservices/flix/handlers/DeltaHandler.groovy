@@ -100,24 +100,23 @@ class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
         })
     }
 
-    def enhanceDeltaResult(DeltaResult deltaResult, List<ProductResult> sheetResults) {
-        Map pErrors = [:]
-        sheetResults.findAll({ !it.success }).each { ProductResult serviceResult ->
-            serviceResult.errors.each { error ->
-                if (pErrors[error] == null) pErrors[error] = []
-                pErrors[error] << serviceResult.inputUrn
-            }
-        }
+    def enhanceDeltaResult(DeltaResult deltaResult, List<ProductResult> productResults) {
         deltaResult.with {
-            productErrors = pErrors
+            productErrors = productResults.findAll({ !it.success }).inject([:]) { map, ProductResult productResult ->
+                productResult.errors.each { error ->
+                    if (map[error] == null) map[error] = []
+                    map[error] << productResult.inputUrn
+                }
+                map
+            }
             categoryFilteredOutUrns = deltaResult.categoryFilteredOutUrns
-            eanCodeFilteredOutUrns = sheetResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
-            successfulUrns = sheetResults?.findAll({ it.success }).collect({ it.inputUrn })
-            unsuccessfulUrns = sheetResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
+            eanCodeFilteredOutUrns = productResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
+            successfulUrns = productResults?.findAll({ it.success }).collect({ it.inputUrn })
+            unsuccessfulUrns = productResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
             other = [
                     "package created" : deltaResult.other?.outputPackageUrl,
                     "package archived": deltaResult.other?.archivePackageUrl,
-                    outputUrls        : (sheetResults.findAll({ it.success }).collect({ it.outputUrl }))
+                    outputUrls        : (productResults.findAll({ it.success }).collect({ it.outputUrl }))
             ]
         }
     }

@@ -2,7 +2,6 @@ package com.sony.ebs.octopus3.microservices.flix.service
 
 import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
-import com.sony.ebs.octopus3.commons.ratpack.encoding.MaterialNameEncoder
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpClient
 import com.sony.ebs.octopus3.commons.ratpack.http.Oct3HttpResponse
@@ -48,7 +47,7 @@ class ProductService {
     @Autowired
     FlixXmlBuilder flixXmlBuilder
 
-    def createSheetJson(InputStream inputStream, String eanCode) {
+    def createProductJson(InputStream inputStream, String eanCode) {
         log.debug "starting parsing json"
         def json = jsonSlurper.parse(inputStream, EncodingUtil.CHARSET_STR)
         json.eanCode = eanCode
@@ -93,10 +92,10 @@ class ProductService {
             log.info "getting json from repo for {}", product.sku
             httpClient.doGet(it)
         }).filter({ Oct3HttpResponse response ->
-            response.isSuccessful("getting sheet from repo", productResult.errors)
+            response.isSuccessful("getting product from repo", productResult.errors)
         }).flatMap({ Oct3HttpResponse response ->
             observe(execControl.blocking {
-                createSheetJson(response.bodyAsStream, productResult.eanCode)
+                createProductJson(response.bodyAsStream, productResult.eanCode)
             })
         }).flatMap({ json ->
             observe(execControl.blocking {

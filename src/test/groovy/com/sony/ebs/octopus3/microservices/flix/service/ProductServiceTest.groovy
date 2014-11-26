@@ -201,7 +201,7 @@ class ProductServiceTest {
 
 
     @Test
-    void "sheet not found"() {
+    void "product not found"() {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj, encoded ->
                 obj.eanCode = "ea2"
@@ -221,11 +221,11 @@ class ProductServiceTest {
         }
         assert runFlow() == "outOfFlow"
         validateProductResultError()
-        assert productResult.errors == ["HTTP 404 error getting sheet from repo"]
+        assert productResult.errors == ["HTTP 404 error getting product from repo"]
     }
 
     @Test
-    void "invalid sheet"() {
+    void "invalid product"() {
         mockEanCodeEnhancer.demand.with {
             enhance(1) { obj, encoded ->
                 obj.eanCode = "ea2"

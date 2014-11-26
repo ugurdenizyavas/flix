@@ -13,17 +13,17 @@ class FlixUtilsTest {
     }
 
     @Test(expected = URNCreationException)
-    void "getXmlUrn invalid sheetUrn"() {
+    void "getXmlUrn invalid product urn"() {
         FlixUtils.getXmlUrn("urn:a")
     }
 
     @Test
-    void "getXmlUrn valid sheetUrn"() {
+    void "getXmlUrn valid product urn"() {
         assert FlixUtils.getXmlUrn("urn:a:b")?.toString() == "urn:flixmedia:b.xml"
     }
 
     @Test
-    void "getXmlUrn valid longer sheetUrn"() {
+    void "getXmlUrn valid longer product urn"() {
         assert FlixUtils.getXmlUrn("urn:a:b:c:d")?.toString() == "urn:flixmedia:b:c:d.xml"
     }
 

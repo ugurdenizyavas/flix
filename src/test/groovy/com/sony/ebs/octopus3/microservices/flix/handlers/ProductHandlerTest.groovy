@@ -17,14 +17,14 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class ProductHandlerTest {
 
-    StubFor mockFlixSheetService, mockRequestValidator
+    StubFor mockProductService, mockRequestValidator
 
     RepoProduct product
     def deltaResultService
 
     @Before
     void before() {
-        mockFlixSheetService = new StubFor(ProductService)
+        mockProductService = new StubFor(ProductService)
         mockRequestValidator = new StubFor(RequestValidator)
         deltaResultService = new DeltaResultService()
 
@@ -33,7 +33,7 @@ class ProductHandlerTest {
 
     @Test
     void "success"() {
-        mockFlixSheetService.demand.with {
+        mockProductService.demand.with {
             processProduct(1) { RepoProduct product, ProductResult productResult ->
                 assert product.publication == "GLOBAL"
                 assert product.locale == "fr_BE"
@@ -57,7 +57,7 @@ class ProductHandlerTest {
         }
 
         handle(new ProductHandler(
-                productService: mockFlixSheetService.proxyInstance(),
+                productService: mockProductService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
@@ -115,12 +115,12 @@ class ProductHandlerTest {
 
     @Test
     void "error in flow"() {
-        mockFlixSheetService.demand.with {
+        mockProductService.demand.with {
             processProduct(1) { RepoProduct product, ProductResult productResult ->
 
                 productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
                 productResult.inputUrl = "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
-                productResult.errors << "error in sheet flow"
+                productResult.errors << "error in product flow"
 
                 rx.Observable.just(null)
             }
@@ -132,7 +132,7 @@ class ProductHandlerTest {
         }
 
         handle(new ProductHandler(
-                productService: mockFlixSheetService.proxyInstance(),
+                productService: mockProductService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
@@ -147,7 +147,7 @@ class ProductHandlerTest {
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
 
-            assert ren.errors == ["error in sheet flow"]
+            assert ren.errors == ["error in product flow"]
 
             assert ren.result.inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
             assert ren.result.inputUrl == "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
@@ -156,14 +156,14 @@ class ProductHandlerTest {
 
     @Test
     void "exception in flow"() {
-        mockFlixSheetService.demand.with {
+        mockProductService.demand.with {
             processProduct(1) { RepoProduct product, ProductResult productResult ->
 
                 productResult.inputUrn = "urn:global_sku:global:fr_be:a_2fb_2bc"
                 productResult.inputUrl = "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"
 
                 rx.Observable.just("starting").map({
-                    throw new Exception("exp in sheet flow")
+                    throw new Exception("exp in product flow")
                 })
             }
         }
@@ -174,7 +174,7 @@ class ProductHandlerTest {
         }
 
         handle(new ProductHandler(
-                productService: mockFlixSheetService.proxyInstance(),
+                productService: mockProductService.proxyInstance(),
                 validator: mockRequestValidator.proxyInstance(),
                 deltaResultService: deltaResultService), {
             pathBinding([publication: "GLOBAL", locale: "fr_BE", sku: "a_2fb_2bc"])
@@ -190,7 +190,7 @@ class ProductHandlerTest {
             assert ren.product.locale == "fr_BE"
             assert ren.product.sku == "a_2fb_2bc"
 
-            assert ren.errors == ["exp in sheet flow"]
+            assert ren.errors == ["exp in product flow"]
 
             assert ren.result.inputUrn == "urn:global_sku:global:fr_be:a_2fb_2bc"
             assert ren.result.inputUrl == "/repo/file/urn:global_sku:global:fr_be:a_2fb_2bc"

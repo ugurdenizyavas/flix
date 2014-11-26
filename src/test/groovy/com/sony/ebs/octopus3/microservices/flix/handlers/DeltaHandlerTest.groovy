@@ -35,12 +35,12 @@ class DeltaHandlerTest {
         delta = new RepoDelta(type: RepoValue.flixMedia, publication: "SCORE", locale: "en_GB")
     }
 
-    def sheetResultA = new ProductResult(inputUrn: "a", eanCode: "1", success: true, outputUrl: "http:/repo/a.xml")
-    def sheetResultB = new ProductResult(inputUrn: "b", eanCode: "1", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new ProductResult(inputUrn: "e", eanCode: "1", success: true, outputUrl: "http:/repo/e.xml")
-    def sheetResultF = new ProductResult(inputUrn: "f", eanCode: "1", success: false, errors: ["err4", "err5"])
-    def sheetResultG = new ProductResult(inputUrn: "g", success: false, errors: ["no ean code"])
-    def sheetResultH = new ProductResult(inputUrn: "h", success: false, errors: ["no ean code"])
+    def productResultA = new ProductResult(inputUrn: "a", eanCode: "1", success: true, outputUrl: "http:/repo/a.xml")
+    def productResultB = new ProductResult(inputUrn: "b", eanCode: "1", success: false, errors: ["err3", "err4"])
+    def productResultE = new ProductResult(inputUrn: "e", eanCode: "1", success: true, outputUrl: "http:/repo/e.xml")
+    def productResultF = new ProductResult(inputUrn: "f", eanCode: "1", success: false, errors: ["err4", "err5"])
+    def productResultG = new ProductResult(inputUrn: "g", success: false, errors: ["no ean code"])
+    def productResultH = new ProductResult(inputUrn: "h", success: false, errors: ["no ean code"])
 
     @Test
     void "success"() {
@@ -63,7 +63,7 @@ class DeltaHandlerTest {
 
                 dr.deltaUrns = ["a", "b", "c", "d", "e", "f", "g", "h"]
                 dr.categoryFilteredOutUrns = ["c", "d"]
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB, sheetResultG, sheetResultH])
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB, productResultG, productResultH])
             }
         }
         mockRequestValidator.demand.with {
@@ -226,7 +226,7 @@ class DeltaHandlerTest {
         }
         mockDeltaService.demand.with {
             processDelta(1) { RepoDelta d, DeltaResult dr ->
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB])
             }
         }
         mockRequestValidator.demand.with {
@@ -269,7 +269,7 @@ class DeltaHandlerTest {
         }
         mockDeltaService.demand.with {
             processDelta(1) { RepoDelta d, DeltaResult dr ->
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB])
             }
         }
         mockRequestValidator.demand.with {
