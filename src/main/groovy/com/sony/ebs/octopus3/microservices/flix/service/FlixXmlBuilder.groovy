@@ -1,4 +1,4 @@
-package com.sony.ebs.octopus3.microservices.flix.services.sub
+package com.sony.ebs.octopus3.microservices.flix.service
 
 import com.sony.ebs.octopus3.commons.ratpack.encoding.EncodingUtil
 import groovy.util.logging.Slf4j

@@ -1,156 +1,124 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
-import com.sony.ebs.octopus3.commons.process.ProcessIdImpl
+import com.hazelcast.core.HazelcastInstance
+import com.sony.ebs.octopus3.commons.flows.FlowTypeEnum
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
 import com.sony.ebs.octopus3.commons.ratpack.handlers.HandlerUtil
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
+import com.sony.ebs.octopus3.commons.ratpack.handlers.HazelcastAwareDeltaHandler
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
-import com.sony.ebs.octopus3.microservices.flix.services.basic.DeltaService
-import groovy.json.JsonOutput
+import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import ratpack.groovy.handling.GroovyContext
-import ratpack.groovy.handling.GroovyHandler
 
-import static ratpack.jackson.Jackson.json
-
+@Slf4j(value = "log", category = "DeltaHandler")
 @Slf4j(value = "activity", category = "activity")
 @Component
 @org.springframework.context.annotation.Lazy
-class DeltaHandler extends GroovyHandler {
+class DeltaHandler extends HazelcastAwareDeltaHandler<RepoDelta> {
 
-    @Autowired
     DeltaService deltaService
-
-    @Autowired
     PackageService packageService
 
     @Autowired
-    RequestValidator validator
+    public DeltaHandler(
+            DeltaService deltaService,
+            PackageService packageService,
+            RequestValidator validator,
+            HazelcastInstance hazelcastInstance,
+            DeltaResultService deltaResultService,
+            ResponseStorage responseStorage
+    ) {
+        this.deltaService = deltaService
+        this.packageService = packageService
+        super.setValidator(validator)
+        super.setHazelcastInstance(hazelcastInstance)
+        super.setDeltaResultService(deltaResultService)
+        super.setResponseStorage(responseStorage)
+    }
 
-    @Autowired
-    ResponseStorage responseStorage
+    public DeltaHandler() {
+    }
 
     @Override
-    protected void handle(GroovyContext context) {
-        context.with {
-            RepoDelta delta = new RepoDelta(type: DeltaType.flixMedia, processId: new ProcessIdImpl(), publication: pathTokens.publication,
-                    locale: pathTokens.locale, sdate: request.queryParams.sdate, edate: request.queryParams.edate)
-            activity.info "starting {}", delta
+    RepoValue getDeltaType() {
+        return RepoValue.flixMedia
+    }
 
-            List productServiceResults = []
-            List errors = validator.validateRepoDelta(delta)
-            if (errors) {
-                activity.error "error validating {} : {}", delta, errors
-                response.status(400)
+    @Override
+    RepoDelta createDelta(GroovyContext context) {
+        new RepoDelta()
+    }
 
-                def jsonResponse = json(status: 400, errors: errors, delta: delta)
+    @Override
+    FlowTypeEnum getFlowType() {
+        FlowTypeEnum.FLIX
+    }
 
-                responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
+    @Override
+    void flowHandle(GroovyContext context, RepoDelta delta) {
+        def startTime = new DateTime()
 
-                render jsonResponse
+        List<ProductResult> productServiceResults = []
+        DeltaResult deltaResult = new DeltaResult()
+        deltaService.processDelta(delta, deltaResult).finallyDo({
+            if (deltaResult.errors) {
+                def jsonResponse = processResult(delta, deltaResult, startTime)
+                context.response.status(500)
+                context.render jsonResponse
             } else {
-                def startTime = new DateTime()
-                def flix = new Flix()
-                deltaService.processDelta(delta, flix).finallyDo({
-                    if (delta.errors) {
-                        activity.error "finished {} with errors: {}", delta, delta.errors
-                        def endTime = new DateTime()
-                        def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
-                        response.status(500)
-
-                        def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
-
-                        responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
-
-                        render jsonResponse
+                packageService.processPackage(delta, deltaResult).finallyDo({
+                    if (deltaResult.errors) {
+                        context.response.status(500)
                     } else {
-                        handleFlixPackage(context, delta, flix, productServiceResults, startTime)
+                        enhanceDeltaResult(deltaResult, productServiceResults)
+                        context.response.status(200)
                     }
+                    def jsonResponse = processResult(delta, deltaResult, startTime)
+                    context.render jsonResponse
                 }).subscribe({
-                    productServiceResults << it
-                    activity.debug "flix flow emitted: {}", it
+                    activity.debug "{} emitted: {}", delta, it
                 }, { e ->
-                    delta.errors << HandlerUtil.getErrorMessage(e)
+                    deltaResult.errors << HandlerUtil.getErrorMessage(e)
                     activity.error "error in $delta", e
                 })
             }
-
-        }
+        }).subscribe({
+            productServiceResults << it
+            activity.debug "flix flow emitted: {}", it
+        }, { e ->
+            deltaResult.errors << HandlerUtil.getErrorMessage(e)
+            activity.error "error in $delta", e
+        })
     }
 
-    void handleFlixPackage(GroovyContext context, RepoDelta delta, Flix flix, List productServiceResults, DateTime startTime) {
-        context.with {
-            packageService.packageFlow(delta, flix).finallyDo({
-                def endTime = new DateTime()
-                def timeStats = HandlerUtil.getTimeStats(startTime, endTime)
-                if (delta.errors) {
-                    activity.error "finished {} with errors: {}", delta, delta.errors
-                    response.status(500)
-
-                    def jsonResponse = json(status: 500, timeStats: timeStats, errors: delta.errors, delta: delta)
-
-                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
-
-                    render jsonResponse
-                } else {
-                    activity.info "finished {} with success", delta
-                    response.status(200)
-
-                    def jsonResponse = json(status: 200, timeStats: timeStats, result: createDeltaResult(delta, flix, productServiceResults), delta: delta)
-
-                    responseStorage.store(delta.processId.id, ["flix", "delta", delta.publication, delta.locale, delta.processId.id], JsonOutput.toJson(jsonResponse.object))
-
-                    render jsonResponse
+    def enhanceDeltaResult(DeltaResult deltaResult, List<ProductResult> productResults) {
+        deltaResult.with {
+            productErrors = productResults.findAll({ !it.success }).inject([:]) { map, ProductResult productResult ->
+                productResult.errors.each { error ->
+                    if (map[error] == null) map[error] = []
+                    map[error] << productResult.inputUrn
                 }
-            }).subscribe({
-                activity.debug "{} emitted: {}", delta, it
-            }, { e ->
-                delta.errors << HandlerUtil.getErrorMessage(e)
-                activity.error "error in $delta", e
-            })
-        }
-    }
-
-    Map createDeltaResult(RepoDelta delta, Flix flix, List sheetServiceResults) {
-        def createSuccess = {
-            sheetServiceResults.findAll({ it.success }).collect({ it.xmlFileUrl })
-        }
-        def createErrors = {
-            Map errorMap = [:]
-            sheetServiceResults.findAll({ !it.success }).each { ProductServiceResult serviceResult ->
-                serviceResult.errors.each { error ->
-                    if (errorMap[error] == null) errorMap[error] = []
-                    errorMap[error] << serviceResult.jsonUrn
-                }
+                map
             }
-            errorMap
+            categoryFilteredOutUrns = deltaResult.categoryFilteredOutUrns
+            eanCodeFilteredOutUrns = productResults?.findAll({ !it.eanCode }).collect({ it.inputUrn })
+            successfulUrns = productResults?.findAll({ it.success }).collect({ it.inputUrn })
+            unsuccessfulUrns = productResults?.findAll({ it.eanCode && !it.success }).collect({ it.inputUrn })
+            other = [
+                    "package created" : deltaResult.other?.outputPackageUrl,
+                    "package archived": deltaResult.other?.archivePackageUrl,
+                    outputUrls        : (productResults.findAll({ it.success }).collect({ it.outputUrl }))
+            ]
         }
-        [
-                "package created"      : flix.outputPackageUrl,
-                "package archived"     : flix.archivePackageUrl,
-                stats                  : [
-                        "number of delta products"                   : delta.deltaUrns?.size(),
-                        "number of products filtered out by category": flix.categoryFilteredOutUrns?.size(),
-                        "number of products filtered out by ean code": flix.eanCodeFilteredOutUrns?.size(),
-                        "number of success"                          : sheetServiceResults?.findAll({
-                            it.success
-                        }).size(),
-                        "number of errors"                           : sheetServiceResults?.findAll({
-                            !it.success
-                        }).size()
-                ],
-                success                : createSuccess(),
-                errors                 : createErrors(),
-                categoryFilteredOutUrns: flix.categoryFilteredOutUrns,
-                eanCodeFilteredOutUrns : flix.eanCodeFilteredOutUrns
-        ]
     }
 
 }

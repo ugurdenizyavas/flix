@@ -1,13 +1,14 @@
 package com.sony.ebs.octopus3.microservices.flix.handlers
 
+import com.sony.ebs.octopus3.commons.flows.RepoValue
 import com.sony.ebs.octopus3.commons.ratpack.file.ResponseStorage
-import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaType
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.DeltaResult
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.ProductResult
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.model.RepoDelta
+import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.service.DeltaResultService
 import com.sony.ebs.octopus3.commons.ratpack.product.cadc.delta.validator.RequestValidator
-import com.sony.ebs.octopus3.microservices.flix.model.Flix
-import com.sony.ebs.octopus3.microservices.flix.model.ProductServiceResult
-import com.sony.ebs.octopus3.microservices.flix.services.basic.PackageService
-import com.sony.ebs.octopus3.microservices.flix.services.basic.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.service.DeltaService
+import com.sony.ebs.octopus3.microservices.flix.service.PackageService
 import groovy.mock.interceptor.StubFor
 import groovy.util.logging.Slf4j
 import org.junit.Before
@@ -19,63 +20,69 @@ import static ratpack.groovy.test.GroovyUnitTest.handle
 @Slf4j
 class DeltaHandlerTest {
 
-    StubFor mockFlixService, mockFlixPackageService, mockRequestValidator, mockResponseStorage
+    StubFor mockDeltaService, mockPackageService, mockRequestValidator, mockResponseStorage
     RepoDelta delta
-    Flix flix
+    def deltaResultService
 
     @Before
     void before() {
-        mockFlixService = new StubFor(DeltaService)
+        mockDeltaService = new StubFor(DeltaService)
         mockRequestValidator = new StubFor(RequestValidator)
-        mockFlixPackageService = new StubFor(PackageService)
+        mockPackageService = new StubFor(PackageService)
         mockResponseStorage = new StubFor(ResponseStorage)
+        deltaResultService = new DeltaResultService()
 
-        delta = new RepoDelta(type: DeltaType.flixMedia, publication: "SCORE", locale: "en_GB")
-        flix = new Flix()
+        delta = new RepoDelta(type: RepoValue.flixMedia, publication: "SCORE", locale: "en_GB")
     }
 
-    def sheetResultA = new ProductServiceResult(jsonUrn: "a", success: true, xmlFileUrl: "http:/repo/a.xml")
-    def sheetResultB = new ProductServiceResult(jsonUrn: "b", success: false, errors: ["err3", "err4"])
-    def sheetResultE = new ProductServiceResult(jsonUrn: "e", success: true, xmlFileUrl: "http:/repo/e.xml")
-    def sheetResultF = new ProductServiceResult(jsonUrn: "f", success: false, errors: ["err4", "err5"])
+    def productResultA = new ProductResult(inputUrn: "a", eanCode: "1", success: true, outputUrl: "http:/repo/a.xml")
+    def productResultB = new ProductResult(inputUrn: "b", eanCode: "1", success: false, errors: ["err3", "err4"])
+    def productResultE = new ProductResult(inputUrn: "e", eanCode: "1", success: true, outputUrl: "http:/repo/e.xml")
+    def productResultF = new ProductResult(inputUrn: "f", eanCode: "1", success: false, errors: ["err4", "err5"])
+    def productResultG = new ProductResult(inputUrn: "g", success: false, errors: ["no ean code"])
+    def productResultH = new ProductResult(inputUrn: "h", success: false, errors: ["no ean code"])
 
     @Test
     void "success"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
                 assert d.publication == "SCORE"
                 assert d.locale == "en_GB"
-                f.outputPackageUrl = "/3rdparty/flix.zip"
-                f.archivePackageUrl = "/archive/flix.zip"
+                dr.other.outputPackageUrl = "/3rdparty/flix.zip"
+                dr.other.archivePackageUrl = "/archive/flix.zip"
                 rx.Observable.just("xxx")
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 assert d.processId != null
                 assert d.publication == "SCORE"
                 assert d.locale == "en_GB"
                 assert d.sdate == "s1"
                 assert d.edate == "s2"
 
-                d.deltaUrns = ["a", "b", "c", "d", "e", "f"]
-                f.categoryFilteredOutUrns = ["c", "d"]
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+                dr.deltaUrns = ["a", "b", "c", "d", "e", "f", "g", "h"]
+                dr.categoryFilteredOutUrns = ["c", "d"]
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB, productResultG, productResultH])
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService
+        ), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/?sdate=s1&edate=s2"
         }).with {
@@ -89,36 +96,41 @@ class DeltaHandlerTest {
             assert ren.delta.processId.id != null
             assert !ren.errors
 
-            assert ren.result."package created" == "/3rdparty/flix.zip"
-            assert ren.result."package archived" == "/archive/flix.zip"
-            assert ren.result.stats."number of delta products" == 6
+            assert ren.result.other."package created" == "/3rdparty/flix.zip"
+            assert ren.result.other."package archived" == "/archive/flix.zip"
+            assert ren.result.other.outputUrls?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
+
+            assert ren.result.stats."number of delta products" == 8
             assert ren.result.stats."number of products filtered out by category" == 2
-            assert ren.result.stats."number of success" == 2
-            assert ren.result.stats."number of errors" == 2
+            assert ren.result.stats."number of products filtered out by ean code" == 2
+            assert ren.result.stats."number of successful" == 2
+            assert ren.result.stats."number of unsuccessful" == 2
 
-            assert ren.result.success?.sort() == ["http:/repo/a.xml", "http:/repo/e.xml"]
-
-            assert ren.result.errors.size() == 3
-            assert ren.result.errors.err3 == ["b"]
-            assert ren.result.errors.err4?.sort() == ["b", "f"]
-            assert ren.result.errors.err5 == ["f"]
+            assert ren.result.productErrors.size() == 4
+            assert ren.result.productErrors.err3 == ["b"]
+            assert ren.result.productErrors.err4?.sort() == ["b", "f"]
+            assert ren.result.productErrors.err5 == ["f"]
+            assert ren.result.productErrors."no ean code"?.sort() == ["g", "h"]
         }
     }
 
     @Test
     void "error in params"() {
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) {
+            validateDelta(1) {
                 ["error"]
             }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
-        handle(new DeltaHandler(validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             uri "/"
         }).with {
             assert status.code == 400
@@ -131,25 +143,28 @@ class DeltaHandlerTest {
 
     @Test
     void "error in flix flow"() {
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
-                d.errors << "error in flix flow"
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
+                dr.errors << "error in flix flow"
                 rx.Observable.just(null)
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -160,32 +175,34 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["error in flix flow"]
-            assert !ren.result
         }
     }
 
     @Test
     void "exception in flix flow"() {
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in flix flow")
                 })
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -196,36 +213,38 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["exp in flix flow"]
-            assert !ren.result
         }
     }
 
     @Test
     void "error in package flow"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
-                d.errors << "error in package flow"
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
+                dr.errors << "error in package flow"
                 rx.Observable.just(null)
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -236,37 +255,39 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["error in package flow"]
-            assert !ren.result
         }
     }
 
     @Test
     void "exception in package flow"() {
-        mockFlixPackageService.demand.with {
-            packageFlow(1) { RepoDelta d, Flix f ->
+        mockPackageService.demand.with {
+            processPackage(1) { RepoDelta d, DeltaResult dr ->
                 rx.Observable.just("starting").map({
                     throw new Exception("exp in package flow")
                 })
             }
         }
-        mockFlixService.demand.with {
-            processDelta(1) { RepoDelta d, Flix f ->
-                rx.Observable.from([sheetResultF, sheetResultE, sheetResultA, sheetResultB])
+        mockDeltaService.demand.with {
+            processDelta(1) { RepoDelta d, DeltaResult dr ->
+                rx.Observable.from([productResultF, productResultE, productResultA, productResultB])
             }
         }
         mockRequestValidator.demand.with {
-            validateRepoDelta(1) { [] }
+            validateDelta(1) { [] }
         }
 
         mockResponseStorage.demand.with {
-            store(1) { String st1, List list1, String st2 ->
+            store(1) { delta, json ->
                 true
             }
         }
 
-        handle(new DeltaHandler(deltaService: mockFlixService.proxyInstance(),
-                packageService: mockFlixPackageService.proxyInstance(),
-                validator: mockRequestValidator.proxyInstance(), responseStorage: mockResponseStorage.proxyInstance()), {
+        handle(new DeltaHandler(
+                deltaService: mockDeltaService.proxyInstance(),
+                packageService: mockPackageService.proxyInstance(),
+                validator: mockRequestValidator.proxyInstance(),
+                responseStorage: mockResponseStorage.proxyInstance(),
+                deltaResultService: deltaResultService), {
             pathBinding([publication: "SCORE", locale: "en_GB"])
             uri "/"
         }).with {
@@ -277,7 +298,6 @@ class DeltaHandlerTest {
             assert ren.delta.locale == "en_GB"
             assert ren.delta.processId.id != null
             assert ren.errors == ["exp in package flow"]
-            assert !ren.result
         }
     }
 }
